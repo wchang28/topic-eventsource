@@ -1,0 +1,22 @@
+{
+  "name": "topic-eventsource",
+  "version": "0.0.1",
+  "description": "Topic-based event source",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "ajaxon": "git+https://github.com/wchang28/ajaxon.git",
+    "alasql": "^0.2.5",
+    "eventsource": "^0.2.1",
+    "express": "^4.13.4",
+    "jquery-no-dom": "git+https://github.com/wchang28/jquery-no-dom.git",
+    "json-api-router": "git+https://github.com/wchang28/json-api-router.git",
+    "lodash": "^4.12.0",
+    "node-uuid": "^1.4.7",
+    "sse-express": "git+https://github.com/wchang28/sse-express.git"
+  }
+}

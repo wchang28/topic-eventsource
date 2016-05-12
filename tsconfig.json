@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+      "target": "es5",
+      "module": "commonjs",
+      "sourceMap": true,
+      "outDir": "./js",
+      "watch": true
+  },
+  "files": [
+      "./ts/Connection.ts",
+      "./ts/EventSourceClient.ts",
+      "./ts/SSETopicRouter.ts",
+      "./ts/ProxyConnection.ts",
+      "./ts/app.ts",
+      "./ts/api/index.ts",
+      "./ts/proxy/index.ts",
+      "./ts/clientTest.ts"
+  ]
+}
