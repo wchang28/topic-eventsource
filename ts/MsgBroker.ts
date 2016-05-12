@@ -1,4 +1,4 @@
-import {MessageClient as Client, Subscription} from './MessageClient';
+import {MessageClient as Client} from './MessageClient';
 import * as events from 'events';
 
 interface ClientFactory {
