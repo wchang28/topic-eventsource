@@ -1,12 +1,8 @@
 
 import {MsgBroker, MsgBrokerStates} from './MsgBroker';
-import {Client} from './EventSourceClient';
+import {EventSourceClient} from './EventSourceClient';
 
-function clientFactory() : Client {
-    return new Client('http://127.0.0.1:8080/proxy/events', {'sessionId': 'xxxyyy'});
-}
-
-let msgBorker = new MsgBroker(clientFactory, 10000, false);
+let msgBorker = new MsgBroker(() => new EventSourceClient('http://127.0.0.1:8080/proxy/events', {}) , 10000);
 
 msgBorker.on('connect', (conn_id:string) : void => {
     console.log('connected: conn_id=' + conn_id);
@@ -21,8 +17,16 @@ msgBorker.on('connect', (conn_id:string) : void => {
     });
 });
 
+msgBorker.on('client_open', (): void => {
+    console.log('client_open');
+});
+
+msgBorker.on('ping', (): void => {
+    console.log('<<PING>> ' + new Date());
+});
+
 msgBorker.on('error', (err: any) : void => {
-    console.error('Error:' + JSON.stringify(err));
+    console.error('!!! Error:' + JSON.stringify(err));
 });
 
 msgBorker.on('message', (msg:IMessage) : void => {
@@ -34,4 +38,3 @@ msgBorker.on('state_changed', (state: MsgBrokerStates): void => {
 });
 
 msgBorker.connect();
-

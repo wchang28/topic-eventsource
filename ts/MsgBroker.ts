@@ -1,6 +1,6 @@
 /// <reference path="../typings/lodash/lodash.d.ts" />
 
-import {Client, Subscription} from './EventSourceClient';
+import {EventSourceClient as Client, Subscription} from './EventSourceClient';
 
 import * as events from 'events';
 import * as _ from 'lodash';
@@ -15,12 +15,21 @@ export enum MsgBrokerStates {
     Connected
 }
 
+// this class supportes the following events
+// 1. state_changed
+// 2. client_open
+// 3. ping
+// 4. connect
+// 5. error
+// 6. message
 export class MsgBroker extends events.EventEmitter {
     private client: Client = null;
     private state: MsgBrokerStates = MsgBrokerStates.Idle;
     private err_not_connected: string = "not connected";
     connect(): void {
         this.client = this.clientFactory();
+        this.client.on('open', () => {this.emit('client_open');});
+        this.client.on('ping', () => {this.emit('ping');});
         this.state = MsgBrokerStates.Connecting;
         this.emit('state_changed', this.state);
         this.client.connect((err: any, conn_id:string) : void => {
@@ -37,9 +46,8 @@ export class MsgBroker extends events.EventEmitter {
             }
         });
     }
-    constructor(private clientFactory: ClientFactory, private reconnectIntervalMS:number = 5000, autoConnect: boolean = true) {
+    constructor(private clientFactory: ClientFactory, private reconnectIntervalMS:number = 5000) {
         super();
-        if (autoConnect) this.connect();
     }
     getState() : MsgBrokerStates { return this.state;}
     subscribe(destination: string, headers:{[field:string]: any} = {}, done?: DoneHandler) : string {

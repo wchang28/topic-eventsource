@@ -10,7 +10,7 @@ export class Subscription extends events.EventEmitter {
         super();
     }
     unsubscribe(done?: DoneHandler) : void {
-        Client.ajaxUnsubscribe(this.ajaxon, this.conn_id, this.sub_id, (err: any) => {
+        EventSourceClient.ajaxUnsubscribe(this.ajaxon, this.conn_id, this.sub_id, (err: any) => {
             if (err) {
                 if (typeof done === 'function') done(err);
             } else {
@@ -21,12 +21,17 @@ export class Subscription extends events.EventEmitter {
     }
 }
 
-export class Client {
+// this class suooprt the following events
+// 1. open
+// 2. ping
+export class EventSourceClient extends events.EventEmitter {
 	private source: any = null;
 	private conn_id: string = null;
 	public subscriptions: {[sub_id: string]: Subscription;} = {};
 	private sub_id: number = 0;
-	constructor(public url:string, public headers?: { [field: string]: string; }, public rejectUnauthorized: boolean = false) {}
+	constructor(public url:string, public headers?: { [field: string]: string; }, public rejectUnauthorized: boolean = false) {
+        super();
+    }
     
     static ajaxSubscribe(ajaxon: IEventSourceAjaxon, conn_id: string, sub_id: string, destination: string, headers: {[field:string]: any}, done?: DoneHandler) {
 		let data = {
@@ -69,13 +74,13 @@ export class Client {
         };
 		this.source = new EventSource(this.url, options);
 		this.source.onopen = () => {
+            this.emit('open');
 		};
 		this.source.onmessage = (event) => {
 			let msg: IMessage = JSON.parse(event.data);
 			//console.log(JSON.stringify(msg));
 			if (msg.headers.event === 'ping') {
-				// fire on ping
-                console.log("<<PING>> " + new Date());
+				this.emit('ping');
 			} else if (msg.headers.event === 'connect') {
 				this.conn_id = msg.headers.conn_id;
 				if (typeof cb === 'function') cb(null, this.conn_id);
@@ -103,7 +108,7 @@ export class Client {
 		});
 		this.subscriptions[this_sub_id] = subscription;
         this.sub_id++;
-        Client.ajaxSubscribe(this.getEventSourceAjaxon(), this.conn_id, this_sub_id, destination, headers, (err: any) => {
+        EventSourceClient.ajaxSubscribe(this.getEventSourceAjaxon(), this.conn_id, this_sub_id, destination, headers, (err: any) => {
             if (err) {
                 delete this.subscriptions[this_sub_id];
                 if (typeof done === 'function') done(err);
@@ -123,6 +128,6 @@ export class Client {
 		}
 	}
     send(destination:string, headers: {[field:string]:any}, message:any, done? : DoneHandler) : void {
-        Client.ajaxSend(this.getEventSourceAjaxon(), this.conn_id, destination, headers, message, done);
+        EventSourceClient.ajaxSend(this.getEventSourceAjaxon(), this.conn_id, destination, headers, message, done);
     }
 }
