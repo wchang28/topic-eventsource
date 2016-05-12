@@ -1,9 +1,5 @@
-/// <reference path="../typings/lodash/lodash.d.ts" />
-
 import {MessageClient as Client, Subscription} from './MessageClient';
-
 import * as events from 'events';
-import * as _ from 'lodash';
 
 interface ClientFactory {
     () : Client    
