@@ -9,6 +9,7 @@
   "files": [
       "./ts/Connection.ts",
       "./ts/EventSourceClient.ts",
+      "./ts/MsgBroker.ts",
       "./ts/SSETopicRouter.ts",
       "./ts/ProxyConnection.ts",
       "./ts/app.ts",
