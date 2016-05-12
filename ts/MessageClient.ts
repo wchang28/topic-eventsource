@@ -1,16 +1,13 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="./Message.ts" />
 import * as events from 'events';
-let EventSource = require('eventsource');
-let $ = require('jquery-no-dom');
-let $J = (require("ajaxon"))($);
 
 export class Subscription extends events.EventEmitter {
     constructor(private ajaxon: IEventSourceAjaxon, private conn_id: string, public destination: string, public headers:{[field:string]: any}, public sub_id: string, public cb: IMessageCallback) {
         super();
     }
     unsubscribe(done?: DoneHandler) : void {
-        EventSourceClient.ajaxUnsubscribe(this.ajaxon, this.conn_id, this.sub_id, (err: any) => {
+        MessageClient.ajaxUnsubscribe(this.ajaxon, this.conn_id, this.sub_id, (err: any) => {
             if (err) {
                 if (typeof done === 'function') done(err);
             } else {
@@ -24,12 +21,12 @@ export class Subscription extends events.EventEmitter {
 // this class suooprt the following events
 // 1. open
 // 2. ping
-export class EventSourceClient extends events.EventEmitter {
+export class MessageClient extends events.EventEmitter {
 	private source: any = null;
 	private conn_id: string = null;
 	public subscriptions: {[sub_id: string]: Subscription;} = {};
 	private sub_id: number = 0;
-	constructor(public url:string, public headers?: { [field: string]: string; }, public rejectUnauthorized: boolean = false) {
+	constructor(private EventSourceClass, private jQuery, public url:string, public headers?: { [field: string]: string; }, public rejectUnauthorized: boolean = false) {
         super();
     }
     
@@ -72,7 +69,7 @@ export class EventSourceClient extends events.EventEmitter {
             headers: this.headers
             ,rejectUnauthorized: this.rejectUnauthorized
         };
-		this.source = new EventSource(this.url, options);
+		this.source = new this.EventSourceClass(this.url, options);
 		this.source.onopen = () => {
             this.emit('open');
 		};
@@ -95,6 +92,7 @@ export class EventSourceClient extends events.EventEmitter {
 	}
 
     private getEventSourceAjaxon() : IEventSourceAjaxon {
+        let $J = (require("ajaxon"))(this.jQuery);
         return ((method: string, path: string, data: any, done: (err: any, data: any) => void) => {
             $J(method, this.url+path, data, done, this.headers, this.rejectUnauthorized);
         });
@@ -108,7 +106,7 @@ export class EventSourceClient extends events.EventEmitter {
 		});
 		this.subscriptions[this_sub_id] = subscription;
         this.sub_id++;
-        EventSourceClient.ajaxSubscribe(this.getEventSourceAjaxon(), this.conn_id, this_sub_id, destination, headers, (err: any) => {
+        MessageClient.ajaxSubscribe(this.getEventSourceAjaxon(), this.conn_id, this_sub_id, destination, headers, (err: any) => {
             if (err) {
                 delete this.subscriptions[this_sub_id];
                 if (typeof done === 'function') done(err);
@@ -128,6 +126,6 @@ export class EventSourceClient extends events.EventEmitter {
 		}
 	}
     send(destination:string, headers: {[field:string]:any}, message:any, done? : DoneHandler) : void {
-        EventSourceClient.ajaxSend(this.getEventSourceAjaxon(), this.conn_id, destination, headers, message, done);
+        MessageClient.ajaxSend(this.getEventSourceAjaxon(), this.conn_id, destination, headers, message, done);
     }
 }

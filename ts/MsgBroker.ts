@@ -1,6 +1,6 @@
 /// <reference path="../typings/lodash/lodash.d.ts" />
 
-import {EventSourceClient as Client, Subscription} from './EventSourceClient';
+import {MessageClient as Client, Subscription} from './MessageClient';
 
 import * as events from 'events';
 import * as _ from 'lodash';

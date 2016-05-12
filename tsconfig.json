@@ -8,7 +8,7 @@
   },
   "files": [
       "./ts/Connection.ts",
-      "./ts/EventSourceClient.ts",
+      "./ts/MessageClient.ts",
       "./ts/MsgBroker.ts",
       "./ts/SSETopicRouter.ts",
       "./ts/ProxyConnection.ts",

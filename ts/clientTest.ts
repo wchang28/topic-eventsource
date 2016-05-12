@@ -1,8 +1,10 @@
 
 import {MsgBroker, MsgBrokerStates} from './MsgBroker';
-import {EventSourceClient} from './EventSourceClient';
+import {MessageClient} from './MessageClient';
+let EventSource = require('eventsource');
+let $ = require('jquery-no-dom');
 
-let msgBorker = new MsgBroker(() => new EventSourceClient('http://127.0.0.1:8080/proxy/events', {}) , 10000);
+let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, 'http://127.0.0.1:8080/proxy/events', {}) , 10000);
 
 msgBorker.on('connect', (conn_id:string) : void => {
     console.log('connected: conn_id=' + conn_id);

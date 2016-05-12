@@ -2,7 +2,7 @@
 /// <reference path="../typings/express-serve-static-core/express-serve-static-core.d.ts" />
 /// <reference path="./Message.ts" />
 let EventSource = require('eventsource');
-import {EventSourceClient as Client} from './EventSourceClient';
+import {MessageClient as Client} from './MessageClient';
 import * as express from 'express';
 import * as events from 'events';
 
