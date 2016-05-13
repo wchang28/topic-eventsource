@@ -2,9 +2,12 @@
 /// <reference path="../typings/express-serve-static-core/express-serve-static-core.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/node-uuid/node-uuid.d.ts" />
+/// <reference path="../typings/body-parser/body-parser.d.ts" />
 /// <reference path="Message.ts" />
 import * as uuid from 'node-uuid';
 import * as events from 'events';
+import * as express from 'express';
+import * as bodyParser from 'body-parser';
 
 interface IConnectionCreateDoneHandler {
     (err: any, conn_id: string) : void;
@@ -90,29 +93,21 @@ class ConnectionsManager extends events.EventEmitter
     }
 }
 
-import * as express from 'express';
-
 interface SSEResponse extends express.Response {
     sseSend: (msg:any) => void;
 }
 
-interface SSEInitializer {
-    (req: express.Request, res: SSEResponse) : any;
+interface IConnectionsManagedRouter extends express.Router {
+    connectionsManager: ConnectionsManager;
+    eventSource: events.EventEmitter;
 }
 
-interface SSETerminator {
-    (req: express.Request, res: SSEResponse, v: any) : void;
-}
-interface SSE {
-    (initializer: SSEInitializer, terminator: SSETerminator) : express.RequestHandler;
-}
-
-let sse : SSE = require('sse-express');
-
-export function get_router(eventPath: string, connectionFactoryFactory: IConnectionFactoryFactory, cookieSetter?: ICookieSetter) : express.Router {
-    let router : express.Router = require('json-api-router')();
+export function get_router(eventPath: string, connectionFactoryFactory: IConnectionFactoryFactory, cookieSetter?: ICookieSetter) : IConnectionsManagedRouter {
+	let router: IConnectionsManagedRouter  = <IConnectionsManagedRouter>express.Router();
+	router.use(bodyParser.json({'limit': '100mb'}));
     let connectionsManager = new ConnectionsManager();
     router.connectionsManager = connectionsManager;
+    router.eventSource = new events.EventEmitter();
     
     // server side events streaming
     router.get(eventPath, (req: express.Request, res: SSEResponse) => {
@@ -141,8 +136,8 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
         ,(msg: IMessage) => {res.sseSend(msg);}
         ,(err: any) => {req.socket.end();}
         ,(err: any, connnection_id: string) => {
-            if (err)
-                req.socket.end();
+            if (err)    // connection cannot be created due to some error
+                req.socket.end();   // close the socket, this will trigger req.on("close")
             else {
                 conn_id = connnection_id;
                 console.log('new client (' + conn_id + ') connected');

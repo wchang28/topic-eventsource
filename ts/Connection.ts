@@ -1,10 +1,7 @@
-/// <reference path="../typings/express/express.d.ts" />
-/// <reference path="../typings/express-serve-static-core/express-serve-static-core.d.ts" />
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="./Message.ts" />
 import * as events from 'events';
-import * as express from 'express';
-var alasql = require('alasql');
+let alasql = require('alasql');
 
 interface Subscription {
 	destination: string;
