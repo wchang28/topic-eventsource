@@ -26,7 +26,7 @@ export class MessageClient extends events.EventEmitter {
 	private conn_id: string = null;
 	public subscriptions: {[sub_id: string]: Subscription;} = {};
 	private sub_id: number = 0;
-	constructor(private EventSourceClass, private jQuery, public url:string, public headers?: { [field: string]: string; }, public rejectUnauthorized: boolean = false) {
+	constructor(private EventSourceClass, private jQuery, public url:string, public headers?: { [field: string]: string; }, public rejectUnauthorized?: boolean) {
         super();
     }
     
