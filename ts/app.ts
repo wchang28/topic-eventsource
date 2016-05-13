@@ -19,6 +19,8 @@ app.use('/api', apiRouter);
 import {router as proxyRouter} from './proxy';
 app.use('/proxy', proxyRouter);
 
+app.use('/app', express.static(path.join(__dirname, '../ui')));
+
 let secure_http:boolean = false;
 let server: http.Server = http.createServer(app);
 

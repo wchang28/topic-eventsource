@@ -2,6 +2,7 @@
   "compilerOptions": {
       "target": "es5",
       "module": "commonjs",
+      "jsx": "react",
       "sourceMap": true,
       "outDir": "./js",
       "watch": true
@@ -15,6 +16,7 @@
       "./ts/app.ts",
       "./ts/api/index.ts",
       "./ts/proxy/index.ts",
-      "./ts/clientTest.ts"
+      "./ts/clientTest.ts",
+      "./ts/ui/main.tsx"
   ]
 }

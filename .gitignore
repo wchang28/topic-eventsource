@@ -8,3 +8,5 @@ logs
 npm-debug.log*
 
 js
+
+ui/js/bundle.js

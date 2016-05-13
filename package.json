@@ -18,6 +18,11 @@
     "json-api-router": "git+https://github.com/wchang28/json-api-router.git",
     "lodash": "^4.12.0",
     "node-uuid": "^1.4.7",
+    "react": "^15.0.2",
+    "react-dom": "^15.0.2",
     "sse-express": "git+https://github.com/wchang28/sse-express.git"
+  },
+  "devDependencies": {
+    "browserify": "^12.0.1"
   }
 }
