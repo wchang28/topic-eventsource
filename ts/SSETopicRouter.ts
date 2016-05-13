@@ -145,13 +145,13 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
         });
         ///////////////////////////////////////////////////////////////////////
 		
-		// The 'close' event is fired when a user closes their browser window.
-		req.on("close", function() {
+        // The 'close' event is fired when a user closes their browser window.
+        req.on("close", function() {
             if (conn_id.length > 0) {
                 console.log('client (' + conn_id + ') closes sse streaming connection');
                 connectionsManager.removeConnection(conn_id);
             }
-		});
+        });
     });
     
     router.post(eventPath + '/subscribe', function(req: express.Request, res: express.Response) {
