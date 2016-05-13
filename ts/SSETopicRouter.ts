@@ -103,33 +103,33 @@ interface IConnectionsManagedRouter extends express.Router {
 }
 
 export function get_router(eventPath: string, connectionFactoryFactory: IConnectionFactoryFactory, cookieSetter?: ICookieSetter) : IConnectionsManagedRouter {
-	let router: IConnectionsManagedRouter  = <IConnectionsManagedRouter>express.Router();
-	router.use(bodyParser.json({'limit': '100mb'}));
+    let router: IConnectionsManagedRouter  = <IConnectionsManagedRouter>express.Router();
+    router.use(bodyParser.json({'limit': '100mb'}));
     let connectionsManager = new ConnectionsManager();
     router.connectionsManager = connectionsManager;
     router.eventSource = new events.EventEmitter();
     
     // server side events streaming
     router.get(eventPath, (req: express.Request, res: SSEResponse) => {
-		// init SSE
-		///////////////////////////////////////////////////////////////////////
-		//send headers for event-stream connection
-		res.writeHead(200, {
-			'Content-Type': 'text/event-stream',
-			'Cache-Control': 'no-cache',
-			'Connection': 'keep-alive'
-		});
-		// add a sseSend() method to the result object
-		res.sseSend = function(data: any, event? : any) {
-			if (event) res.write("event: " + event.toString() + "\n");
-			res.write("data: " + JSON.stringify(data) + "\n\n");
-		}
-		res.write('\n');
-		///////////////////////////////////////////////////////////////////////
+        // init SSE
+        ///////////////////////////////////////////////////////////////////////
+        //send headers for event-stream connection
+        res.writeHead(200, {
+            'Content-Type': 'text/event-stream',
+            'Cache-Control': 'no-cache',
+            'Connection': 'keep-alive'
+        });
+        // add a sseSend() method to the result object
+        res.sseSend = function(data: any, event? : any) {
+            if (event) res.write("event: " + event.toString() + "\n");
+            res.write("data: " + JSON.stringify(data) + "\n\n");
+        }
+        res.write('\n');
+        ///////////////////////////////////////////////////////////////////////
 		
         let conn_id: string = '';
-		// initialize event streaming
-		///////////////////////////////////////////////////////////////////////
+        // initialize event streaming
+        ///////////////////////////////////////////////////////////////////////
         connectionsManager.createConnection(
         connectionFactoryFactory(req, cookieSetter)
         ,req.connection.remoteAddress+':'+req.connection.remotePort.toString()
