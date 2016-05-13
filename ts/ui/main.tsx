@@ -10,7 +10,7 @@ var MessageClient_1 = require('message-client');
 window.EventSourcePolyfill = require('eventsource');
 window.EventSource = window.EventSource || window.EventSourcePolyfill
 
-var msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, '/proxy/events', {}); }, 10000);
+let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, '/proxy/events', {}); }, 10000);
 msgBorker.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
     var sub_id = msgBorker.subscribe('topic/say_hi', { "selector": "location = 'USA'" }, function (err) {
