@@ -13,6 +13,8 @@ interface IConnectionCreateDoneHandler {
     (err: any, conn_id: string) : void;
 }
 
+// this class emits the following events
+// 1. change
 class ConnectionsManager extends events.EventEmitter
 {
     private connCount: number;
@@ -99,7 +101,7 @@ interface SSEResponse extends express.Response {
 
 interface IConnectionsManagedRouter extends express.Router {
     connectionsManager: ConnectionsManager;
-    eventSource: events.EventEmitter;
+    eventEmitter: events.EventEmitter;
 }
 
 export function get_router(eventPath: string, connectionFactoryFactory: IConnectionFactoryFactory, cookieSetter?: ICookieSetter) : IConnectionsManagedRouter {
@@ -107,10 +109,13 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
     router.use(bodyParser.json({'limit': '100mb'}));
     let connectionsManager = new ConnectionsManager();
     router.connectionsManager = connectionsManager;
-    router.eventSource = new events.EventEmitter();
+    router.eventEmitter = new events.EventEmitter();
     
     // server side events streaming
     router.get(eventPath, (req: express.Request, res: SSEResponse) => {
+        let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
+        router.eventEmitter.emit('sse_connect', remoteAddress);
+        
         // init SSE
         ///////////////////////////////////////////////////////////////////////
         //send headers for event-stream connection
@@ -132,7 +137,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
         ///////////////////////////////////////////////////////////////////////
         connectionsManager.createConnection(
         connectionFactoryFactory(req, cookieSetter)
-        ,req.connection.remoteAddress+':'+req.connection.remotePort.toString()
+        ,remoteAddress
         ,(msg: IMessage) => {res.sseSend(msg);}
         ,(err: any) => {req.socket.end();}
         ,(err: any, connnection_id: string) => {
@@ -147,6 +152,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
 		
         // The 'close' event is fired when a user closes their browser window.
         req.on("close", function() {
+            router.eventEmitter.emit('sse_disconnect', remoteAddress);
             if (conn_id.length > 0) {
                 console.log('client (' + conn_id + ') closes sse streaming connection');
                 connectionsManager.removeConnection(conn_id);
@@ -155,6 +161,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
     });
     
     router.post(eventPath + '/subscribe', function(req: express.Request, res: express.Response) {
+        let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.body;
         let conn_id: string = data.conn_id;
         let sub_id: string = data.sub_id;
@@ -171,6 +178,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
     });
 
     router.get(eventPath + '/unsubscribe', function(req: express.Request, res: express.Response) {
+        let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let query = req.query;
         let conn_id = query.conn_id;
         let sub_id = query.sub_id;
@@ -185,6 +193,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
     });
 
     router.post(eventPath + '/send', function(req: express.Request, res: express.Response) {
+        let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.body;
         connectionsManager.forwardMessage(data.conn_id, data.destination, data.headers, data.body, (err: any) => {
             if (err) {

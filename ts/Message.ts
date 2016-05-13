@@ -49,7 +49,7 @@ interface ICookieSetter {
     (req: any) : any;
 }
 
-interface IConnectionFactoryFactory {   // a function thats returns connection factory
+interface IConnectionFactoryFactory {   // a function that returns connection factory
     (req: any, cookieSetter?: ICookieSetter): IConnectionFactory;
 }
 

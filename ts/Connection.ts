@@ -14,7 +14,7 @@ class Connection extends events.EventEmitter implements IConnection {
 	private eventEmitter: events.EventEmitter;
 	private subscriptions: {[sub_id:string] : Subscription;}
 	private pintInterval: NodeJS.Timer;
-	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: IMessageCallback, errorCB: ErrorHandler) {
+	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: IMessageCallback) {
 		super();
 		this.conn_id = conn_id;
 		this.remoteAddress = remoteAddress;
@@ -115,7 +115,7 @@ class Connection extends events.EventEmitter implements IConnection {
 
 export function ConnectionFactoryFactory (req: any, cookieSetter?: ICookieSetter) : IConnectionFactory {
     let cookie = cookieSetter ? cookieSetter(req) : null;
-	return ((conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: (err: any, conn: IConnection) => void) => {
-		done(null, new Connection(conn_id, remoteAddress, cookie, messageCB, errorCB));
+	return ((conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler) => {
+		done(null, new Connection(conn_id, remoteAddress, cookie, messageCB));
 	});
 }
