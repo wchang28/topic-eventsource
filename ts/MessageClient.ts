@@ -23,21 +23,21 @@ export class Subscription extends events.EventEmitter {
 // 1. open
 // 2. ping
 export class MessageClient extends events.EventEmitter {
-	private source: any = null;
-	private conn_id: string = null;
-	public subscriptions: {[sub_id: string]: Subscription;} = {};
-	private sub_id: number = 0;
+    private source: any = null;
+    private conn_id: string = null;
+    public subscriptions: {[sub_id: string]: Subscription;} = {};
+    private sub_id: number = 0;
     constructor(private EventSourceClass, private jQuery, public url:string, public eventSourceInitDict?: any) {
         super();
     }
     
     static ajaxSubscribe(ajaxon: IEventSourceAjaxon, conn_id: string, sub_id: string, destination: string, headers: {[field:string]: any}, done?: DoneHandler) {
-		let data = {
-			conn_id: conn_id,
-			sub_id: sub_id,
-			destination: destination,
+        let data = {
+            conn_id: conn_id,
+            sub_id: sub_id,
+            destination: destination,
             headers: headers
-		};
+        };
         ajaxon("POST", "/subscribe", data, (err, data) => {
             if (typeof done === 'function') done(err ? err : null);
         });
