@@ -6,9 +6,7 @@ import * as ReactDOM from 'react-dom';
 import * as $ from 'jquery';
 var MsgBroker_1 = require('message-broker');
 var MessageClient_1 = require('message-client');
-
-window.EventSourcePolyfill = require('eventsource');
-window.EventSource = window.EventSource || window.EventSourcePolyfill
+require('eventsource-polyfill');
 
 let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, '/proxy/events', {}); }, 10000);
 msgBorker.on('connect', function (conn_id) {
