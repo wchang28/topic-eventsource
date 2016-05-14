@@ -27,8 +27,10 @@ msgBorker.on('connect', (conn_id:string) : void => {
 msgBorker.on('connect', (conn_id:string) : void => {
     console.log('connected: conn_id=' + conn_id);
     console.log('sending a test message...');
-    msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon'}, (err: any) : void => {       
+    msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good morning ' + new Date()}, (err: any) : void => {
+        console.log('test message sent disconnecting...');
         msgBorker.disconnect();
+        console.log('disconnected');
     });
 });
 

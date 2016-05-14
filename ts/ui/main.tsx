@@ -8,6 +8,7 @@ var MsgBroker_1 = require('message-broker');
 var MessageClient_1 = require('message-client');
 require('eventsource-polyfill');
 
+let eventSourceUrl = '/proxy/events';
 
 class MsgBrokerTestProps {
     message: string;
@@ -22,16 +23,12 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
     }
 }
 
-let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, '/proxy/events', {}); }, 10000);
+let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, eventSourceUrl); }, 10000);
 msgBorker.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
     var sub_id = msgBorker.subscribe('topic/say_hi', { "selector": "location = 'USA'" }, function (err) {
         console.log('sending a test message...');
         msgBorker.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good afternoon' }, function (err) {
-            msgBorker.unsubscribe(sub_id, function (err) {
-                //msgBorker.disconnect();
-                //console.log('unsubscribed');
-            });
         });
     });
 });
