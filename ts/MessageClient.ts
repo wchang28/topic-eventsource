@@ -1,6 +1,7 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="./Message.ts" />
 import * as events from 'events';
+let Ajx = require("ajaxon");
 
 export class Subscription extends events.EventEmitter {
     constructor(private ajaxon: IEventSourceAjaxon, private conn_id: string, public destination: string, public headers:{[field:string]: any}, public sub_id: string, public cb: IMessageCallback) {
@@ -26,7 +27,7 @@ export class MessageClient extends events.EventEmitter {
 	private conn_id: string = null;
 	public subscriptions: {[sub_id: string]: Subscription;} = {};
 	private sub_id: number = 0;
-	constructor(private EventSourceClass, private jQuery, public url:string, public headers?: { [field: string]: string; }, public rejectUnauthorized?: boolean) {
+	constructor(private EventSourceClass, private jQuery, public url:string, public eventSourceInitDict?: any) {
         super();
     }
     
@@ -65,11 +66,7 @@ export class MessageClient extends events.EventEmitter {
     }
 		
 	connect(cb: (err?: any, conn_id?: string) => void) : void {
-        let options = {
-            headers: this.headers
-            ,rejectUnauthorized: this.rejectUnauthorized
-        };
-		this.source = new this.EventSourceClass(this.url, options);
+		this.source = new this.EventSourceClass(this.url, this.eventSourceInitDict);
 		this.source.onopen = () => {
             this.emit('open');
 		};
@@ -92,9 +89,11 @@ export class MessageClient extends events.EventEmitter {
 	}
 
     private getEventSourceAjaxon() : IEventSourceAjaxon {
-        let $J = (require("ajaxon"))(this.jQuery);
+        let $J = Ajx(this.jQuery);
+        let headers = (this.eventSourceInitDict ? this.eventSourceInitDict.headers : null);
+        let rejectUnauthorized = (this.eventSourceInitDict ? this.eventSourceInitDict.rejectUnauthorized : null);
         return ((method: string, path: string, data: any, done: (err: any, data: any) => void) => {
-            $J(method, this.url+path, data, done, this.headers, this.rejectUnauthorized);
+            $J(method, this.url+path, data, done, headers, rejectUnauthorized);
         });
     }
 	subscribe(destination: string, cb: IMessageCallback, headers:{[field:string]: any} = {}, done?: DoneHandler) : Subscription {

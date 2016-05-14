@@ -4,8 +4,12 @@ import {MessageClient} from './MessageClient';
 let EventSource = require('eventsource');
 let $ = require('jquery-no-dom');
 
-let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, 'http://127.0.0.1:8080/proxy/events', {}) , 10000);
+//let url = 'http://127.0.0.1:8080/proxy/events';
+let url = 'http://127.0.0.1:8080/api/events';
 
+let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, url) , 10000);
+
+/*
 msgBorker.on('connect', (conn_id:string) : void => {
     console.log('connected: conn_id=' + conn_id);
     let sub_id = msgBorker.subscribe('topic/say_hi', {"selector": "location = 'USA'"}, (err: any): void => {
@@ -16,6 +20,15 @@ msgBorker.on('connect', (conn_id:string) : void => {
                 //console.log('unsubscribed');
             });
         });
+    });
+});
+*/
+
+msgBorker.on('connect', (conn_id:string) : void => {
+    console.log('connected: conn_id=' + conn_id);
+    console.log('sending a test message...');
+    msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon'}, (err: any) : void => {       
+        msgBorker.disconnect();
     });
 });
 

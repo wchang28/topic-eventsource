@@ -8,6 +8,20 @@ var MsgBroker_1 = require('message-broker');
 var MessageClient_1 = require('message-client');
 require('eventsource-polyfill');
 
+
+class MsgBrokerTestProps {
+    message: string;
+}
+
+class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
+    constructor(props:MsgBrokerTestProps) {
+        super(props);
+    }
+    render() {
+        return <div>{this.props.message}</div>;
+    }
+}
+
 let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, '/proxy/events', {}); }, 10000);
 msgBorker.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
@@ -25,29 +39,21 @@ msgBorker.on('client_open', function () {
     console.log('client_open');
 });
 msgBorker.on('ping', function () {
-    console.log('<<PING>> ' + new Date());
+    let message = '<<PING>> ' + new Date();
+    console.log(message);
+    ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
 msgBorker.on('error', function (err) {
     console.error('!!! Error:' + JSON.stringify(err));
 });
 msgBorker.on('message', function (msg) {
-    console.log('msg-rcvd: ' + JSON.stringify(msg));
+    let message = 'msg-rcvd: ' + JSON.stringify(msg);
+    console.log(message);
+    ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
 msgBorker.on('state_changed', function (state) {
     console.log('state_changed: ' + state.toString());
 });
 msgBorker.connect();
 
-class MsgBrokerTestProps {
-}
-
-class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
-    constructor(props:MsgBrokerTestProps) {
-        super(props);
-    }
-    render() {
-        return <div>Hello world!</div>;
-    }
-}
-
-ReactDOM.render(<MsgBrokerTestApp/>, document.getElementById('test'));
+ReactDOM.render(<MsgBrokerTestApp message={'Hello World :-)'}/>, document.getElementById('test'));
