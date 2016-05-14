@@ -41,7 +41,9 @@ msgBorker.on('ping', function () {
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
 msgBorker.on('error', function (err) {
-    console.error('!!! Error:' + JSON.stringify(err));
+    let message = '!!! Error:' + JSON.stringify(err);
+    console.error(message);
+    ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
 msgBorker.on('message', function (msg) {
     let message = 'msg-rcvd: ' + JSON.stringify(msg);
