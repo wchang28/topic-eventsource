@@ -96,6 +96,7 @@ export class MessageClient extends events.EventEmitter {
             $J(method, this.url+path, data, done, headers, rejectUnauthorized);
         });
     }
+    
     subscribe(destination: string, cb: IMessageCallback, headers:{[field:string]: any} = {}, done?: DoneHandler) : Subscription {
         if (!this.source || !this.conn_id) throw "not connected";
         let this_sub_id = this.sub_id.toString();
@@ -115,15 +116,15 @@ export class MessageClient extends events.EventEmitter {
         });
         return subscription;
     }
-	disconnect() : void {
-		if (this.source) {
-			this.source.close();
-			this.source = null;
-			this.conn_id = null;
-			this.subscriptions = {};
-			this.sub_id = 0;
-		}
-	}
+    disconnect() : void {
+        if (this.source) {
+            this.source.close();
+            this.source = null;
+            this.conn_id = null;
+            this.subscriptions = {};
+            this.sub_id = 0;
+        }
+    }
     send(destination:string, headers: {[field:string]:any}, message:any, done? : DoneHandler) : void {
         MessageClient.ajaxSend(this.getEventSourceAjaxon(), this.conn_id, destination, headers, message, done);
     }
