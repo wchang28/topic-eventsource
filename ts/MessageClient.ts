@@ -65,28 +65,28 @@ export class MessageClient extends events.EventEmitter {
         });
     }
 		
-	connect(cb: (err?: any, conn_id?: string) => void) : void {
-		this.source = new this.EventSourceClass(this.url, this.eventSourceInitDict);
-		this.source.onopen = () => {
+    connect(cb: (err?: any, conn_id?: string) => void) : void {
+        this.source = new this.EventSourceClass(this.url, this.eventSourceInitDict);
+        this.source.onopen = () => {
             this.emit('open');
-		};
-		this.source.onmessage = (event) => {
-			let msg: IMessage = JSON.parse(event.data);
-			//console.log(JSON.stringify(msg));
-			if (msg.headers.event === 'ping') {
-				this.emit('ping');
-			} else if (msg.headers.event === 'connect') {
-				this.conn_id = msg.headers.conn_id;
-				if (typeof cb === 'function') cb(null, this.conn_id);
-			} else if (msg.headers.event === 'msg') {
-				let sub_id = msg.headers.sub_id;
-				if (this.subscriptions[sub_id] && typeof this.subscriptions[sub_id].cb === 'function') (this.subscriptions[sub_id].cb)(msg);
-			}
-		};
-		this.source.onerror = (err) => {
-			if (typeof cb === 'function') cb(err, null);
-		};
-	}
+        };
+        this.source.onmessage = (event) => {
+            let msg: IMessage = JSON.parse(event.data);
+            //console.log(JSON.stringify(msg));
+            if (msg.headers.event === 'ping') {
+                this.emit('ping');
+            } else if (msg.headers.event === 'connect') {
+                this.conn_id = msg.headers.conn_id;
+                if (typeof cb === 'function') cb(null, this.conn_id);
+            } else if (msg.headers.event === 'msg') {
+                let sub_id = msg.headers.sub_id;
+                if (this.subscriptions[sub_id] && typeof this.subscriptions[sub_id].cb === 'function') (this.subscriptions[sub_id].cb)(msg);
+            }
+        };
+        this.source.onerror = (err) => {
+            if (typeof cb === 'function') cb(err, null);
+        };
+    }
 
     private getEventSourceAjaxon() : IEventSourceAjaxon {
         let $J = Ajx(this.jQuery);
@@ -96,14 +96,14 @@ export class MessageClient extends events.EventEmitter {
             $J(method, this.url+path, data, done, headers, rejectUnauthorized);
         });
     }
-	subscribe(destination: string, cb: IMessageCallback, headers:{[field:string]: any} = {}, done?: DoneHandler) : Subscription {
+    subscribe(destination: string, cb: IMessageCallback, headers:{[field:string]: any} = {}, done?: DoneHandler) : Subscription {
         if (!this.source || !this.conn_id) throw "not connected";
-		let this_sub_id = this.sub_id.toString();
-		let subscription = new Subscription(this.getEventSourceAjaxon(), this.conn_id, destination, headers, this_sub_id, cb);
-		subscription.on('unsubscribed', (sub_id) => {
-			delete this.subscriptions[sub_id];
-		});
-		this.subscriptions[this_sub_id] = subscription;
+        let this_sub_id = this.sub_id.toString();
+        let subscription = new Subscription(this.getEventSourceAjaxon(), this.conn_id, destination, headers, this_sub_id, cb);
+        subscription.on('unsubscribed', (sub_id) => {
+            delete this.subscriptions[sub_id];
+        });
+        this.subscriptions[this_sub_id] = subscription;
         this.sub_id++;
         MessageClient.ajaxSubscribe(this.getEventSourceAjaxon(), this.conn_id, this_sub_id, destination, headers, (err: any) => {
             if (err) {
@@ -113,8 +113,8 @@ export class MessageClient extends events.EventEmitter {
                 if (typeof done === 'function') done(null);
             }
         });
-		return subscription;
-	}
+        return subscription;
+    }
 	disconnect() : void {
 		if (this.source) {
 			this.source.close();
