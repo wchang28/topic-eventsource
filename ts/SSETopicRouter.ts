@@ -9,7 +9,7 @@ import * as events from 'events';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 
-interface IConnectionCreateDoneHandler {
+interface IConnectionCreatedHandler {
     (err: any, conn_id: string) : void;
 }
 
@@ -25,7 +25,7 @@ class ConnectionsManager extends events.EventEmitter
         this.__connections = {};
     }
     getConnectionsCount() : number { return this.connCount;}
-    createConnection(connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateDoneHandler) : void {
+    createConnection(connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreatedHandler) : void {
         let conn_id = uuid.v4();
         connectionFactory(conn_id, remoteAddress, messageCB, errorCB, (err: any, conn: IConnection) => {
             if (err) {
