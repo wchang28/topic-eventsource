@@ -103,7 +103,7 @@ interface ITopicProxyRequest extends express.Request {
 }
 
 export function getConnectionFactory(cookieSetter?: ICookieSetter)  : IConnectionFactory {
-    function eventSourceAjaxonFactory(req: ITopicProxyRequest) : IEventSourceAjaxon {
+	function eventSourceAjaxonFactory(req: ITopicProxyRequest) : IEventSourceAjaxon {
 		return req.remoteEventSource.$C;
 	}
     return ((req: ITopicProxyRequest, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
