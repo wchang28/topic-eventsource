@@ -45,8 +45,12 @@ interface IConnectionFactory {
     (req: any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void;
 }
 
+interface IAjaxonCompletionHandler {
+    (err: any, data: any) : void;
+}
+
 interface IEventSourceAjaxon {
-    (method: string, path: string, data: any, done: (err: any, data: any) => void): void;
+    (method: string, path: string, data: any, done: IAjaxonCompletionHandler): void;
 }
 
 interface ICookieSetter {
