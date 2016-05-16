@@ -30,9 +30,9 @@ interface IConnection {
     remoteAddress: string
     cookie: any
     onChange: (handler: () => void) => void;
-    addSubscription: (sub_id: string, destination: string, headers: {[field: string]: any}, done?: DoneHandler) => void;
-    removeSubscription: (sub_id: string, done?: DoneHandler) => void;
-    forwardMessage: (srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: DoneHandler) => void;
+    addSubscription: (req: any, sub_id: string, destination: string, headers: {[field: string]: any}, done?: DoneHandler) => void;
+    removeSubscription: (req: any, sub_id: string, done?: DoneHandler) => void;
+    forwardMessage: (req: any, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: DoneHandler) => void;
     end: () => void;
     toJSON: () => Object
 }
@@ -42,17 +42,17 @@ interface IConnectionCreateCompleteHandler {
 }
 
 interface IConnectionFactory {
-    (conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void;
+    (req: any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void;
+}
+
+interface IEventSourceAjaxon {
+    (method: string, path: string, data: any, done: (err: any, data: any) => void): void;
 }
 
 interface ICookieSetter {
     (req: any) : any;
 }
 
-interface IConnectionFactoryFactory {   // a function that returns connection factory
-    (req: any, cookieSetter?: ICookieSetter): IConnectionFactory;
-}
-
-interface IEventSourceAjaxon {
-    (method: string, path: string, data: any, done: (err: any, data: any) => void): void;
+interface IEventSourceAjaxonFactory {
+    (req: any) : IEventSourceAjaxon;
 }

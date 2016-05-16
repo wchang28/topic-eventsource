@@ -8,7 +8,7 @@
       "watch": true
   },
   "files": [
-      "./ts/Connection.ts",
+      "./ts/TopicConnection.ts",
       "./ts/MessageClient.ts",
       "./ts/MsgBroker.ts",
       "./ts/SSETopicRouter.ts",

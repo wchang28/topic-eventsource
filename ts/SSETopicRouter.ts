@@ -25,9 +25,9 @@ class ConnectionsManager extends events.EventEmitter
         this.__connections = {};
     }
     getConnectionsCount() : number { return this.connCount;}
-    createConnection(connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreatedHandler) : void {
+    createConnection(req: any, connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreatedHandler) : void {
         let conn_id = uuid.v4();
-        connectionFactory(conn_id, remoteAddress, messageCB, errorCB, (err: any, conn: IConnection) => {
+        connectionFactory(req, conn_id, remoteAddress, messageCB, errorCB, (err: any, conn: IConnection) => {
             if (err) {
                 done(err, null);
             } else {
@@ -50,30 +50,30 @@ class ConnectionsManager extends events.EventEmitter
             this.emit('change');
         }     
     }
-    addSubscription(conn_id: string, sub_id:string, destination: string, headers:{[field: string]: any}, done?: DoneHandler)  {
+    addSubscription(req: any, conn_id: string, sub_id:string, destination: string, headers:{[field: string]: any}, done?: DoneHandler)  {
         let conn = this.__connections[conn_id];
         if (conn) {
-            conn.addSubscription(sub_id, destination, headers, done);
+            conn.addSubscription(req, sub_id, destination, headers, done);
         } else {
             if (typeof done === 'function') done('bad connection');
         }
     }
-    removeSubscription(conn_id: string, sub_id:string, done?: DoneHandler) {
+    removeSubscription(req: any, conn_id: string, sub_id:string, done?: DoneHandler) {
         let conn = this.__connections[conn_id];
         if (conn) {
-            conn.removeSubscription(sub_id, done);
+            conn.removeSubscription(req, sub_id, done);
         } else {
             if (typeof done === 'function') done('bad connection');
         }        
     }
-    forwardMessage(conn_id: string, destination: string, headers: {[field: string]:any}, message:any, done?: DoneHandler) {
+    forwardMessage(req: any, conn_id: string, destination: string, headers: {[field: string]:any}, message:any, done?: DoneHandler) {
         let srcConn = this.__connections[conn_id];
         let left = this.connCount;
         if (srcConn) {
             var errs = [];
             for (var id in this.__connections) {    // for each connection
                 let conn = this.__connections[id];
-                conn.forwardMessage(srcConn, destination, headers, message, (err: any) => {
+                conn.forwardMessage(req, srcConn, destination, headers, message, (err: any) => {
                     left--;
                     if (err) errs.push(err);
                     if (left === 0) {
@@ -104,7 +104,7 @@ interface IConnectionsManagedRouter extends express.Router {
     eventEmitter: events.EventEmitter;
 }
 
-export function get_router(eventPath: string, connectionFactoryFactory: IConnectionFactoryFactory, cookieSetter?: ICookieSetter) : IConnectionsManagedRouter {
+export function get_router(eventPath: string, connectionFactory: IConnectionFactory) : IConnectionsManagedRouter {
     let router: IConnectionsManagedRouter  = <IConnectionsManagedRouter>express.Router();
     router.use(bodyParser.json({'limit': '100mb'}));
     let connectionsManager = new ConnectionsManager();
@@ -136,7 +136,8 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
         // initialize event streaming
         ///////////////////////////////////////////////////////////////////////
         connectionsManager.createConnection(
-        connectionFactoryFactory(req, cookieSetter)
+        req
+        ,connectionFactory
         ,remoteAddress
         ,(msg: IMessage) => {res.sseSend(msg);}
         ,(err: any) => {req.socket.end();}
@@ -168,7 +169,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
         let destination: string = data.destination;
         let headers: {[field: string]: any} = data.headers;
         console.log('client ('+ conn_id +') adding subscription (' + sub_id + ') to destination "' + destination + '"');
-        connectionsManager.addSubscription(conn_id, sub_id, destination, headers, (err: any) => {
+        connectionsManager.addSubscription(req, conn_id, sub_id, destination, headers, (err: any) => {
             if (err) {
                 res.jsonp({exception: JSON.parse(JSON.stringify(err))});
             } else {
@@ -183,7 +184,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
         let conn_id = query.conn_id;
         let sub_id = query.sub_id;
         console.log('client ('+ conn_id +') removing subscription (' + sub_id + ')');
-        connectionsManager.removeSubscription(conn_id, sub_id, (err: any) => {
+        connectionsManager.removeSubscription(req, conn_id, sub_id, (err: any) => {
             if (err) {
                 res.jsonp({exception: JSON.parse(JSON.stringify(err))});
             } else {
@@ -195,7 +196,7 @@ export function get_router(eventPath: string, connectionFactoryFactory: IConnect
     router.post(eventPath + '/send', function(req: express.Request, res: express.Response) {
         let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.body;
-        connectionsManager.forwardMessage(data.conn_id, data.destination, data.headers, data.body, (err: any) => {
+        connectionsManager.forwardMessage(req, data.conn_id, data.destination, data.headers, data.body, (err: any) => {
             if (err) {
                 res.jsonp({exception: JSON.parse(JSON.stringify(err))});
             } else {

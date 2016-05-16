@@ -1,9 +1,9 @@
 import {get_router} from '../SSETopicRouter';
-import {ConnectionFactoryFactory} from '../Connection';
+import {getTopicConnectionFactory} from '../TopicConnection';
 
 // cookie can be a function of req (example: () => req.access, () => req.user)
   
-let router = get_router('/events', ConnectionFactoryFactory, (req) => null);
+let router = get_router('/events', getTopicConnectionFactory(5000));
 export {router};
 
 router.connectionsManager.on('change', () => {

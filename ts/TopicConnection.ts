@@ -7,14 +7,14 @@ interface Subscription {
 	destination: string;
 	headers?: {[field: string]: any};
 }
-class Connection extends events.EventEmitter implements IConnection {
+class TopicConnection extends events.EventEmitter implements IConnection {
 	public conn_id: string;
 	public remoteAddress: string
 	public cookie: any
 	private eventEmitter: events.EventEmitter;
 	private subscriptions: {[sub_id:string] : Subscription;}
 	private pintInterval: NodeJS.Timer;
-	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: IMessageCallback) {
+	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: IMessageCallback, public pingIntervalMS:number = 10000) {
 		super();
 		this.conn_id = conn_id;
 		this.remoteAddress = remoteAddress;
@@ -30,7 +30,7 @@ class Connection extends events.EventEmitter implements IConnection {
                 }
              };
 			this.eventEmitter.emit('message', msg);
-		}, 10000);
+		}, this.pingIntervalMS);
 		// emit a 'connected' message
 		/////////////////////////////////////////////////////////
         let msg : IMessage = {
@@ -46,7 +46,7 @@ class Connection extends events.EventEmitter implements IConnection {
 	onChange(handler: () => void) {
 		this.on('change', handler);
 	}
-	forwardMessage(srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: DoneHandler) : void {
+	forwardMessage(req: any, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: DoneHandler) : void {
         for (var sub_id in this.subscriptions) {
 			let subscription = this.subscriptions[sub_id];
 			if (subscription.destination === destination) {	// matching destination
@@ -80,7 +80,7 @@ class Connection extends events.EventEmitter implements IConnection {
 		}
 		if (typeof done === 'function') done(null);
 	}
-	addSubscription(sub_id: string, destination: string, headers: {[field: string]: any}, done: DoneHandler) : void {
+	addSubscription(req: any, sub_id: string, destination: string, headers: {[field: string]: any}, done: DoneHandler) : void {
 		let subscription: Subscription = {
 			destination: destination
 			,headers: headers
@@ -89,7 +89,7 @@ class Connection extends events.EventEmitter implements IConnection {
 		this.emit('change');
 		if (typeof done === 'function') done(null);
 	}
-	removeSubscription(sub_id: string, done: DoneHandler) : void {
+	removeSubscription(req: any, sub_id: string, done: DoneHandler) : void {
 		delete this.subscriptions[sub_id];
 		this.emit('change');
 		if (typeof done === 'function') done(null);
@@ -113,9 +113,9 @@ class Connection extends events.EventEmitter implements IConnection {
 	}
 }
 
-export function ConnectionFactoryFactory (req: any, cookieSetter?: ICookieSetter) : IConnectionFactory {
-    let cookie = cookieSetter ? cookieSetter(req) : null;
-	return ((conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler) => {
-		done(null, new Connection(conn_id, remoteAddress, cookie, messageCB));
+export function getTopicConnectionFactory(pingIntervalMS:number = 10000, cookieSetter?: ICookieSetter) : IConnectionFactory {
+	return ((req:any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler) => {
+		let cookie = (cookieSetter ? cookieSetter(req) : null);
+		done(null, new TopicConnection(conn_id, remoteAddress, cookie, messageCB, pingIntervalMS));
 	});
 }

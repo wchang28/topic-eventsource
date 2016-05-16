@@ -11,18 +11,18 @@ export class ProxyConnection extends events.EventEmitter implements IConnection 
 	public remoteAddress: string;
 	public cookie: any
 	private remoteEventSource: any;
-	private remoteEventSourceAjaxon: IEventSourceAjaxon
+	private eventSourceAjaxonFactory: IEventSourceAjaxonFactory
 	private state: string;
 	private remote_conn_id: string;
 		
-	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: IMessageCallback, errorCB: ErrorHandler, remoteEventSource: any, remoteEventSourceAjaxon: IEventSourceAjaxon) {
+	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: IMessageCallback, errorCB: ErrorHandler, remoteEventSource: any, eventSourceAjaxonFactory: IEventSourceAjaxonFactory) {
 		super();
 		this.conn_id = conn_id;
 		this.remoteAddress = remoteAddress;
 		this.cookie = cookie;
 		
 		this.remoteEventSource = remoteEventSource;
-		this.remoteEventSourceAjaxon = remoteEventSourceAjaxon;
+		this.eventSourceAjaxonFactory = eventSourceAjaxonFactory;
 		this.state = 'open';
 		this.remote_conn_id = "";
 		this.initEventSource(messageCB, errorCB);
@@ -61,26 +61,26 @@ export class ProxyConnection extends events.EventEmitter implements IConnection 
 	onChange(handler: () => void) {
 		this.on('change', handler);
 	}
-	addSubscription(sub_id: string, destination: string, headers: {[field: string]: any}, done?: DoneHandler) : void {
+	addSubscription(req: any, sub_id: string, destination: string, headers: {[field: string]: any}, done?: DoneHandler) : void {
 		if (!this.remoteConnected()) {
 			if (typeof done === 'funcion') done("not connected");
 		} else {
-			Client.ajaxSubscribe(this.remoteEventSourceAjaxon, this.remote_conn_id, sub_id, destination, headers, done);
+			Client.ajaxSubscribe(this.eventSourceAjaxonFactory(req), this.remote_conn_id, sub_id, destination, headers, done);
 		}
 	}
-	removeSubscription (sub_id: string, done?: DoneHandler) : void {
+	removeSubscription (req: any, sub_id: string, done?: DoneHandler) : void {
 		if (!this.remoteConnected()) {
 			if (typeof done === 'funcion') done("not connected");
 		} else {
-			Client.ajaxUnsubscribe(this.remoteEventSourceAjaxon, this.remote_conn_id, sub_id, done);
+			Client.ajaxUnsubscribe(this.eventSourceAjaxonFactory(req), this.remote_conn_id, sub_id, done);
 		}		
 	}
-	forwardMessage(srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: DoneHandler) : void {
+	forwardMessage(req: any, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: DoneHandler) : void {
 		if (srcConn === this) {	// only if the message came from this connection
 			if (!this.remoteConnected()) {
 				if (typeof done === 'funcion') done("not connected");
 			} else {
-				Client.ajaxSend(this.remoteEventSourceAjaxon, this.remote_conn_id, destination, headers, message, done);
+				Client.ajaxSend(this.eventSourceAjaxonFactory(req), this.remote_conn_id, destination, headers, message, done);
 			}
 		} else {
 			if (typeof done === 'funcion') done(null);

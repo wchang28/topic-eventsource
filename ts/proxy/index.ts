@@ -9,23 +9,22 @@ let EventSource = require('eventsource');
 let $ = require('jquery-no-dom');
 let $J = (require("ajaxon"))($);
 
-function getConnectionFactoryFactory(url: string, rejectUnauthorized: boolean = true)  : IConnectionFactoryFactory {
-    return ((req: any, cookieSetter?: ICookieSetter) : IConnectionFactory => {
+function getProxyConnectionFactory(url: string, rejectUnauthorized: boolean = true, cookieSetter?: ICookieSetter)  : IConnectionFactory {
+    return ((req:any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: (err: any, conn: IConnection) => void): void => {
         let cookie = cookieSetter ? cookieSetter(req) : null;
-        return ((conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: (err: any, conn: IConnection) => void): void => {
-            let remoteEventSource = new EventSource(url, {headers: {}, rejectUnauthorized: rejectUnauthorized});
-            remoteEventSource.onopen = () : void  => {
-                function getRemoteEventSourceAjaxon(url: string, rejectUnauthorized: boolean) : IEventSourceAjaxon {
-                    return( (method: string, path: string, data: any, done: (err: any, data: any) => void) : void => {
-                        $J(method, url+path, data, done, {}, rejectUnauthorized);
-                    });
-                }
-                done(null, new ProxyConnection(conn_id, remoteAddress, cookie, messageCB, errorCB, remoteEventSource, getRemoteEventSourceAjaxon(url, rejectUnauthorized))); 
-            };
-            remoteEventSource.onerror = (err: any) : void => {
-                done(err, null); 
-            };
-        });
+        let remoteEventSource = new EventSource(url, {headers: {}, rejectUnauthorized: rejectUnauthorized});
+        function eventSourceAjaxonFactory(req: any) : IEventSourceAjaxon {
+            return( (method: string, path: string, data: any, done: (err: any, data: any) => void) : void => {
+                $J(method, url+path, data, done, {}, rejectUnauthorized);
+                // or req.$J
+            });
+        }
+        remoteEventSource.onopen = () : void  => {
+            done(null, new ProxyConnection(conn_id, remoteAddress, cookie, messageCB, errorCB, remoteEventSource, eventSourceAjaxonFactory)); 
+        };
+        remoteEventSource.onerror = (err: any) : void => {
+            done(err, null); 
+        };
     });
 }
 
@@ -61,7 +60,7 @@ function getConnectionFactoryFactory(url: string, rejectUnauthorized: boolean = 
 */
 
 //let router = get_router('/events', ConnectionFactoryFactory);
-let router = get_router('/events', getConnectionFactoryFactory('http://127.0.0.1:8080/api/events', false), (req: any) => null);
+let router = get_router('/events', getProxyConnectionFactory('http://127.0.0.1:8080/api/events', false));
 
 export {router};
 
