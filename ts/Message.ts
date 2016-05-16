@@ -64,8 +64,3 @@ interface IEventSourceAjaxonFactory {
 interface IEventSourceCreateCompletionHandler {
     (err: any, eventSource: any): void;
 }
-
-interface IRemoteEventSourceExtension {
-    $C: IEventSourceAjaxon;
-    $E: (done: IEventSourceCreateCompletionHandler) => void;
-}

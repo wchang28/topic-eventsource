@@ -104,7 +104,7 @@ interface IConnectionsManagedRouter extends express.Router {
     eventEmitter: events.EventEmitter;
 }
 
-export function get_router(eventPath: string, connectionFactory: IConnectionFactory) : IConnectionsManagedRouter {
+export function getRouter(eventPath: string, connectionFactory: IConnectionFactory) : IConnectionsManagedRouter {
     let router: IConnectionsManagedRouter  = <IConnectionsManagedRouter>express.Router();
     router.use(bodyParser.json({'limit': '100mb'}));
     let connectionsManager = new ConnectionsManager();
