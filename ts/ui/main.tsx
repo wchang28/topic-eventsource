@@ -8,7 +8,7 @@ var MsgBroker_1 = require('message-broker');
 var MessageClient_1 = require('message-client');
 require('eventsource-polyfill');
 
-let eventSourceUrl = '/proxy/events';
+let eventSourceUrl = '/proxy/events/event_stream';
 
 class MsgBrokerTestProps {
     message: string;

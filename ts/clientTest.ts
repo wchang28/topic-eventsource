@@ -4,8 +4,8 @@ import {MessageClient} from './MessageClient';
 let EventSource = require('eventsource');
 let $ = require('jquery-no-dom');
 
-let url = 'http://127.0.0.1:8080/proxy/events';
-//let url = 'http://127.0.0.1:8080/api/events';
+let url = 'http://127.0.0.1:8080/proxy/events/event_stream';
+//let url = 'http://127.0.0.1:8080/api/events/event_stream';
 
 let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, url) , 10000);
 

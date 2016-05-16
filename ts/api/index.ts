@@ -1,5 +1,19 @@
-import {getRouter} from '../SSETopicRouter';
-import {getConnectionFactory} from '../TopicConnection';
+/// <reference path="../../typings/express/express.d.ts" />
+/// <reference path="../../typings/express-serve-static-core/express-serve-static-core.d.ts" />
+import * as express from 'express';
+let router = express.Router();
 
-let router = getRouter('/events', getConnectionFactory(5000));
+import {router as topicRouter} from './events';
+
+router.use('/events', topicRouter);
+
+topicRouter.connectionsManager.on('change', () => {
+    console.log("");
+    console.log("api topic router's connectionsManager changed");
+    console.log("======================================================");
+    console.log(JSON.stringify(topicRouter.connectionsManager));
+    console.log("======================================================");
+    console.log("");
+});
+
 export {router};
