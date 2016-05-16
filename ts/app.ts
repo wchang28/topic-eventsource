@@ -64,7 +64,6 @@ proxyRouter.connectionsManager.on('change', () => {
     console.log("");
 });
 
-
 app.use('/app', express.static(path.join(__dirname, '../ui')));
 
 let secure_http:boolean = false;
