@@ -28,7 +28,7 @@ msgBorker.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
     var sub_id = msgBorker.subscribe('topic/say_hi', { "selector": "location = 'USA'" }, function (err) {
         console.log('sending a test message...');
-        msgBorker.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good afternoon' }, function (err) {
+        msgBorker.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
         });
     });
 });

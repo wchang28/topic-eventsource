@@ -63,14 +63,14 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 	}
 	addSubscription(req: any, sub_id: string, destination: string, headers: {[field: string]: any}, done?: DoneHandler) : void {
 		if (!this.remoteConnected()) {
-			if (typeof done === 'funcion') done("not connected");
+			if (typeof done === 'function') done("not connected");
 		} else {
 			Client.ajaxSubscribe(this.eventSourceAjaxonFactory(req), this.remote_conn_id, sub_id, destination, headers, done);
 		}
 	}
 	removeSubscription (req: any, sub_id: string, done?: DoneHandler) : void {
 		if (!this.remoteConnected()) {
-			if (typeof done === 'funcion') done("not connected");
+			if (typeof done === 'function') done("not connected");
 		} else {
 			Client.ajaxUnsubscribe(this.eventSourceAjaxonFactory(req), this.remote_conn_id, sub_id, done);
 		}		
@@ -78,12 +78,12 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 	forwardMessage(req: any, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: DoneHandler) : void {
 		if (srcConn === this) {	// only if the message came from this connection
 			if (!this.remoteConnected()) {
-				if (typeof done === 'funcion') done("not connected");
+				if (typeof done === 'function') done("not connected");
 			} else {
 				Client.ajaxSend(this.eventSourceAjaxonFactory(req), this.remote_conn_id, destination, headers, message, done);
 			}
 		} else {
-			if (typeof done === 'funcion') done(null);
+			if (typeof done === 'function') done(null);
 		}
 	}
 	toJSON() : Object {

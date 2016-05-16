@@ -17,7 +17,7 @@ msgBorker.on('connect', (conn_id:string) : void => {
         } else {
             console.log('topic subscribed sub_id=' + sub_id + " :-)");
             console.log('sending a test message...');
-            msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon'}, (err: any) : void => {
+            msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
                 if (err) {
                     console.error('!!!Errro: message send failed');
                 } else {
