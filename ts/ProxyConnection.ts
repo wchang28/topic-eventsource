@@ -106,13 +106,13 @@ export function getConnectionFactory(cookieSetter?: ICookieSetter)  : IConnectio
 	function eventSourceAjaxonFactory(req: ITopicProxyRequest) : IEventSourceAjaxon {
 		return req.remoteEventSource.$C;
 	}
-    return ((req: ITopicProxyRequest, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
-        let cookie = (cookieSetter ? cookieSetter(req) : null);
-        req.remoteEventSource.$E((err: any, eventSource: any): void => {
-            if (err) 
-                done(err, null);
-            else
-               done(null, new ProxyConnection(conn_id, remoteAddress, cookie, messageCB, errorCB, eventSource, eventSourceAjaxonFactory));        
-        });
-    });
+	return ((req: ITopicProxyRequest, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
+		let cookie = (cookieSetter ? cookieSetter(req) : null);
+		req.remoteEventSource.$E((err: any, eventSource: any): void => {
+			if (err) 
+				done(err, null);
+			else
+				done(null, new ProxyConnection(conn_id, remoteAddress, cookie, messageCB, errorCB, eventSource, eventSourceAjaxonFactory));        
+		});
+	});
 }
