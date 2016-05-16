@@ -6,7 +6,7 @@ import {MessageClient as Client} from './MessageClient';
 import * as express from 'express';
 import * as events from 'events';
 
-export class ProxyConnection extends events.EventEmitter implements IConnection {
+class ProxyConnection extends events.EventEmitter implements IConnection {
 	public conn_id: string;
 	public remoteAddress: string;
 	public cookie: any
@@ -96,4 +96,23 @@ export class ProxyConnection extends events.EventEmitter implements IConnection 
 		}
 		return o;
 	}
+}
+
+interface ITopicProxyRequest extends express.Request {
+    remoteEventSource: IRemoteEventSourceExtension
+}
+
+export function getConnectionFactory(cookieSetter?: ICookieSetter)  : IConnectionFactory {
+    function eventSourceAjaxonFactory(req: ITopicProxyRequest) : IEventSourceAjaxon {
+		return req.remoteEventSource.$C;
+	}
+    return ((req: ITopicProxyRequest, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
+        let cookie = (cookieSetter ? cookieSetter(req) : null);
+        req.remoteEventSource.$E((err: any, eventSource: any): void => {
+            if (err) 
+                done(err, null);
+            else
+               done(null, new ProxyConnection(conn_id, remoteAddress, cookie, messageCB, errorCB, eventSource, eventSourceAjaxonFactory));        
+        });
+    });
 }

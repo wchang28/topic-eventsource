@@ -92,8 +92,8 @@ export class MessageClient extends events.EventEmitter {
         let $J = Ajx(this.jQuery);
         let headers = (this.eventSourceInitDict ? this.eventSourceInitDict.headers : null);
         let rejectUnauthorized = (this.eventSourceInitDict ? this.eventSourceInitDict.rejectUnauthorized : null);
-        return ((method: string, path: string, data: any, done: (err: any, data: any) => void) => {
-            $J(method, this.url+path, data, done, headers, rejectUnauthorized);
+        return ((method: string, cmdPath: string, data: any, done: (err: any, data: any) => void) => {
+            $J(method, this.url+cmdPath, data, done, headers, rejectUnauthorized);
         });
     }
     

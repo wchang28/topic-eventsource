@@ -50,7 +50,7 @@ interface IAjaxonCompletionHandler {
 }
 
 interface IEventSourceAjaxon {
-    (method: string, path: string, data: any, done: IAjaxonCompletionHandler): void;
+    (method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler): void;
 }
 
 interface ICookieSetter {
@@ -59,4 +59,13 @@ interface ICookieSetter {
 
 interface IEventSourceAjaxonFactory {
     (req: any) : IEventSourceAjaxon;
+}
+
+interface IEventSourceCreateCompletionHandler {
+    (err: any, eventSource: any): void;
+}
+
+interface IRemoteEventSourceExtension {
+    $C: IEventSourceAjaxon;
+    $E: (done: IEventSourceCreateCompletionHandler) => void;
 }

@@ -113,7 +113,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 	}
 }
 
-export function getTopicConnectionFactory(pingIntervalMS:number = 10000, cookieSetter?: ICookieSetter) : IConnectionFactory {
+export function getConnectionFactory(pingIntervalMS:number = 10000, cookieSetter?: ICookieSetter) : IConnectionFactory {
 	return ((req:any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler) => {
 		let cookie = (cookieSetter ? cookieSetter(req) : null);
 		done(null, new TopicConnection(conn_id, remoteAddress, cookie, messageCB, pingIntervalMS));
