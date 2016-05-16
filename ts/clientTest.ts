@@ -13,19 +13,19 @@ msgBorker.on('connect', (conn_id:string) : void => {
     console.log('connected: conn_id=' + conn_id);
     let sub_id = msgBorker.subscribe('topic/say_hi', {"selector": "location = 'USA'"}, (err: any): void => {
         if (err) {
-            console.error('!!!Errro: topic subscription failed');
+            console.error('!!! Error: topic subscription failed');
         } else {
             console.log('topic subscribed sub_id=' + sub_id + " :-)");
             console.log('sending a test message...');
             msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
                 if (err) {
-                    console.error('!!!Errro: message send failed');
+                    console.error('!!! Error: message send failed');
                 } else {
                     console.log('message sent successfully :-)');
                     console.log('unscribing the topic...');
                     msgBorker.unsubscribe(sub_id, (err:any):void => {
                         if (err) {
-                            console.error('!!!Errro: unscribed failed');
+                            console.error('!!! Error: unscribed failed');
                         } else {
                             console.log('topic unsubscribed :-)'); 
                             msgBorker.disconnect();
