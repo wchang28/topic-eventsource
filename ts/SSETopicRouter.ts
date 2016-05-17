@@ -99,13 +99,13 @@ interface SSEResponse extends express.Response {
     sseSend: (msg:any) => void;
 }
 
-interface IConnectionsManagedRouter extends express.Router {
+export interface ISSETopicRouter extends express.Router {
     connectionsManager: ConnectionsManager;
     eventEmitter: events.EventEmitter;
 }
 
-export function getRouter(eventPath: string, connectionFactory: IConnectionFactory) : IConnectionsManagedRouter {
-    let router: IConnectionsManagedRouter  = <IConnectionsManagedRouter>express.Router();
+export function getRouter(eventPath: string, connectionFactory: IConnectionFactory) : ISSETopicRouter {
+    let router: ISSETopicRouter  = <ISSETopicRouter>express.Router();
     router.use(bodyParser.json({'limit': '100mb'}));
     let connectionsManager = new ConnectionsManager();
     router.connectionsManager = connectionsManager;
@@ -146,7 +146,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
                 req.socket.end();   // close the socket, this will trigger req.on("close")
             else {
                 conn_id = connnection_id;
-                console.log('new client (' + conn_id + ') connected');
+                router.eventEmitter.emit('client_connect', {remoteAddress:remoteAddress, conn_id: conn_id});
             }
         });
         ///////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         req.on("close", function() {
             router.eventEmitter.emit('sse_disconnect', remoteAddress);
             if (conn_id.length > 0) {
-                console.log('client (' + conn_id + ') closes sse streaming connection');
+                router.eventEmitter.emit('client_disconnect', {remoteAddress:remoteAddress, conn_id: conn_id});
                 connectionsManager.removeConnection(conn_id);
             }
         });
@@ -164,12 +164,8 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
     router.post(eventPath + '/subscribe', function(req: express.Request, res: express.Response) {
         let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.body;
-        let conn_id: string = data.conn_id;
-        let sub_id: string = data.sub_id;
-        let destination: string = data.destination;
-        let headers: {[field: string]: any} = data.headers;
-        console.log('client ('+ conn_id +') adding subscription (' + sub_id + ') to destination "' + destination + '"');
-        connectionsManager.addSubscription(req, conn_id, sub_id, destination, headers, (err: any) => {
+        router.eventEmitter.emit('client_cmd', {remoteAddress:remoteAddress, cmd: 'subscribe', data: data});
+        connectionsManager.addSubscription(req, data.conn_id, data.sub_id, data.destination, data.headers, (err: any) => {
             if (err) {
                 res.jsonp({exception: JSON.parse(JSON.stringify(err))});
             } else {
@@ -180,11 +176,9 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
 
     router.get(eventPath + '/unsubscribe', function(req: express.Request, res: express.Response) {
         let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
-        let query = req.query;
-        let conn_id = query.conn_id;
-        let sub_id = query.sub_id;
-        console.log('client ('+ conn_id +') removing subscription (' + sub_id + ')');
-        connectionsManager.removeSubscription(req, conn_id, sub_id, (err: any) => {
+        let data = req.query;
+        router.eventEmitter.emit('client_cmd', {remoteAddress:remoteAddress, cmd: 'unsubscribe', data: data});
+        connectionsManager.removeSubscription(req, data.conn_id, data.sub_id, (err: any) => {
             if (err) {
                 res.jsonp({exception: JSON.parse(JSON.stringify(err))});
             } else {
@@ -196,6 +190,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
     router.post(eventPath + '/send', function(req: express.Request, res: express.Response) {
         let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.body;
+        router.eventEmitter.emit('client_cmd', {remoteAddress:remoteAddress, cmd: 'send', data: data});
         connectionsManager.forwardMessage(req, data.conn_id, data.destination, data.headers, data.body, (err: any) => {
             if (err) {
                 res.jsonp({exception: JSON.parse(JSON.stringify(err))});
