@@ -16,4 +16,12 @@ topicRouter.connectionsManager.on('change', () => {
     console.log("");
 });
 
+topicRouter.eventEmitter.on('sse_connect', (remoteAddress: string) : void => {
+    console.log('remote host ' + remoteAddress + ' connected to the SSE endpoint');
+});
+
+topicRouter.eventEmitter.on('sse_disconnect', (remoteAddress: string) : void => {
+    console.log('remote host ' + remoteAddress + ' disconnected from the SSE endpoint');
+});
+
 export {router};
