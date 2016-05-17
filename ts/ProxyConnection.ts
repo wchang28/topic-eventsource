@@ -33,7 +33,6 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 				this.remote_conn_id = msg.headers.conn_id; // store the remote conn_id
 				this.state = 'connected';
 				this.emit('change');
-				console.log('proxy connected to remote event source. remote_conn_id=' + this.remote_conn_id);
 			}
 			if (msg.headers.conn_id) msg.headers.conn_id = this.conn_id;	// replace the connection id with this one
 			messageCB(msg);

@@ -23,14 +23,16 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		this.eventEmitter = new events.EventEmitter();
 		this.eventEmitter.on('message', messageCB);
 		this.subscriptions = {};
-		this.pintInterval = setInterval(() => {
-             let msg:IMessage = {
-                headers: {
-                    event: "ping"
-                }
-             };
-			this.eventEmitter.emit('message', msg);
-		}, this.pingIntervalMS);
+		if (this.pingIntervalMS > 0) {
+			this.pintInterval = setInterval(() => {
+				let msg:IMessage = {
+					headers: {
+						event: "ping"
+					}
+				};
+				this.eventEmitter.emit('message', msg);
+			}, this.pingIntervalMS);
+		}
 		// emit a 'connected' message
 		/////////////////////////////////////////////////////////
         let msg : IMessage = {
@@ -47,9 +49,10 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		this.on('change', handler);
 	}
 	forwardMessage(req: any, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: DoneHandler) : void {
-        for (var sub_id in this.subscriptions) {
+        for (var sub_id in this.subscriptions) {	// for each subscription this connection has
 			let subscription = this.subscriptions[sub_id];
-			if (subscription.destination === destination) {	// matching destination
+			let pattern = new RegExp(subscription.destination, 'gi');
+			if (destination.match(pattern)) {	// matching destination
                 let msg: IMessage = {
                    headers: {
                        event: 'msg',
