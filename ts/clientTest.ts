@@ -32,7 +32,6 @@ msgBorker.on('connect', (conn_id:string) : void => {
                     console.error('!!! Error: message send failed');
                 } else {
                     console.log('message sent successfully :-)');
-                    /*
                     console.log('unscribing the topic...');
                     msgBorker.unsubscribe(sub_id, (err:any):void => {
                         if (err) {
@@ -43,7 +42,6 @@ msgBorker.on('connect', (conn_id:string) : void => {
                             console.log('disconnected :-)'); 
                         }
                     });
-                    */
                 }
             });
         }
