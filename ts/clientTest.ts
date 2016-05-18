@@ -4,17 +4,18 @@ import {MessageClient} from './MessageClient';
 let EventSource = require('eventsource');
 let $ = require('jquery-no-dom');
 
-//let url = 'http://127.0.0.1:8080/proxy/events/event_stream';
+let url = 'http://127.0.0.1:8080/proxy/events/event_stream';
 //let url = 'http://127.0.0.1:8080/api/events/event_stream';
-//let eventSourceInitDict = null;
+let eventSourceInitDict = null;
 
+/*
 let url = 'https://harvesttesting.firstkeyholdings.com:47380/services/data/v35.0/events/event_stream';
 let eventSourceInitDict = {
     headers: {
         'Authorization': 'Bearer' + ' ' + 'Vi7HG3KiptvKF_MYKRSci1qgqNZ8SkF_bKL4RxgSYClN9VWy6nLrXay9lbZqBrjNluuLwRCgXOXRTTgTvUttoqTERGf2ZZbl'
     }
 };
-
+*/
 
 let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, url, eventSourceInitDict) , 10000);
 
