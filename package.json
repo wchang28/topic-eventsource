@@ -12,6 +12,7 @@
     "ajaxon": "git+https://github.com/wchang28/ajaxon.git",
     "alasql": "^0.2.5",
     "body-parser": "^1.15.1",
+    "es-factory": "git+https://github.com/wchang28/es-factory.git",
     "eventsource": "^0.2.1",
     "eventsource-polyfill": "^0.9.6",
     "express": "^4.13.4",

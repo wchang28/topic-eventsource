@@ -6,26 +6,26 @@ let router = express.Router();
 import {router as topicRouter} from './events';
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-import {ITopicProxyRequest} from '../ProxyConnection'
-let EventSource = require('eventsource');
+import {ISSETopicProxyRequest} from '../ProxyConnection'
 let $ = require('jquery-no-dom');
 let $J = (require("ajaxon"))($);
+let EventSource = require('eventsource');
+let $E = (require('es-factory'))(EventSource);
 
-function topicProxyExtension(req: ITopicProxyRequest, res: express.Response, next: express.NextFunction) {
+function topicProxyExtension(req: ISSETopicProxyRequest, res: express.Response, next: express.NextFunction) {
     let instance_url = 'http://127.0.0.1:8080';
     let rejectUnauthorized = false;
     let eventSourcePath = '/api/events/event_stream';
     
     let eventSourceUrl = instance_url + eventSourcePath;
-	req.$C = function(method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler) {
-		let headers = {};   // this can be customize
+    // attach a $J and a $E methods to the Request object BEFORE going into the proxy route as required
+	req.$J = (method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler) : void => {
+		let headers = {};   // this can be customize by req
 		$J(method, eventSourceUrl+cmdPath, data, done, headers, rejectUnauthorized);
 	};
-	req.$E = function(done: (err: any, eventSource: any) => void) {
-		let headers = {};   // this can be customize
-		let eventSource = new EventSource(eventSourceUrl, {headers: headers, rejectUnauthorized: rejectUnauthorized});
-		eventSource.onopen = () : void  => {done(null, eventSource);};
-		eventSource.onerror = (err: any) : void => {done(err, null);};
+	req.$E = (done: IEventSourceCreateCompletionHandler) : void => {
+		let headers = {};   // this can be customize by req
+        $E(eventSourceUrl, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
 	};
     next();
 }
