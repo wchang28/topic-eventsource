@@ -17,15 +17,14 @@ function topicProxyExtension(req: ISSETopicProxyRequest, res: express.Response, 
     let rejectUnauthorized = false;
     let eventSourcePath = '/api/events/event_stream';
     
-    let eventSourceUrl = instance_url + eventSourcePath;
     // attach a $J and a $E methods to the Request object BEFORE going into the proxy route as required
 	req.$J = (method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler) : void => {
 		let headers = {};   // this can be customize by req
-		$J(method, eventSourceUrl+cmdPath, data, done, headers, rejectUnauthorized);
+		$J(method, instance_url + eventSourcePath + cmdPath, data, done, headers, rejectUnauthorized);
 	};
 	req.$E = (done: IEventSourceCreateCompletionHandler) : void => {
 		let headers = {};   // this can be customize by req
-        $E(eventSourceUrl, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
+        $E(instance_url + eventSourcePath, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
 	};
     next();
 }
