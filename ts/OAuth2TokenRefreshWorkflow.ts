@@ -45,7 +45,7 @@ class EventSourceCall implements IWorkflowCall {
 }
 
 export class OAuth2TokenRefreshWorkflow extends events.EventEmitter {
-    constructor(protected $J_: IAjaxon, protected $E_: IEventSourceFactory, protected access: IOAuth2Access, protected tokenRefresher: IOAuth2TokenRefresher) {
+    constructor(protected $J_: IAjaxon, protected $E_: IEventSourceFactory, protected access: IOAuth2Access, protected tokenRefresher: IOAuth2TokenRefresher, protected rejectUnauthorized?:boolean) {
         super();
     }
     
@@ -71,14 +71,14 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter {
     }
     
     // workflow's $J method
-    $J(method: string, pathname:string, data:any, done: ICompletionHandler, rejectUnauthorized?: boolean) : void {
-        let action = new AJaxonCall(this.$J_, method, data, rejectUnauthorized);
+    $J(method: string, pathname:string, data:any, done: ICompletionHandler) : void {
+        let action = new AJaxonCall(this.$J_, method, data, this.rejectUnauthorized);
         this.executehWorkflow(action, pathname, done);
     }
     
     // workflow's $E method
-    $E(pathname: string, done: ICompletionHandler, rejectUnauthorized?: boolean) : void {
-        let action = new EventSourceCall(this.$E_, rejectUnauthorized);
+    $E(pathname: string, done: ICompletionHandler) : void {
+        let action = new EventSourceCall(this.$E_, this.rejectUnauthorized);
         this.executehWorkflow(action, pathname, done);
     }
 }
