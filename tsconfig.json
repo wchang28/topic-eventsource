@@ -17,6 +17,7 @@
       "./ts/api/index.ts",
       "./ts/proxy/index.ts",
       "./ts/clientTest.ts",
+      "./ts/AuthorizedRequest.ts",
       "./ts/OAuth2TokenRefreshWorkflow.ts",
       "./ts/ui/main.tsx"
   ]

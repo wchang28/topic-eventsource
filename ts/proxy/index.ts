@@ -5,30 +5,7 @@ let router = express.Router();
 
 import {router as topicRouter} from './events';
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-import {ITopicProxy$} from '../ProxyConnection'
-
-interface IAuthorizedProxyRequest extends express.Request {
-    $A: IAuthorized$;
-    $P: ITopicProxy$;
-}
-
-function TopicProxyExtension(req: IAuthorizedProxyRequest, res: express.Response, next: express.NextFunction) {
-    let eventSourcePath = '/api/events/event_stream';
-    let $P : ITopicProxy$ = {
-        $J: (method: string, cmdPath: string, data: any, done: ICompletionHandler) : void => {
-            req.$A.$J(method, eventSourcePath + cmdPath, data, done);
-        }
-        ,$E: (done: ICompletionHandler) : void => {
-            req.$A.$E(eventSourcePath, done);
-        }
-    };
-    req.$P = $P;
-    next();
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-router.use('/events', TopicProxyExtension, topicRouter);
+router.use('/events', topicRouter);
 
 topicRouter.connectionsManager.on('change', () => {
     console.log("");

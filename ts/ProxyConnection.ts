@@ -96,22 +96,17 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 	}
 }
 
-export interface ITopicProxy$ {
-    $J: IEventSourceAjaxon;
-    $E: IEventSourceFactory;
-}
+import {IAuthorizedRequest} from './AuthorizedRequest';
 
-interface ISSETopicProxyRequest extends express.Request {
-    $P: ITopicProxy$;
-}
-
-export function getConnectionFactory(cookieSetter?: ICookieSetter)  : IConnectionFactory {
-	function eventSourceAjaxonFactory(req: ISSETopicProxyRequest) : IEventSourceAjaxon {
-		return req.$P.$J;
+export function getConnectionFactory(eventSourcePath: string, cookieSetter?: ICookieSetter)  : IConnectionFactory {
+	function eventSourceAjaxonFactory(req: IAuthorizedRequest) : IEventSourceAjaxon {
+		return ((method: string, cmdPath: string, data: any, done: ICompletionHandler): void => {
+			req.$A.$J(method, eventSourcePath + cmdPath, data, done);
+		});
 	}
-	return ((req: ISSETopicProxyRequest, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
+	return ((req: IAuthorizedRequest, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
 		let cookie = (cookieSetter ? cookieSetter(req) : null);
-		req.$P.$E((err: any, eventSource: any): void => {
+		req.$A.$E(eventSourcePath, (err: any, eventSource: any): void => {
 			if (err) 
 				done(err, null);
 			else

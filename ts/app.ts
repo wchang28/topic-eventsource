@@ -23,18 +23,14 @@ app.use(function(req: express.Request, res: express.Response, next: express.Next
 import {router as apiRouter} from './api';
 app.use('/api', apiRouter);
 
-interface IAuthorizedRequest extends express.Request {
-    $A: IAuthorized$;
-}
+import {IAuthorizedRequest, IAuthorized$} from './AuthorizedRequest';
 
-import {UnAuthorizedWorkflow, IUnauthorizedAccess} from './OAuth2TokenRefreshWorkflow';
+import {UnAuthorizedWorkflow} from './OAuth2TokenRefreshWorkflow';
 
 function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
-	let rejectUnauthorized = false;
-	let access: IUnauthorizedAccess = {
-		instance_url: 'http://127.0.0.1:8080'
-	}
-	let workflow = new UnAuthorizedWorkflow($J, $E, access, rejectUnauthorized);
+	let instance_url = 'http://127.0.0.1:8080';
+	let instanceUrlRejectUnauthorized = false;
+	let workflow = new UnAuthorizedWorkflow($J, $E, instance_url, instanceUrlRejectUnauthorized);
 	let $A: IAuthorized$ = {
 		$J: (method: string, pathname: string, data:any, done: ICompletionHandler) : void => {
 			workflow.$J(method, pathname, data, done);
@@ -50,10 +46,10 @@ function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, nex
 /*
 import {OAuth2TokenRefreshWorkflow, IOAuth2Access, IOAuth2TokenRefresher} from './OAuth2TokenRefreshWorkflow';
 
-function OAuth2AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
-	let rejectUnauthorized = false;
+function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
+	let instanceUrlRejectUnauthorized = false;
 	let tokenRefresher: IOAuth2TokenRefresher = null;
-	let workflow = new OAuth2TokenRefreshWorkflow($J, $E, req.session.access, tokenRefresher, rejectUnauthorized);
+	let workflow = new OAuth2TokenRefreshWorkflow($J, $E, req.session.access, tokenRefresher, instanceUrlRejectUnauthorized);
 	workflow.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
 		req.session.access = newAccess;
 	});

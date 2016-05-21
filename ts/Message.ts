@@ -64,8 +64,3 @@ interface IEventSourceFactory {
 interface ICookieSetter {
     (req: any) : any;
 }
-
-interface IAuthorized$ {
-	$J: (method: string, pathname: string, data:any, done: ICompletionHandler) => void;
-	$E: (pathname: string, done: ICompletionHandler) => void
-}

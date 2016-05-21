@@ -13,11 +13,8 @@ interface IEventSourceFactory {
     (url: string, eventSourceInitDic: any, done: ICompletionHandler) : void
 }
 
-export interface IUnauthorizedAccess {
+export interface IOAuth2Access {
     instance_url: string;
-}
-
-export interface IOAuth2Access extends IUnauthorizedAccess {
     token_type?: string;
     access_token?: string;
     refresh_token?: string;
@@ -92,8 +89,8 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter {
 }
 
 export class UnAuthorizedWorkflow extends OAuth2TokenRefreshWorkflow {
-    constructor($J: IAjaxon, $E: IEventSourceFactory, access: IUnauthorizedAccess, rejectUnauthorized?:boolean) {
-        let acc : IOAuth2Access = {instance_url: access.instance_url};
-        super($J, $E, acc, null, rejectUnauthorized);
+    constructor($J: IAjaxon, $E: IEventSourceFactory, instance_url: string, rejectUnauthorized?:boolean) {
+        let access : IOAuth2Access = {instance_url: instance_url};
+        super($J, $E, access, null, rejectUnauthorized);
     }  
 }
