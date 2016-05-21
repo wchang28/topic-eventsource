@@ -7,6 +7,7 @@ import {router as topicRouter} from './events';
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 import {ISSETopicProxyRequest} from '../ProxyConnection'
+import {ITopicProxy$} from '../ProxyConnection'
 let $ = require('jquery-no-dom');
 let $J = (require("ajaxon"))($);
 let EventSource = require('eventsource');
@@ -17,15 +18,18 @@ function topicProxyExtension(req: ISSETopicProxyRequest, res: express.Response, 
     let rejectUnauthorized = false;
     let eventSourcePath = '/api/events/event_stream';
     
-    // attach a $J and a $E methods to the Request object BEFORE going into the proxy route as required
-	req.$J = (method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler) : void => {
-		let headers = {};   // this can be customize by req
-		$J(method, instance_url + eventSourcePath + cmdPath, data, done, headers, rejectUnauthorized);
-	};
-	req.$E = (done: IEventSourceCreateCompletionHandler) : void => {
-		let headers = {};   // this can be customize by req
-        $E(instance_url + eventSourcePath, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
-	};
+    let $P : ITopicProxy$ = {
+        // attach a $J and a $E methods to the Request object BEFORE going into the proxy route as required
+        $J: (method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler) : void => {
+            let headers = {};   // this can be customize by req
+            $J(method, instance_url + eventSourcePath + cmdPath, data, done, headers, rejectUnauthorized);
+        }
+        ,$E : (done: IEventSourceCreateCompletionHandler) : void => {
+            let headers = {};   // this can be customize by req
+            $E(instance_url + eventSourcePath, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
+        }
+    };
+    req.$P = $P;
     next();
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
