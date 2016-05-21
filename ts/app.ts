@@ -27,17 +27,20 @@ interface IAuthorizedRequest extends express.Request {
     $A: IAuthorized$;
 }
 
+import {UnAuthorizedWorkflow, IUnauthorizedAccess} from './OAuth2TokenRefreshWorkflow';
+
 function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
-	let instance_url = 'http://127.0.0.1:8080';
 	let rejectUnauthorized = false;
+	let access: IUnauthorizedAccess = {
+		instance_url: 'http://127.0.0.1:8080'
+	}
+	let workflow = new UnAuthorizedWorkflow($J, $E, access, rejectUnauthorized);
 	let $A: IAuthorized$ = {
 		$J: (method: string, pathname: string, data:any, done: ICompletionHandler) : void => {
-            let headers = {};
-            $J(method, instance_url + pathname, data, done, headers, rejectUnauthorized);
+			workflow.$J(method, pathname, data, done);
 		}
 		,$E: (pathname: string, done: ICompletionHandler) : void => {
-			let headers = {};
-			$E(instance_url + pathname, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
+			workflow.$E(pathname, done);
 		}
 	};
 	req.$A = $A;
@@ -49,17 +52,11 @@ import {OAuth2TokenRefreshWorkflow, IOAuth2Access, IOAuth2TokenRefresher} from '
 
 function OAuth2AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
 	let rejectUnauthorized = false;
-	let access: IOAuth2Access = {
-		instance_url: 'http://127.0.0.1:8080'
-		,token_type: 'Bearer'
-		,access_token: 'fsafdbgsfduiogjdfgbsfhbnsfgbnfg'
-	}
 	let tokenRefresher: IOAuth2TokenRefresher = null;
-	let workflow = new OAuth2TokenRefreshWorkflow($J, $E, access, tokenRefresher, rejectUnauthorized);
+	let workflow = new OAuth2TokenRefreshWorkflow($J, $E, req.session.access, tokenRefresher, rejectUnauthorized);
 	workflow.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
-		//req.session.access = newAccess;
+		req.session.access = newAccess;
 	});
-
 	let $A: IAuthorized$ = {
 		$J: (method: string, pathname: string, data:any, done: ICompletionHandler) : void => {
 			workflow.$J(method, pathname, data, done);

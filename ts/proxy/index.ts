@@ -13,7 +13,7 @@ interface IAuthorizedProxyRequest extends express.Request {
     $P: ITopicProxy$;
 }
 
-function topicProxyExtension(req: IAuthorizedProxyRequest, res: express.Response, next: express.NextFunction) {
+function TopicProxyExtension(req: IAuthorizedProxyRequest, res: express.Response, next: express.NextFunction) {
     let eventSourcePath = '/api/events/event_stream';
     let $P : ITopicProxy$ = {
         $J: (method: string, cmdPath: string, data: any, done: ICompletionHandler) : void => {
@@ -28,7 +28,7 @@ function topicProxyExtension(req: IAuthorizedProxyRequest, res: express.Response
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-router.use('/events', topicProxyExtension, topicRouter);
+router.use('/events', TopicProxyExtension, topicRouter);
 
 topicRouter.connectionsManager.on('change', () => {
     console.log("");

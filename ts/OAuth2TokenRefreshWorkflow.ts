@@ -13,10 +13,13 @@ interface IEventSourceFactory {
     (url: string, eventSourceInitDic: any, done: ICompletionHandler) : void
 }
 
-export interface IOAuth2Access {
+export interface IUnauthorizedAccess {
     instance_url: string;
-    token_type: string;
-    access_token: string;
+}
+
+export interface IOAuth2Access extends IUnauthorizedAccess {
+    token_type?: string;
+    access_token?: string;
     refresh_token?: string;
 }
 
@@ -49,7 +52,12 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter {
         super();
     }
     
-    private getAuthorizedHeaders(access: IOAuth2Access) : any {return {'Authorization' : access.token_type + " " + access.access_token};}
+    private getAuthorizedHeaders(access: IOAuth2Access) : any {
+        if (access.token_type && access.access_token)
+            return {'Authorization' : access.token_type + " " + access.access_token};
+        else
+            return {};
+    }
     
     private executehWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: ICompletionHandler) {
         workFlowCall.call(this.access.instance_url+pathname, this.getAuthorizedHeaders(this.access), (err: any, ret: any) => {
@@ -81,4 +89,11 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter {
         let action = new EventSourceCall(this.$E_, this.rejectUnauthorized);
         this.executehWorkflow(action, pathname, done);
     }
+}
+
+export class UnAuthorizedWorkflow extends OAuth2TokenRefreshWorkflow {
+    constructor($J: IAjaxon, $E: IEventSourceFactory, access: IUnauthorizedAccess, rejectUnauthorized?:boolean) {
+        let acc : IOAuth2Access = {instance_url: access.instance_url};
+        super($J, $E, acc, null, rejectUnauthorized);
+    }  
 }
