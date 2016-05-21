@@ -3,8 +3,10 @@
 import * as express from 'express';
 let router = express.Router();
 
-import {router as topicRouter} from './events';
+import {getRouter as getTopicRouter} from '../SSETopicRouter';
+import {getConnectionFactory} from '../ProxyConnection';
 
+let topicRouter = getTopicRouter('/event_stream', getConnectionFactory('/api/events/event_stream'));
 router.use('/events', topicRouter);
 
 topicRouter.connectionsManager.on('change', () => {
