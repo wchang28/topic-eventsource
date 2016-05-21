@@ -1,6 +1,6 @@
 /// <reference path="../typings/node/node.d.ts" />
 import * as events from 'events';
-import {IAuthorized$} from './AuthorizedRequest';
+import {IAuthorized$} from './Authorized$';
 
 interface ICompletionHandler {
     (err: any, ret: any) : void;

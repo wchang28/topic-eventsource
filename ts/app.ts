@@ -23,7 +23,7 @@ app.use(function(req: express.Request, res: express.Response, next: express.Next
 import {router as apiRouter} from './api';
 app.use('/api', apiRouter);
 
-import {IAuthorizedRequest, IAuthorized$} from './AuthorizedRequest';
+import {IAuthorizedRequest} from './AuthorizedRequest';
 
 import {UnAuthorizedWorkflow} from './OAuth2TokenRefreshWorkflow';
 function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
