@@ -6,27 +6,21 @@ let router = express.Router();
 import {router as topicRouter} from './events';
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-import {ISSETopicProxyRequest} from '../ProxyConnection'
 import {ITopicProxy$} from '../ProxyConnection'
-let $ = require('jquery-no-dom');
-let $J = (require("ajaxon"))($);
-let EventSource = require('eventsource');
-let $E = (require('es-factory'))(EventSource);
 
-function topicProxyExtension(req: ISSETopicProxyRequest, res: express.Response, next: express.NextFunction) {
-    let instance_url = 'http://127.0.0.1:8080';
-    let rejectUnauthorized = false;
+interface IAuthorizedProxyRequest extends express.Request {
+    $A: IAuthorized$;
+    $P: ITopicProxy$;
+}
+
+function topicProxyExtension(req: IAuthorizedProxyRequest, res: express.Response, next: express.NextFunction) {
     let eventSourcePath = '/api/events/event_stream';
-    
     let $P : ITopicProxy$ = {
-        // attach a $J and a $E methods to the Request object BEFORE going into the proxy route as required
-        $J: (method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler) : void => {
-            let headers = {};   // this can be customize by req
-            $J(method, instance_url + eventSourcePath + cmdPath, data, done, headers, rejectUnauthorized);
+        $J: (method: string, cmdPath: string, data: any, done: ICompletionHandler) : void => {
+            req.$A.$J(method, eventSourcePath + cmdPath, data, done);
         }
-        ,$E : (done: IEventSourceCreateCompletionHandler) : void => {
-            let headers = {};   // this can be customize by req
-            $E(instance_url + eventSourcePath, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
+        ,$E: (done: ICompletionHandler) : void => {
+            req.$A.$E(eventSourcePath, done);
         }
     };
     req.$P = $P;

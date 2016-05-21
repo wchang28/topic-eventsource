@@ -1,9 +1,14 @@
 /// <reference path="../typings/node/node.d.ts" />
 /// <reference path="../typings/express/express.d.ts" />
 /// <reference path="../typings/express-serve-static-core/express-serve-static-core.d.ts" />
+/// <reference path="./Message.ts" />
 import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';
+let $ = require('jquery-no-dom');
+let $J = (require("ajaxon"))($);
+let EventSource = require('eventsource');
+let $E = (require('es-factory'))(EventSource);
 
 let app: express.Express = express();
 
@@ -18,8 +23,58 @@ app.use(function(req: express.Request, res: express.Response, next: express.Next
 import {router as apiRouter} from './api';
 app.use('/api', apiRouter);
 
+interface IAuthorizedRequest extends express.Request {
+    $A: IAuthorized$;
+}
+
+function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
+	let instance_url = 'http://127.0.0.1:8080';
+	let rejectUnauthorized = false;
+	let $A: IAuthorized$ = {
+		$J: (method: string, pathname: string, data:any, done: ICompletionHandler) : void => {
+            let headers = {};
+            $J(method, instance_url + pathname, data, done, headers, rejectUnauthorized);
+		}
+		,$E: (pathname: string, done: ICompletionHandler) : void => {
+			let headers = {};
+			$E(instance_url + pathname, {headers: headers, rejectUnauthorized: rejectUnauthorized}, done);
+		}
+	};
+	req.$A = $A;
+	next();
+}
+
+/*
+import {OAuth2TokenRefreshWorkflow, IOAuth2Access, IOAuth2TokenRefresher} from './OAuth2TokenRefreshWorkflow';
+
+function OAuth2AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
+	let rejectUnauthorized = false;
+	let access: IOAuth2Access = {
+		instance_url: 'http://127.0.0.1:8080'
+		,token_type: 'Bearer'
+		,access_token: 'fsafdbgsfduiogjdfgbsfhbnsfgbnfg'
+	}
+	let tokenRefresher: IOAuth2TokenRefresher = null;
+	let workflow = new OAuth2TokenRefreshWorkflow($J, $E, access, tokenRefresher, rejectUnauthorized);
+	workflow.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
+		//req.session.access = newAccess;
+	});
+
+	let $A: IAuthorized$ = {
+		$J: (method: string, pathname: string, data:any, done: ICompletionHandler) : void => {
+			workflow.$J(method, pathname, data, done);
+		}
+		,$E: (pathname: string, done: ICompletionHandler) : void => {
+			workflow.$E(pathname, done);
+		}
+	};
+	req.$A = $A;
+	next();
+}
+*/
+
 import {router as proxyRouter} from './proxy';
-app.use('/proxy', proxyRouter);
+app.use('/proxy', AuthorizedExtension, proxyRouter);
 
 app.use('/app', express.static(path.join(__dirname, '../ui')));
 

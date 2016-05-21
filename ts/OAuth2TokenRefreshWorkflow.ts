@@ -13,14 +13,14 @@ interface IEventSourceFactory {
     (url: string, eventSourceInitDic: any, done: ICompletionHandler) : void
 }
 
-interface IOAuth2Access {
+export interface IOAuth2Access {
     instance_url: string;
     token_type: string;
     access_token: string;
     refresh_token?: string;
 }
 
-interface IOAuth2TokenRefresher {
+export interface IOAuth2TokenRefresher {
     isTokenExpiredError : (err:any) => boolean;
     refreshAccessToken: (refresh_token: string, done: (err: any, newAccess: IOAuth2Access) => void) => void;
 }
@@ -54,7 +54,7 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter {
     private executehWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: ICompletionHandler) {
         workFlowCall.call(this.access.instance_url+pathname, this.getAuthorizedHeaders(this.access), (err: any, ret: any) => {
              if (err) {
-                if (this.tokenRefresher.isTokenExpiredError(err) && this.access.refresh_token) {
+                if (this.tokenRefresher && this.tokenRefresher.isTokenExpiredError(err) && this.access.refresh_token) {
                     this.tokenRefresher.refreshAccessToken(this.access.refresh_token, (err: any, newAccess: IOAuth2Access) : void => {
                         if (err)
                             done(err, null);

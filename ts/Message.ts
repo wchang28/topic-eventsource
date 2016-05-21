@@ -45,26 +45,27 @@ interface IConnectionFactory {
     (req: any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void;
 }
 
-interface IAjaxonCompletionHandler {
+interface ICompletionHandler {
     (err: any, data: any) : void;
 }
 
 interface IEventSourceAjaxon {
-    (method: string, cmdPath: string, data: any, done: IAjaxonCompletionHandler): void;
+    (method: string, cmdPath: string, data: any, done: ICompletionHandler): void;
 }
 
 interface IEventSourceAjaxonFactory {
     (req: any) : IEventSourceAjaxon;
 }
 
-interface IEventSourceCreateCompletionHandler {
-    (err: any, eventSource: any): void;
-}
-
 interface IEventSourceFactory {
-    (done: IEventSourceCreateCompletionHandler): void;
+    (done: ICompletionHandler): void;
 }
 
 interface ICookieSetter {
     (req: any) : any;
+}
+
+interface IAuthorized$ {
+	$J: (method: string, pathname: string, data:any, done: ICompletionHandler) => void;
+	$E: (pathname: string, done: ICompletionHandler) => void
 }

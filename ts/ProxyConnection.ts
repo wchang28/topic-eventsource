@@ -100,8 +100,8 @@ export interface ITopicProxy$ {
     $J: IEventSourceAjaxon;
     $E: IEventSourceFactory;
 }
-// !!! the express Request object that goes into the proxy route must have $J and $E methods !!!
-export interface ISSETopicProxyRequest extends express.Request {
+
+interface ISSETopicProxyRequest extends express.Request {
     $P: ITopicProxy$;
 }
 
