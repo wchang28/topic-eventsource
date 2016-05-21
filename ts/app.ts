@@ -26,26 +26,16 @@ app.use('/api', apiRouter);
 import {IAuthorizedRequest, IAuthorized$} from './AuthorizedRequest';
 
 import {UnAuthorizedWorkflow} from './OAuth2TokenRefreshWorkflow';
-
 function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
 	let instance_url = 'http://127.0.0.1:8080';
 	let instanceUrlRejectUnauthorized = false;
 	let workflow = new UnAuthorizedWorkflow($J, $E, instance_url, instanceUrlRejectUnauthorized);
-	let $A: IAuthorized$ = {
-		$J: (method: string, pathname: string, data:any, done: ICompletionHandler) : void => {
-			workflow.$J(method, pathname, data, done);
-		}
-		,$E: (pathname: string, done: ICompletionHandler) : void => {
-			workflow.$E(pathname, done);
-		}
-	};
-	req.$A = $A;
+	req.$A = workflow;
 	next();
 }
 
 /*
 import {OAuth2TokenRefreshWorkflow, IOAuth2Access, IOAuth2TokenRefresher} from './OAuth2TokenRefreshWorkflow';
-
 function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
 	let instanceUrlRejectUnauthorized = false;
 	let tokenRefresher: IOAuth2TokenRefresher = null;
@@ -53,15 +43,7 @@ function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, nex
 	workflow.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
 		req.session.access = newAccess;
 	});
-	let $A: IAuthorized$ = {
-		$J: (method: string, pathname: string, data:any, done: ICompletionHandler) : void => {
-			workflow.$J(method, pathname, data, done);
-		}
-		,$E: (pathname: string, done: ICompletionHandler) : void => {
-			workflow.$E(pathname, done);
-		}
-	};
-	req.$A = $A;
+	req.$A = workflow;
 	next();
 }
 */

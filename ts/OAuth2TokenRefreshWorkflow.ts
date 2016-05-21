@@ -1,5 +1,6 @@
 /// <reference path="../typings/node/node.d.ts" />
 import * as events from 'events';
+import {IAuthorized$} from './AuthorizedRequest';
 
 interface ICompletionHandler {
     (err: any, ret: any) : void;
@@ -44,7 +45,7 @@ class EventSourceCall implements IWorkflowCall {
     }
 }
 
-export class OAuth2TokenRefreshWorkflow extends events.EventEmitter {
+export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements IAuthorized$ {
     constructor(protected $J_: IAjaxon, protected $E_: IEventSourceFactory, protected access: IOAuth2Access, protected tokenRefresher: IOAuth2TokenRefresher, protected rejectUnauthorized?:boolean) {
         super();
     }
