@@ -1,5 +1,7 @@
 /// <reference path="../typings/node/node.d.ts" />
+/// <reference path="../typings/lodash/lodash.d.ts" />
 import * as events from 'events';
+import * as _ from 'lodash';
 import {IAuthorized$} from './Authorized$';
 
 interface ICompletionHandler {
@@ -46,15 +48,16 @@ class EventSourceCall implements IWorkflowCall {
 }
 
 export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements IAuthorized$ {
+    public additionalHeaders: {[field: string]: string} = null;
     constructor(protected $J_: IAjaxon, protected $E_: IEventSourceFactory, protected access: IOAuth2Access, protected tokenRefresher: IOAuth2TokenRefresher, protected rejectUnauthorized?:boolean) {
         super();
     }
     
     private getAuthorizedHeaders(access: IOAuth2Access) : any {
+        let headers = this.additionalHeaders || {};
         if (access.token_type && access.access_token)
-            return {'Authorization' : access.token_type + " " + access.access_token};
-        else
-            return {};
+            _.assignIn(headers, {'Authorization' : access.token_type + " " + access.access_token});
+        return headers;
     }
     
     private executehWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: ICompletionHandler) {
@@ -93,5 +96,13 @@ export class UnAuthorizedWorkflow extends OAuth2TokenRefreshWorkflow {
     constructor($J: IAjaxon, $E: IEventSourceFactory, instance_url: string, rejectUnauthorized?:boolean) {
         let access : IOAuth2Access = {instance_url: instance_url};
         super($J, $E, access, null, rejectUnauthorized);
+    }  
+}
+
+export class AuthorizationPassThroughdWorkflow extends OAuth2TokenRefreshWorkflow {
+    constructor($J: IAjaxon, $E: IEventSourceFactory, instance_url: string, passThroughHeaders: {[field:string]:string} = null, rejectUnauthorized?:boolean) {
+        let access : IOAuth2Access = {instance_url: instance_url};
+        super($J, $E, access, null, rejectUnauthorized);
+        this.additionalHeaders = passThroughHeaders;
     }  
 }
