@@ -7,7 +7,7 @@ import {getRouter as getTopicRouter} from '../SSETopicRouter';
 import {getConnectionFactory} from '../TopicConnection';
 
 let topicRouter = getTopicRouter('/event_stream', getConnectionFactory(5000));
-router.use('/events', topicRouter);
+router.use('/events', topicRouter); // topic subscription endpoint is available at /events/event_stream from this route
 
 topicRouter.connectionsManager.on('change', () => {
     console.log("");
