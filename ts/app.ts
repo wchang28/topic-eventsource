@@ -25,7 +25,7 @@ app.use('/api', apiRouter);
 
 import {IAuthorizedRequest} from './AuthorizedRequest';
 
-import {UnAuthorizedWorkflow} from './OAuth2TokenRefreshWorkflow';
+import {UnAuthorizedWorkflow} from './OAuth2TokenRefreshWorkflows';
 function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
 	let instance_url = 'http://127.0.0.1:8080';
 	let instanceUrlRejectUnauthorized = false;
@@ -35,7 +35,7 @@ function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, nex
 }
 
 /*
-import {OAuth2TokenRefreshWorkflow, IOAuth2Access, IOAuth2TokenRefresher} from './OAuth2TokenRefreshWorkflow';
+import {OAuth2TokenRefreshWorkflow, IOAuth2Access, IOAuth2TokenRefresher} from './OAuth2TokenRefreshWorkflows';
 function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
 	let instanceUrlRejectUnauthorized = false;
 	let tokenRefresher: IOAuth2TokenRefresher = null;

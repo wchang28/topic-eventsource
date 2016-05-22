@@ -19,7 +19,7 @@
       "./ts/clientTest.ts",
       "./ts/Authorized$.ts",
       "./ts/AuthorizedRequest.ts",
-      "./ts/OAuth2TokenRefreshWorkflow.ts",
+      "./ts/OAuth2TokenRefreshWorkflows.ts",
       "./ts/ui/main.tsx"
   ]
 }
