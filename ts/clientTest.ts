@@ -34,16 +34,18 @@ msgBorker.on('connect', (conn_id:string) : void => {
                     console.error('!!! Error: message send failed');
                 } else {
                     console.log('message sent successfully :-)');
-                    console.log('unscribing the topic...');
-                    msgBorker.unsubscribe(sub_id, (err:any):void => {
-                        if (err) {
-                            console.error('!!! Error: unscribed failed');
-                        } else {
-                            console.log('topic unsubscribed :-)'); 
-                            msgBorker.disconnect();
-                            console.log('disconnected :-)'); 
-                        }
-                    });
+                    setTimeout(() : void => {
+                        console.log('unscribing the topic...');
+                        msgBorker.unsubscribe(sub_id, (err:any):void => {
+                            if (err) {
+                                console.error('!!! Error: unscribed failed');
+                            } else {
+                                console.log('topic unsubscribed :-)'); 
+                                msgBorker.disconnect();
+                                console.log('disconnected :-)'); 
+                            }
+                        });                        
+                    }, 10000);
                 }
             });
         }
