@@ -1,3 +1,5 @@
+/// <reference path="../typings/node/node.d.ts" />
+/// <reference path="./Message.ts" />
 import {MessageClient as Client} from './MessageClient';
 import * as events from 'events';
 
@@ -17,7 +19,6 @@ export enum MsgBrokerStates {
 // 3. ping
 // 4. connect
 // 5. error
-// 6. message
 export class MsgBroker extends events.EventEmitter {
     private client: Client = null;
     private state: MsgBrokerStates = MsgBrokerStates.Idle;
@@ -46,12 +47,9 @@ export class MsgBroker extends events.EventEmitter {
         super();
     }
     getState() : MsgBrokerStates { return this.state;}
-    subscribe(destination: string, headers:{[field:string]: any} = {}, done?: DoneHandler) : string {
+    subscribe(destination: string, cb: IMessageCallback, headers:{[field:string]: any} = {}, done?: DoneHandler) : string {
         if (this.state === MsgBrokerStates.Connected) {
-            let subscription = this.client.subscribe(destination, (msg:IMessage) => {
-                this.emit('message', msg);
-            }, headers
-            ,done);
+            let subscription = this.client.subscribe(destination, cb, headers, done);
             return subscription.sub_id;
         } else {
             if (typeof done === 'function') done(this.err_not_connected);

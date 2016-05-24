@@ -21,7 +21,9 @@ let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, url, event
 
 msgBorker.on('connect', (conn_id:string) : void => {
     console.log('connected: conn_id=' + conn_id);
-    let sub_id = msgBorker.subscribe('topic/say_hi', {"selector": "location = 'USA'"}, (err: any): void => {
+    let sub_id = msgBorker.subscribe('topic/say_hi', (msg: IMessage): void => {
+         console.log('msg-rcvd: ' + JSON.stringify(msg));
+    }, {"selector": "location = 'USA'"}, (err: any): void => {
         if (err) {
             console.error('!!! Error: topic subscription failed');
         } else {
@@ -58,10 +60,6 @@ msgBorker.on('ping', (): void => {
 
 msgBorker.on('error', (err: any) : void => {
     console.error('!!! Error:' + JSON.stringify(err));
-});
-
-msgBorker.on('message', (msg:IMessage) : void => {
-    console.log('msg-rcvd: ' + JSON.stringify(msg));
 });
 
 msgBorker.on('state_changed', (state: MsgBrokerStates): void => {

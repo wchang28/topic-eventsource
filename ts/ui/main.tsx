@@ -26,9 +26,16 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
 let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, eventSourceUrl); }, 10000);
 msgBorker.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
-    var sub_id = msgBorker.subscribe('topic/say_hi', { "selector": "location = 'USA'" }, function (err) {
-        console.log('sending a test message...');
-        msgBorker.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
+    var sub_id = msgBorker.subscribe('topic/say_hi'
+        ,function(msg) {
+            let message = 'msg-rcvd: ' + JSON.stringify(msg);
+            console.log(message);
+            ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));            
+        }
+        ,{ "selector": "location = 'USA'" }
+        ,function (err) {
+            console.log('sending a test message...');
+            msgBorker.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
         });
     });
 });
@@ -43,11 +50,6 @@ msgBorker.on('ping', function () {
 msgBorker.on('error', function (err) {
     let message = '!!! Error:' + JSON.stringify(err);
     console.error(message);
-    ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
-});
-msgBorker.on('message', function (msg) {
-    let message = 'msg-rcvd: ' + JSON.stringify(msg);
-    console.log(message);
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
 msgBorker.on('state_changed', function (state) {
