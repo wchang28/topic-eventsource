@@ -14,7 +14,7 @@ let app: express.Express = express();
 
 app.use(require('no-cache-express'));
 
-app.use(function(req: express.Request, res: express.Response, next: express.NextFunction) {
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
 	var req_address = req.connection.remoteAddress;
 	console.log('incoming request from ' + req_address + ', path='+ req.path);
 	next();
