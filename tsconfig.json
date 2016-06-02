@@ -4,6 +4,7 @@
       "module": "commonjs",
       "jsx": "react",
       "sourceMap": false,
+      "declaration": true,
       "outDir": "./js",
       "watch": true
   },

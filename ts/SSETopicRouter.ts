@@ -9,13 +9,13 @@ import * as events from 'events';
 import * as express from 'express';
 import * as bodyParser from 'body-parser';
 
-interface IConnectionCreatedHandler {
+export interface IConnectionCreatedHandler {
     (err: any, conn_id: string) : void;
 }
 
 // this class emits the following events
 // 1. change
-class ConnectionsManager extends events.EventEmitter
+export class ConnectionsManager extends events.EventEmitter
 {
     private connCount: number;
     private __connections : {[conn_id: string]: IConnection;}

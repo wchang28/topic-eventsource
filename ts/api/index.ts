@@ -1,6 +1,7 @@
 /// <reference path="../../typings/express/express.d.ts" />
 /// <reference path="../../typings/express-serve-static-core/express-serve-static-core.d.ts" />
 import * as express from 'express';
+import * as core from "express-serve-static-core";
 let router = express.Router();
 
 import {getRouter as getTopicRouter} from '../SSETopicRouter';

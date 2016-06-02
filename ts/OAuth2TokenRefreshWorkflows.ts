@@ -4,15 +4,15 @@ import * as events from 'events';
 import * as _ from 'lodash';
 import {IAuthorized$} from './Authorized$';
 
-interface ICompletionHandler {
+export interface ICompletionHandler {
     (err: any, ret: any) : void;
 }
 
-interface IAjaxon {
+export interface IAjaxon {
     (method: string, url: string, data:any, done: ICompletionHandler, headers?: any, rejectUnauthorized?:boolean) : void;
 }
 
-interface IEventSourceFactory {
+export interface IEventSourceFactory {
     (url: string, eventSourceInitDic: any, done: ICompletionHandler) : void
 }
 

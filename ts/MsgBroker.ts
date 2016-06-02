@@ -3,7 +3,7 @@
 import {MessageClient as Client} from './MessageClient';
 import * as events from 'events';
 
-interface ClientFactory {
+export interface ClientFactory {
     () : Client    
 };
 
