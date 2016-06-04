@@ -1,6 +1,3 @@
-/// <reference path="../typings/express/express.d.ts" />
-/// <reference path="../typings/express-serve-static-core/express-serve-static-core.d.ts" />
-
 interface IMsgHeaders {
 	event: string;
     conn_id?: string;

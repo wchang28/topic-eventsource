@@ -1,4 +1,3 @@
-/// <reference path="../typings/node/node.d.ts" />
 /// <reference path="./Message.ts" />
 import * as events from 'events';
 let alasql = require('alasql');

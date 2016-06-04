@@ -1,5 +1,3 @@
-/// <reference path="../typings/express/express.d.ts" />
-/// <reference path="../typings/express-serve-static-core/express-serve-static-core.d.ts" />
 /// <reference path="./Message.ts" />
 import {MessageClient as Client} from './MessageClient';
 import * as express from 'express';

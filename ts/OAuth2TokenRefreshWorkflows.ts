@@ -1,5 +1,3 @@
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/lodash/lodash.d.ts" />
 import * as events from 'events';
 import * as _ from 'lodash';
 import {IAuthorized$} from './Authorized$';

@@ -1,4 +1,3 @@
-/// <reference path="../typings/node/node.d.ts" />
 /// <reference path="./Message.ts" />
 import {MessageClient as Client} from './MessageClient';
 import * as events from 'events';

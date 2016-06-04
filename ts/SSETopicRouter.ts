@@ -1,9 +1,4 @@
-/// <reference path="../typings/express/express.d.ts" />
-/// <reference path="../typings/express-serve-static-core/express-serve-static-core.d.ts" />
-/// <reference path="../typings/node/node.d.ts" />
-/// <reference path="../typings/node-uuid/node-uuid.d.ts" />
-/// <reference path="../typings/body-parser/body-parser.d.ts" />
-/// <reference path="Message.ts" />
+/// <reference path="./Message.ts" />
 import * as uuid from 'node-uuid';
 import * as events from 'events';
 import * as express from 'express';

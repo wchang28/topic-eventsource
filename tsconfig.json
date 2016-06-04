@@ -9,6 +9,7 @@
       "watch": true
   },
   "files": [
+      "./typings/index.d.ts",
       "./ts/TopicConnection.ts",
       "./ts/MessageClient.ts",
       "./ts/MsgBroker.ts",
