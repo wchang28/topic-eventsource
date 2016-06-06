@@ -22,6 +22,8 @@
       "./ts/Authorized$.ts",
       "./ts/AuthorizedRequest.ts",
       "./ts/OAuth2TokenRefreshWorkflows.ts",
-      "./ts/ui/main.tsx"
+      "./ts/ui/main.tsx",
+      "ts/testExport.ts",
+      "ts/test.ts"
   ]
 }
