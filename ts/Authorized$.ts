@@ -1,4 +1,4 @@
-/// <reference path="./Message.ts" />
+import {ICompletionHandler} from './EventSourceAjaxon';
 
 export interface IAuthorized$ {
 	$J: (method: string, pathname: string, data:any, done: ICompletionHandler) => void;

@@ -1,4 +1,6 @@
-/// <reference path="./Message.ts" />
+import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from './MsgConnection';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './MessageInterfaces';
+import {ICookieSetter} from "./CookieSetter";
 import * as events from 'events';
 let alasql = require('alasql');
 

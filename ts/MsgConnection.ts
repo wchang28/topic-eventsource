@@ -19,25 +19,3 @@ export interface IConnectionCreateCompleteHandler {
 export interface IConnectionFactory {
     (req: any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void;
 }
-
-
-
-interface ICompletionHandler {
-    (err: any, data: any) : void;
-}
-
-interface IEventSourceAjaxon {
-    (method: string, cmdPath: string, data: any, done: ICompletionHandler): void;
-}
-
-interface IEventSourceAjaxonFactory {
-    (req: any) : IEventSourceAjaxon;
-}
-
-interface IEventSourceFactory {
-    (done: ICompletionHandler): void;
-}
-
-interface ICookieSetter {
-    (req: any) : any;
-}

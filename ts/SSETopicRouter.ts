@@ -1,4 +1,5 @@
-/// <reference path="./Message.ts" />
+import {IConnection, IConnectionFactory} from './MsgConnection';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './MessageInterfaces';
 import * as uuid from 'node-uuid';
 import * as events from 'events';
 import * as express from 'express';

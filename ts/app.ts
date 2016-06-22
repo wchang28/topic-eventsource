@@ -1,4 +1,3 @@
-/// <reference path="./Message.ts" />
 import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';

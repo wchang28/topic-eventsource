@@ -1,6 +1,8 @@
 
 import {MsgBroker, MsgBrokerStates} from './MsgBroker';
 import {MessageClient} from './MessageClient';
+import {IMessage} from './MessageInterfaces';
+
 let EventSource = require('eventsource');
 let $ = require('jquery-no-dom');
 

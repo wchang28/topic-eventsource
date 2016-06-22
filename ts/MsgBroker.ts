@@ -1,4 +1,4 @@
-/// <reference path="./Message.ts" />
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './MessageInterfaces';
 import {MessageClient as Client} from './MessageClient';
 import * as events from 'events';
 

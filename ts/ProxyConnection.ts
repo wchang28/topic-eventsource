@@ -1,7 +1,16 @@
-/// <reference path="./Message.ts" />
+import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from './MsgConnection';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './MessageInterfaces';
+import {ICompletionHandler, IEventSourceAjaxon} from './EventSourceAjaxon';
+import {ICookieSetter} from "./CookieSetter";
 import {MessageClient as Client} from './MessageClient';
 import * as express from 'express';
 import * as events from 'events';
+import {IAuthorizedRequest} from './AuthorizedRequest';
+
+// from a express.Request object get an IEventSourceAjaxon function
+interface IEventSourceAjaxonFactory {
+    (req: IAuthorizedRequest) : IEventSourceAjaxon;
+}
 
 class ProxyConnection extends events.EventEmitter implements IConnection {
 	public conn_id: string;
@@ -93,8 +102,6 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 		return o;
 	}
 }
-
-import {IAuthorizedRequest} from './AuthorizedRequest';
 
 export function getConnectionFactory(eventSourcePath: string, cookieSetter?: ICookieSetter)  : IConnectionFactory {
 	function eventSourceAjaxonFactory(req: IAuthorizedRequest) : IEventSourceAjaxon {

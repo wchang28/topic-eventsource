@@ -10,6 +10,10 @@
   },
   "files": [
       "./typings/index.d.ts",
+      "./ts/MessageInterfaces.ts",
+      "./ts/MsgConnection.ts",
+      "./ts/EventSourceAjaxon.ts",
+      "./ts/CookieSetter.ts",
       "./ts/TopicConnection.ts",
       "./ts/MessageClient.ts",
       "./ts/MsgBroker.ts",
@@ -23,7 +27,7 @@
       "./ts/AuthorizedRequest.ts",
       "./ts/OAuth2TokenRefreshWorkflows.ts",
       "./ts/ui/main.tsx",
-      "ts/testExport.ts",
-      "ts/test.ts"
+      "./ts/testExport.ts",
+      "./ts/test.ts"
   ]
 }
