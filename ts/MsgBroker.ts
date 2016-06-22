@@ -1,4 +1,4 @@
-import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './MessageInterfaces';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './common/MessageInterfaces';
 import {MessageClient as Client} from './MessageClient';
 import * as events from 'events';
 

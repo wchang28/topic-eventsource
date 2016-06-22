@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as core from "express-serve-static-core";
 let router = express.Router();
 
-import {getRouter as getTopicRouter} from '../SSETopicRouter';
+import {getRouter as getTopicRouter} from '../sse-topic-router/SSETopicRouter';
 import {getConnectionFactory} from '../ProxyConnection';
 
 let topicRouter = getTopicRouter('/event_stream', getConnectionFactory('/api/events/event_stream'));

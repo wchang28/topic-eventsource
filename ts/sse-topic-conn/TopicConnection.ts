@@ -1,6 +1,6 @@
-import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from './MsgConnection';
-import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './MessageInterfaces';
-import {ICookieSetter} from "./CookieSetter";
+import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from '../common/MsgConnection';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from '../common/MessageInterfaces';
+import {ICookieSetter} from "../common/CookieSetter";
 import * as events from 'events';
 let alasql = require('alasql');
 

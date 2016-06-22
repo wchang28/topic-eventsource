@@ -1,7 +1,7 @@
-import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from './MsgConnection';
-import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './MessageInterfaces';
-import {ICompletionHandler, IEventSourceAjaxon} from './EventSourceAjaxon';
-import {ICookieSetter} from "./CookieSetter";
+import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from './common/MsgConnection';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './common/MessageInterfaces';
+import {ICompletionHandler, IEventSourceAjaxon} from './common/EventSourceAjaxon';
+import {ICookieSetter} from "./common/CookieSetter";
 import {MessageClient as Client} from './MessageClient';
 import * as express from 'express';
 import * as events from 'events';
