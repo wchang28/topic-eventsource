@@ -17,11 +17,11 @@ topicRouter.connectionsManager.on('change', () => {
     console.log("");
 });
 topicRouter.eventEmitter.on('client_connect', (params: ConnectedEventParams) : void => {
-    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress + ' connected to the SSE endpoint');
+    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress + ' connected to the SSE topic endpoint');
 });
 
 topicRouter.eventEmitter.on('client_disconnect', (params: ConnectedEventParams) : void => {
-    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress +  ' disconnected from the SSE endpoint');
+    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress +  ' disconnected from the SSE topic endpoint');
 });
 
 export {router};
