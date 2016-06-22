@@ -109,16 +109,16 @@ export interface ISSETopicRouter extends express.Router {
 export interface EventParams {
     req: express.Request;
     remoteAddress: string;
-};
+}
 
 export interface ConnectedEventParams extends EventParams {
     conn_id: string;
-};
+}
 
 export interface CommandEventParams extends ConnectedEventParams {
     cmd: string;
     data: any;
-};
+}
 
 export function getRouter(eventPath: string, connectionFactory: IConnectionFactory) : ISSETopicRouter {
     let router: ISSETopicRouter  = <ISSETopicRouter>express.Router();
