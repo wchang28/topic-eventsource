@@ -1,4 +1,4 @@
-import {ICompletionHandler} from './common/EventSourceAjaxon';
+import {ICompletionHandler} from './EventSourceAjaxon';
 
 export interface IAuthorized$ {
 	$J: (method: string, pathname: string, data:any, done: ICompletionHandler) => void;

@@ -1,11 +1,11 @@
-import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from './common/MsgConnection';
-import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './common/MessageInterfaces';
-import {ICompletionHandler, IEventSourceAjaxon} from './common/EventSourceAjaxon';
-import {ICookieSetter} from "./common/CookieSetter";
-import {MessageClient as Client} from './MessageClient';
+import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from '../common/MsgConnection';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from '../common/MessageInterfaces';
+import {ICompletionHandler, IEventSourceAjaxon} from '../common/EventSourceAjaxon';
+import {IAuthorizedRequest} from '../common/AuthorizedRequest';
+import {ICookieSetter} from "../common/CookieSetter";
+import {MessageClient as Client} from '../MessageClient';
 import * as express from 'express';
 import * as events from 'events';
-import {IAuthorizedRequest} from './AuthorizedRequest';
 
 // from a express.Request object get an IEventSourceAjaxon function
 interface IEventSourceAjaxonFactory {
@@ -81,7 +81,7 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 		}		
 	}
 	forwardMessage(req: any, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: DoneHandler) : void {
-		if (srcConn === this) {	// only if the message came from this connection
+		if (srcConn === this && req) {	// only if the message came from this connection
 			if (!this.remoteConnected()) {
 				if (typeof done === 'function') done("not connected");
 			} else {

@@ -2,7 +2,7 @@ import * as express from 'express';
 import * as core from "express-serve-static-core";
 let router = express.Router();
 
-import {getRouter as getTopicRouter} from '../sse-topic-router/SSETopicRouter';
+import {getRouter as getTopicRouter, ConnectedEventParams} from '../sse-topic-router/SSETopicRouter';
 import {getConnectionFactory} from '../sse-topic-conn/TopicConnection';
 
 let topicRouter = getTopicRouter('/event_stream', getConnectionFactory(5000));
@@ -16,13 +16,12 @@ topicRouter.connectionsManager.on('change', () => {
     console.log("======================================================");
     console.log("");
 });
-
-topicRouter.eventEmitter.on('sse_connect', (remoteAddress: string) : void => {
-    console.log('remote host ' + remoteAddress + ' connected to the SSE endpoint');
+topicRouter.eventEmitter.on('client_connect', (params: ConnectedEventParams) : void => {
+    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress + ' connected to the SSE endpoint');
 });
 
-topicRouter.eventEmitter.on('sse_disconnect', (remoteAddress: string) : void => {
-    console.log('remote host ' + remoteAddress + ' disconnected from the SSE endpoint');
+topicRouter.eventEmitter.on('client_disconnect', (params: ConnectedEventParams) : void => {
+    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress +  ' disconnected from the SSE endpoint');
 });
 
 export {router};

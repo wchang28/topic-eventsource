@@ -3,7 +3,7 @@ import * as core from "express-serve-static-core";
 let router = express.Router();
 
 import {getRouter as getTopicRouter} from '../sse-topic-router/SSETopicRouter';
-import {getConnectionFactory} from '../ProxyConnection';
+import {getConnectionFactory} from '../sse-topic-proxy/ProxyConnection';
 
 let topicRouter = getTopicRouter('/event_stream', getConnectionFactory('/api/events/event_stream'));
 router.use('/events', topicRouter); // topic subscription endpoint is available at /events/event_stream from this route

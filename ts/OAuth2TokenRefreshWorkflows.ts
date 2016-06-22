@@ -1,6 +1,6 @@
 import * as events from 'events';
 import * as _ from 'lodash';
-import {IAuthorized$} from './Authorized$';
+import {IAuthorized$} from './common/Authorized$';
 
 export interface ICompletionHandler {
     (err: any, ret: any) : void;
