@@ -1,4 +1,4 @@
-/// <reference path="./Message.ts" />
+import {IMessage, IMessageCallback, DoneHandler} from './MessageInterfaces';
 import * as events from 'events';
 let Ajx = require("ajaxon");
 

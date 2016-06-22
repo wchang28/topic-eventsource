@@ -1,28 +1,6 @@
-interface IMsgHeaders {
-	event: string;
-    conn_id?: string;
-    sub_id?: string;
-    destination?: string;
-}
+import {DoneHandler, ErrorHandler, IMessageCallback} from './MessageInterfaces';
 
-interface IMessage {
-	headers: IMsgHeaders;
-	body?: any;
-}
-
-interface IMessageCallback {
-    (msg: IMessage) : void;
-}
-
-interface DoneHandler {
-    (err?:any) : void;
-}
-
-interface ErrorHandler {
-    (err?:any) : void;
-}
-
-interface IConnection {
+export interface IConnection {
     conn_id: string
     remoteAddress: string
     cookie: any
@@ -34,13 +12,15 @@ interface IConnection {
     toJSON: () => Object
 }
 
-interface IConnectionCreateCompleteHandler {
+export interface IConnectionCreateCompleteHandler {
     (err: any, conn: IConnection) : void;
 }
 
-interface IConnectionFactory {
+export interface IConnectionFactory {
     (req: any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void;
 }
+
+
 
 interface ICompletionHandler {
     (err: any, data: any) : void;
