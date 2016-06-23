@@ -19,13 +19,13 @@ msgBorker.on('connect', (conn_id:string) : void => {
             console.error('!!! Error: topic subscription failed');
         } else {
             console.log('topic subscribed sub_id=' + sub_id + " :-)");
-            /*
             console.log('sending a test message...');
-            msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
+            msgBorker.send('/topic/dispatcher', {}, {type:'node-ready', content: {numCPUs: 34} }, (err: any) : void => {
                 if (err) {
                     console.error('!!! Error: message send failed');
                 } else {
                     console.log('message sent successfully :-)');
+                    /*
                     setTimeout(() : void => {
                         console.log('unscribing the topic...');
                         msgBorker.unsubscribe(sub_id, (err:any):void => {
@@ -38,11 +38,15 @@ msgBorker.on('connect', (conn_id:string) : void => {
                             }
                         });                        
                     }, 10000);
+                    */
                 }
             });
-            */
         }
     });
+});
+
+msgBorker.on('error', (err: any) : void => {
+    console.error('!!! Error:' + JSON.stringify(err));
 });
 
 msgBorker.connect();
