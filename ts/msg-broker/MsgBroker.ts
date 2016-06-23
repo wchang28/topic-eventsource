@@ -1,9 +1,9 @@
-import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from './common/MessageInterfaces';
-import {MessageClient as Client} from './MessageClient';
+import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from '../common/MessageInterfaces';
+import {MessageClient} from './MessageClient';
 import * as events from 'events';
 
 export interface ClientFactory {
-    () : Client    
+    () : MessageClient;
 };
 
 export enum MsgBrokerStates {
@@ -19,7 +19,7 @@ export enum MsgBrokerStates {
 // 4. connect
 // 5. error
 export class MsgBroker extends events.EventEmitter {
-    private client: Client = null;
+    private client: MessageClient = null;
     private state: MsgBrokerStates = MsgBrokerStates.Idle;
     private err_not_connected: string = "not connected";
     connect(): void {
@@ -78,3 +78,6 @@ export class MsgBroker extends events.EventEmitter {
         }
     }
 }
+
+export {MessageClient};
+export * from '../common/MessageInterfaces';

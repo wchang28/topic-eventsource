@@ -20,8 +20,6 @@
     "jquery-no-dom": "git+https://github.com/wchang28/jquery-no-dom.git",
     "json-api-router": "git+https://github.com/wchang28/json-api-router.git",
     "lodash": "^4.12.0",
-    "message-broker": "git+https://github.com/wchang28/message-broker.git",
-    "message-client": "git+https://github.com/wchang28/message-client.git",
     "no-cache-express": "git+https://github.com/wchang28/no-cache-express.git",
     "node-uuid": "^1.4.7",
     "react": "^15.0.2",

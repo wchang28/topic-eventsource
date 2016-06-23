@@ -3,7 +3,7 @@ import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from '../common/M
 import {ICompletionHandler, IEventSourceAjaxon} from '../common/EventSourceAjaxon';
 import {IAuthorizedRequest} from '../common/AuthorizedRequest';
 import {ICookieSetter} from "../common/CookieSetter";
-import {MessageClient as Client} from '../MessageClient';
+import {MessageClient as Client} from '../msg-broker/MessageClient';
 import * as express from 'express';
 import * as events from 'events';
 

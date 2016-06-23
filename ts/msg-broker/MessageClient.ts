@@ -1,5 +1,5 @@
-import {IMessage, IMessageCallback, DoneHandler} from './common/MessageInterfaces';
-import {IEventSourceAjaxon} from './common/EventSourceAjaxon';
+import {IMessage, IMessageCallback, DoneHandler} from '../common/MessageInterfaces';
+import {IEventSourceAjaxon} from '../common/EventSourceAjaxon';
 import * as events from 'events';
 let Ajx = require("ajaxon");
 
