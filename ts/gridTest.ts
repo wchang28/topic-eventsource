@@ -5,7 +5,7 @@ import {IMessage} from './common/MessageInterfaces';
 let EventSource = require('eventsource');
 let $ = require('jquery-no-dom');
 
-let url = 'http://127.0.0.1:26354//node-app/events/event_stream';
+let url = 'http://127.0.0.1:26354/node-app/events/event_stream';
 let eventSourceInitDict = null;
 
 let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, url, eventSourceInitDict) , 10000);
@@ -44,3 +44,5 @@ msgBorker.on('connect', (conn_id:string) : void => {
         }
     });
 });
+
+msgBorker.connect();
