@@ -143,8 +143,11 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         });
         // add a sseSend() method to the result object
         res.sseSend = function(data: any, event? : any) {
-            if (event) res.write("event: " + event.toString() + "\n");
-            res.write("data: " + JSON.stringify(data) + "\n\n");
+            let s = "";
+            if (event) s += "event: " + event.toString() + "\n";
+            s+= "data: " + JSON.stringify(data) + "\n\n";
+            res.write(s);
+            router.eventEmitter.emit('sse_send', s);
         }
         res.write('\n');
         ///////////////////////////////////////////////////////////////////////
