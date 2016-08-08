@@ -20,7 +20,7 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
     }
 }
 
-let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(window.EventSource, $, eventSourceUrl); }, 10000);
+let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(global["EventSource"], $, eventSourceUrl); }, 10000);
 msgBorker.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
     var sub_id = msgBorker.subscribe('topic/say_hi'
