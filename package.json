@@ -22,6 +22,7 @@
     "lodash": "^4.12.0",
     "no-cache-express": "git+https://github.com/wchang28/no-cache-express.git",
     "node-uuid": "^1.4.7",
+    "rcf": "git+https://github.com/wchang28/rcf.git",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "sse-express": "git+https://github.com/wchang28/sse-express.git"
