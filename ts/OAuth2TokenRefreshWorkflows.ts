@@ -101,15 +101,19 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
 
 export class UnAuthorizedWorkflow extends OAuth2TokenRefreshWorkflow {
     constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, options?: rcf.ApiInstanceConnectOptions) {
-        let access : IOAuth2Access = {instance_url: options.instance_url, rejectUnauthorized: options.rejectUnauthorized};
-        super(jQuery, EventSourceClass, access, null);
+        let access : IOAuth2Access = {};
+        if (options && options.instance_url) access.instance_url = options.instance_url;
+        if (options && typeof options.rejectUnauthorized === 'boolean') access.rejectUnauthorized = options.rejectUnauthorized;
+        super(jQuery, EventSourceClass, (JSON.stringify(access) === '{}' ? null : access), null);
     }  
 }
 
 export class AuthorizationPassThroughdWorkflow extends OAuth2TokenRefreshWorkflow {
     constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, options?: rcf.ApiInstanceConnectOptions, passThroughHeaders: {[field:string]:string} = null) {
-        let access : IOAuth2Access = {instance_url: options.instance_url, rejectUnauthorized: options.rejectUnauthorized};
-        super(jQuery, EventSourceClass, access, null);
+        let access : IOAuth2Access = {};
+        if (options && options.instance_url) access.instance_url = options.instance_url;
+        if (options && typeof options.rejectUnauthorized === 'boolean') access.rejectUnauthorized = options.rejectUnauthorized;
+        super(jQuery, EventSourceClass, (JSON.stringify(access) === '{}' ? null : access), null);
         this.additionalHeaders = passThroughHeaders;
     }  
 }
