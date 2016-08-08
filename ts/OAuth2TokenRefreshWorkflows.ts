@@ -16,17 +16,17 @@ export interface IOAuth2TokenRefresher {
 }
 
 interface IWorkflowCall {
-    call : (url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) => void;
+    call: (url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) => void;
 }
 
-class AJaxonCall implements IWorkflowCall {
+class $JCall implements IWorkflowCall {
     constructor(protected $J: rcf.I$J, protected method: string, protected data: any) {}
     call(url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) : void {
         this.$J(this.method, url, this.data, done, callOptions);
     }
 }
 
-class EventSourceCall implements IWorkflowCall {
+class $ECall implements IWorkflowCall {
     constructor(protected $E: rcf.I$E) {}
     call(url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) : void {
         this.$E(url, done, callOptions);
@@ -41,6 +41,9 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
         super();
         this.__$J = rcf.$Wrapper.get$J(jQuery);
         this.__$E = rcf.$Wrapper.get$E(EventSourceClass);
+    }
+    public get refresh_token() : string {
+        return (this.access ? (this.access.refresh_token ? this.access.refresh_token : null) : null); 
     }
     public get instance_url(): string {
         return (this.access ? (this.access.instance_url ? this.access.instance_url : '') : '');
@@ -66,8 +69,8 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
     private executehWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: rcf.ICompletionHandler) {
         workFlowCall.call(this.getUrl(pathname), this.callOptions, (err: any, ret: any) => {
              if (err) {
-                if (this.tokenRefresher && this.tokenRefresher.isTokenExpiredError(err) && this.access.refresh_token) {
-                    this.tokenRefresher.refreshAccessToken(this.access.refresh_token, (err: any, newAccess: IOAuth2Access) : void => {
+                if (this.tokenRefresher && this.tokenRefresher.isTokenExpiredError(err) && this.refresh_token) {
+                    this.tokenRefresher.refreshAccessToken(this.refresh_token, (err: any, newAccess: IOAuth2Access) : void => {
                         if (err)
                             done(err, null);
                         else {
@@ -85,13 +88,13 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
     
     // workflow's $J method
     $J(method: string, pathname:string, data:any, done: rcf.ICompletionHandler) : void {
-        let action = new AJaxonCall(this.__$J, method, data);
+        let action = new $JCall(this.__$J, method, data);
         this.executehWorkflow(action, pathname, done);
     }
     
     // workflow's $E method
     $E(pathname: string, done: rcf.IEventSourceConnectCompletionHandler) : void {
-        let action = new EventSourceCall(this.__$E);
+        let action = new $ECall(this.__$E);
         this.executehWorkflow(action, pathname, done);
     }
 }
