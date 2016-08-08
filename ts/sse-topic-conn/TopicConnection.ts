@@ -1,8 +1,13 @@
-import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler} from '../common/MsgConnection';
+import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler, IConnectionOptionsBase} from '../common/MsgConnection';
 import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from '../common/MessageInterfaces';
-import {ICookieSetter} from "../common/CookieSetter";
 import * as events from 'events';
+import * as express from 'express';
+import * as _ from 'lodash';
 let alasql = require('alasql');
+
+export interface Options extends IConnectionOptionsBase {
+	pingIntervalMS?:number
+}
 
 interface Subscription {
 	destination: string;
@@ -49,7 +54,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 	onChange(handler: () => void) {
 		this.on('change', handler);
 	}
-	forwardMessage(req: any, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: DoneHandler) : void {
+	forwardMessage(req: express.Request, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: DoneHandler) : void {
         for (var sub_id in this.subscriptions) {	// for each subscription this connection has
 			let subscription = this.subscriptions[sub_id];
 			let pattern = new RegExp(subscription.destination, 'gi');
@@ -84,7 +89,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		}
 		if (typeof done === 'function') done(null);
 	}
-	addSubscription(req: any, sub_id: string, destination: string, headers: {[field: string]: any}, done: DoneHandler) : void {
+	addSubscription(req: express.Request, sub_id: string, destination: string, headers: {[field: string]: any}, done: DoneHandler) : void {
 		let subscription: Subscription = {
 			destination: destination
 			,headers: headers
@@ -93,7 +98,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		this.emit('change');
 		if (typeof done === 'function') done(null);
 	}
-	removeSubscription(req: any, sub_id: string, done: DoneHandler) : void {
+	removeSubscription(req: express.Request, sub_id: string, done: DoneHandler) : void {
 		delete this.subscriptions[sub_id];
 		this.emit('change');
 		if (typeof done === 'function') done(null);
@@ -117,9 +122,15 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 	}
 }
 
-export function getConnectionFactory(pingIntervalMS:number = 10000, cookieSetter?: ICookieSetter) : IConnectionFactory {
-	return ((req:any, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler) => {
-		let cookie = (cookieSetter ? cookieSetter(req) : null);
-		done(null, new TopicConnection(conn_id, remoteAddress, cookie, messageCB, pingIntervalMS));
+let defaultOptions: Options = {
+	pingIntervalMS: 10000
+}
+
+export function getConnectionFactory(options?: Options) : IConnectionFactory {
+	if (!options) options = {};
+	options = _.assignIn({}, defaultOptions, options);
+	return ((req:express.Request, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler) => {
+		let cookie = (options.cookieSetter ? (options.cookieSetter)(req) : null);
+		done(null, new TopicConnection(conn_id, remoteAddress, cookie, messageCB, options.pingIntervalMS));
 	});
 }

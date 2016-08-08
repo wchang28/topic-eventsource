@@ -1,11 +1,22 @@
 import * as express from 'express';
 import * as core from "express-serve-static-core";
+import * as rcf from 'rcf';
+import * as tr from '../sse-topic-router/SSETopicRouter';
+import * as proxy from '../sse-topic-proxy/ProxyConnection';
+
 let router = express.Router();
 
-import {getRouter as getTopicRouter} from '../sse-topic-router/SSETopicRouter';
-import {getConnectionFactory} from '../sse-topic-proxy/ProxyConnection';
+let get$A = (req: express.Request): rcf.IAuthorizedApi => {
+    return req["$A"];
+}
 
-let topicRouter = getTopicRouter('/event_stream', getConnectionFactory('/api/events/event_stream'));
+let proxyOptions: proxy.Options = {
+	eventSourcePath: '/api/events/event_stream'
+	,getAuthorized$J: (req: express.Request) => {return get$A(req).$J}
+	,getAuthorized$E: (req: express.Request) => {return get$A(req).$E}
+};
+
+let topicRouter = tr.getRouter('/event_stream', proxy.getConnectionFactory(proxyOptions));
 router.use('/events', topicRouter); // topic subscription endpoint is available at /events/event_stream from this route
 
 topicRouter.connectionsManager.on('change', () => {

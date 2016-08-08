@@ -2,9 +2,8 @@ import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';
 let $ = require('jquery-no-dom');
-let $J = (require("ajaxon"))($);
 let EventSource = require('eventsource');
-let $E = (require('es-factory'))(EventSource);
+import * as rcf from 'rcf'; 
 
 let app: express.Express = express();
 
@@ -19,23 +18,21 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 import {router as apiRouter} from './api';
 app.use('/api', apiRouter);
 
-import {IAuthorizedRequest} from './common/AuthorizedRequest';
-
 import {UnAuthorizedWorkflow} from './OAuth2TokenRefreshWorkflows';
-function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
-	let instance_url = 'http://127.0.0.1:8080';
-	let instanceUrlRejectUnauthorized = false;
-	let workflow = new UnAuthorizedWorkflow($J, $E, instance_url, instanceUrlRejectUnauthorized);
-	req.$A = workflow;
+function AuthorizedExtension(req: express.Request, res: express.Response, next: express.NextFunction) {
+	let callOptions: rcf.ApiInstanceConnectOptions = {
+		instance_url: 'http://127.0.0.1:8080'
+	}
+	let workflow = new UnAuthorizedWorkflow($, EventSource, callOptions);
+	req["$A"] = workflow;
 	next();
 }
 
 /*
 import {OAuth2TokenRefreshWorkflow, IOAuth2Access, IOAuth2TokenRefresher} from './OAuth2TokenRefreshWorkflows';
-function AuthorizedExtension(req: IAuthorizedRequest, res: express.Response, next: express.NextFunction) {
-	let instanceUrlRejectUnauthorized = false;
+function AuthorizedExtension(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let tokenRefresher: IOAuth2TokenRefresher = null;
-	let workflow = new OAuth2TokenRefreshWorkflow($J, $E, req.session.access, tokenRefresher, instanceUrlRejectUnauthorized);
+	let workflow = new OAuth2TokenRefreshWorkflow($, EventSource, req.session.access, tokenRefresher);
 	workflow.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
 		req.session.access = newAccess;
 	});

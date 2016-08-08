@@ -1,24 +1,13 @@
 import * as events from 'events';
 import * as _ from 'lodash';
-import {IAuthorized$} from './common/Authorized$';
-
-export interface ICompletionHandler {
-    (err: any, ret: any) : void;
-}
-
-export interface IAjaxon {
-    (method: string, url: string, data:any, done: ICompletionHandler, headers?: any, rejectUnauthorized?:boolean) : void;
-}
-
-export interface IEventSourceFactory {
-    (url: string, eventSourceInitDic: any, done: ICompletionHandler) : void
-}
+import * as rcf from 'rcf';
 
 export interface IOAuth2Access {
-    instance_url: string;
     token_type?: string;
     access_token?: string;
     refresh_token?: string;
+    instance_url?: string;
+    rejectUnauthorized?:boolean;
 }
 
 export interface IOAuth2TokenRefresher {
@@ -27,39 +16,55 @@ export interface IOAuth2TokenRefresher {
 }
 
 interface IWorkflowCall {
-    call : (url: string, headers:any, done: ICompletionHandler) => void;
+    call : (url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) => void;
 }
 
 class AJaxonCall implements IWorkflowCall {
-    constructor(protected $J: IAjaxon, protected method: string, protected data: any, protected rejectUnauthorized?:boolean) {}
-    call(url: string, headers:any, done: ICompletionHandler) : void {
-        this.$J(this.method, url, this.data, done, headers, this.rejectUnauthorized);
+    constructor(protected $J: rcf.I$J, protected method: string, protected data: any) {}
+    call(url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) : void {
+        this.$J(this.method, url, this.data, done, callOptions);
     }
 }
 
 class EventSourceCall implements IWorkflowCall {
-    constructor(protected $E: IEventSourceFactory, protected rejectUnauthorized?:boolean) {}
-    call(url: string, headers:any, done: ICompletionHandler) : void {
-        let eventSourceInitDic = {headers: headers, rejectUnauthorized: this.rejectUnauthorized};
-        this.$E(url, eventSourceInitDic, done);
+    constructor(protected $E: rcf.I$E) {}
+    call(url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) : void {
+        this.$E(url, done, callOptions);
     }
 }
 
-export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements IAuthorized$ {
+export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements rcf.IAuthorizedApi {
+    protected __$J:rcf.I$J = null;
+    protected __$E:rcf.I$E = null;
     public additionalHeaders: {[field: string]: string} = null;
-    constructor(protected $J_: IAjaxon, protected $E_: IEventSourceFactory, protected access: IOAuth2Access, protected tokenRefresher: IOAuth2TokenRefresher, protected rejectUnauthorized?:boolean) {
+    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, protected access?: IOAuth2Access, protected tokenRefresher?: IOAuth2TokenRefresher) {
         super();
+        this.__$J = rcf.$Wrapper.get$J(jQuery);
+        this.__$E = rcf.$Wrapper.get$E(EventSourceClass);
     }
-    
-    private getAuthorizedHeaders(access: IOAuth2Access) : any {
+    public get instance_url(): string {
+        return (this.access ? (this.access.instance_url ? this.access.instance_url : '') : '');
+    }
+    public getUrl(pathname:string) : string {
+        return this.instance_url + pathname;
+    }
+    public get authorizedHeaders() : any {
         let headers = this.additionalHeaders || {};
-        if (access.token_type && access.access_token)
-            _.assignIn(headers, {'Authorization' : access.token_type + " " + access.access_token});
-        return headers;
+        if (this.access && this.access.token_type && this.access.access_token)
+            _.assignIn(headers, {'Authorization' : this.access.token_type + " " + this.access.access_token});
+        return (JSON.stringify(headers) === '{}' ? null : headers);
     }
-    
-    private executehWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: ICompletionHandler) {
-        workFlowCall.call(this.access.instance_url+pathname, this.getAuthorizedHeaders(this.access), (err: any, ret: any) => {
+    public get rejectUnauthorized(): boolean {
+        return (this.access ? (typeof this.access.rejectUnauthorized === 'boolean' ? this.access.rejectUnauthorized : null) : null);
+    }
+    public get callOptions(): rcf.ApiCallOptions {
+        let ret: rcf.ApiCallOptions = {};
+        if (this.authorizedHeaders) ret.headers = this.authorizedHeaders;
+        if (this.rejectUnauthorized) ret.rejectUnauthorized = this.rejectUnauthorized;
+        return (JSON.stringify(ret) === '{}' ? null : ret);
+    }
+    private executehWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: rcf.ICompletionHandler) {
+        workFlowCall.call(this.getUrl(pathname), this.callOptions, (err: any, ret: any) => {
              if (err) {
                 if (this.tokenRefresher && this.tokenRefresher.isTokenExpiredError(err) && this.access.refresh_token) {
                     this.tokenRefresher.refreshAccessToken(this.access.refresh_token, (err: any, newAccess: IOAuth2Access) : void => {
@@ -67,7 +72,8 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements I
                             done(err, null);
                         else {
                             this.emit('on_access_refreshed', newAccess);
-                            workFlowCall.call(newAccess.instance_url + pathname, this.getAuthorizedHeaders(newAccess), done);
+                            this.access = newAccess;
+                            workFlowCall.call(this.getUrl(pathname), this.callOptions, done);
                         }
                     });
                 } else
@@ -78,29 +84,29 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements I
     }
     
     // workflow's $J method
-    $J(method: string, pathname:string, data:any, done: ICompletionHandler) : void {
-        let action = new AJaxonCall(this.$J_, method, data, this.rejectUnauthorized);
+    $J(method: string, pathname:string, data:any, done: rcf.ICompletionHandler) : void {
+        let action = new AJaxonCall(this.__$J, method, data);
         this.executehWorkflow(action, pathname, done);
     }
     
     // workflow's $E method
-    $E(pathname: string, done: ICompletionHandler) : void {
-        let action = new EventSourceCall(this.$E_, this.rejectUnauthorized);
+    $E(pathname: string, done: rcf.IEventSourceConnectCompletionHandler) : void {
+        let action = new EventSourceCall(this.__$E);
         this.executehWorkflow(action, pathname, done);
     }
 }
 
 export class UnAuthorizedWorkflow extends OAuth2TokenRefreshWorkflow {
-    constructor($J: IAjaxon, $E: IEventSourceFactory, instance_url: string, rejectUnauthorized?:boolean) {
-        let access : IOAuth2Access = {instance_url: instance_url};
-        super($J, $E, access, null, rejectUnauthorized);
+    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, options?: rcf.ApiInstanceConnectOptions) {
+        let access : IOAuth2Access = {instance_url: options.instance_url, rejectUnauthorized: options.rejectUnauthorized};
+        super(jQuery, EventSourceClass, access, null);
     }  
 }
 
 export class AuthorizationPassThroughdWorkflow extends OAuth2TokenRefreshWorkflow {
-    constructor($J: IAjaxon, $E: IEventSourceFactory, instance_url: string, passThroughHeaders: {[field:string]:string} = null, rejectUnauthorized?:boolean) {
-        let access : IOAuth2Access = {instance_url: instance_url};
-        super($J, $E, access, null, rejectUnauthorized);
+    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, options?: rcf.ApiInstanceConnectOptions, passThroughHeaders: {[field:string]:string} = null) {
+        let access : IOAuth2Access = {instance_url: options.instance_url, rejectUnauthorized: options.rejectUnauthorized};
+        super(jQuery, EventSourceClass, access, null);
         this.additionalHeaders = passThroughHeaders;
     }  
 }
