@@ -6,8 +6,8 @@ let connectOptions: rcf.ApiInstanceConnectOptions = {
     instance_url:"http://127.0.0.1:8080"
 };
 
-let pathname = '/api/events/event_stream';
-//let pathname = '/proxy/events/event_stream';
+//let pathname = '/api/events/event_stream';
+let pathname = '/proxy/events/event_stream';
 
 let api = new rcf.AuthorizedRestApi($, EventSource, rcf.AuthorizedRestApi.connectOptionsToAccess(connectOptions));
 let clientOptions: rcf.IMessageClientOptions = {reconnetIntervalMS: 3000};
