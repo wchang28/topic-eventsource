@@ -104,7 +104,10 @@ export class MessageClient extends events.EventEmitter {
     }
     
     subscribe(destination: string, cb: IMessageCallback, headers:{[field:string]: any} = {}, done?: DoneHandler) : string {
-        if (!this.source || !this.conn_id) throw "not connected";
+        if (!this.source || !this.conn_id) {
+            done("not connected");
+            return;
+        }
         let this_sub_id = this.sub_id.toString();
         let subscription = new Subscription(this.$J, this.conn_id, destination, headers, this_sub_id, cb);
         subscription.on('unsubscribed', (sub_id) => {
@@ -124,8 +127,14 @@ export class MessageClient extends events.EventEmitter {
     }
 
     unsubscribe(sub_id: string, done?: DoneHandler) : void {
-        if (!this.source || !this.conn_id) throw "not connected";
-        if (!this.subscriptions[sub_id]) throw "bad subscription";
+        if (!this.source || !this.conn_id) {
+            done("not connected");
+            return;
+        }
+        if (!sub_id || !this.subscriptions[sub_id]) {
+            done("bad subscription");
+            return;
+        }
         this.subscriptions[sub_id].unsubscribe(done);
     }
 
@@ -139,6 +148,10 @@ export class MessageClient extends events.EventEmitter {
         }
     }
     send(destination:string, headers: {[field:string]:any}, message:any, done? : DoneHandler) : void {
+        if (!this.source || !this.conn_id) {
+            done("not connected");
+            return;
+        }
         MessageClient.ajaxSend(this.$J, this.conn_id, destination, headers, message, done);
     }
 }

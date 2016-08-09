@@ -109,7 +109,6 @@ export class IOauth2RestApi extends events.EventEmitter implements rcf.IAuthoriz
     $M(pathname: string, reconnetIntervalMS: number) : mc.MessageClient {
         let client = new mc.MessageClient(pathname, this.getAuthorized$J());
         let retryConnect = () => {
-            console.log('retryConnect()');
             this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
                 if (err)
                     client.emit('error', err);
