@@ -9,6 +9,9 @@ let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 //let pathname = '/api/events/event_stream';
 let pathname = '/proxy/events/event_stream';
 
+let api = new AuthorizedRestApi($, EventSource);
+let client = api.$M(pathname, 10000);
+
 class MsgBrokerTestProps {
     message: string;
 }
@@ -22,8 +25,6 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
     }
 }
 
-let api = new AuthorizedRestApi($, EventSource);
-let client = api.$M(pathname, 10000);
 client.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
     var sub_id = client.subscribe('topic/say_hi'

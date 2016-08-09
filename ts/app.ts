@@ -6,12 +6,12 @@ let EventSource: rcf.EventSourceConstructor = require('eventsource');
 import * as rcf from 'rcf'; 
 import {AuthorizedRestApi, IOAuth2TokenRefresher} from './restApi';
 
-let app: express.Express = express();
+let app = express();
 
 app.use(require('no-cache-express'));
 
 app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
-	var req_address = req.connection.remoteAddress;
+	let req_address = req.connection.remoteAddress;
 	console.log('incoming request from ' + req_address + ', path='+ req.path);
 	next();
 });
