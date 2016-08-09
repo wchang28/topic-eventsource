@@ -1,5 +1,5 @@
 import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler, IConnectionOptionsBase} from '../MsgConnection';
-import * as mc from '../MessageClient';
+import * as rcf from 'rcf';
 import * as events from 'events';
 import * as express from 'express';
 import * as _ from 'lodash';
@@ -20,7 +20,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 	private eventEmitter: events.EventEmitter;
 	private subscriptions: {[sub_id:string] : Subscription;}
 	private pintInterval: NodeJS.Timer;
-	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: mc.IMessageCallback, public pingIntervalMS:number = 10000) {
+	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: rcf.IMessageCallback, public pingIntervalMS:number = 10000) {
 		super();
 		this.conn_id = conn_id;
 		this.remoteAddress = remoteAddress;
@@ -31,9 +31,9 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		this.subscriptions = {};
 		if (this.pingIntervalMS > 0) {
 			this.pintInterval = setInterval(() => {
-				let msg:mc.IMessage = {
+				let msg:rcf.IMessage = {
 					headers: {
-						event: mc.EventType.PING
+						event: rcf.MessageEventType.PING
 					}
 				};
 				this.eventEmitter.emit('message', msg);
@@ -41,10 +41,10 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		}
 		// emit a 'connected' message
 		/////////////////////////////////////////////////////////
-        let msg : mc.IMessage = {
+        let msg : rcf.IMessage = {
             headers:
             {
-                event: mc.EventType.CONNECT,
+                event: rcf.MessageEventType.CONNECT,
                 conn_id: conn_id
             }
 	    };
@@ -54,14 +54,14 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 	onChange(handler: () => void) {
 		this.on('change', handler);
 	}
-	forwardMessage(req: express.Request, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: mc.DoneHandler) : void {
+	forwardMessage(req: express.Request, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: rcf.DoneHandler) : void {
         for (var sub_id in this.subscriptions) {	// for each subscription this connection has
 			let subscription = this.subscriptions[sub_id];
 			let pattern = new RegExp(subscription.destination, 'gi');
 			if (destination.match(pattern)) {	// matching destination
-                let msg: mc.IMessage = {
+                let msg: rcf.IMessage = {
                    headers: {
-                       event: mc.EventType.MESSAGE,
+                       event: rcf.MessageEventType.MESSAGE,
                        sub_id: sub_id,
                        destination: destination
                    },
@@ -89,7 +89,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		}
 		if (typeof done === 'function') done(null);
 	}
-	addSubscription(req: express.Request, sub_id: string, destination: string, headers: {[field: string]: any}, done: mc.DoneHandler) : void {
+	addSubscription(req: express.Request, sub_id: string, destination: string, headers: {[field: string]: any}, done: rcf.DoneHandler) : void {
 		let subscription: Subscription = {
 			destination: destination
 			,headers: headers
@@ -98,7 +98,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 		this.emit('change');
 		if (typeof done === 'function') done(null);
 	}
-	removeSubscription(req: express.Request, sub_id: string, done: mc.DoneHandler) : void {
+	removeSubscription(req: express.Request, sub_id: string, done: rcf.DoneHandler) : void {
 		delete this.subscriptions[sub_id];
 		this.emit('change');
 		if (typeof done === 'function') done(null);
@@ -129,7 +129,7 @@ let defaultOptions: Options = {
 export function getConnectionFactory(options?: Options) : IConnectionFactory {
 	if (!options) options = {};
 	options = _.assignIn({}, defaultOptions, options);
-	return ((req:express.Request, conn_id: string, remoteAddress: string, messageCB: mc.IMessageCallback, errorCB: mc.ErrorHandler, done: IConnectionCreateCompleteHandler) => {
+	return ((req:express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.IMessageCallback, errorCB: rcf.ErrorHandler, done: IConnectionCreateCompleteHandler) => {
 		let cookie = (options.cookieSetter ? (options.cookieSetter)(req) : null);
 		done(null, new TopicConnection(conn_id, remoteAddress, cookie, messageCB, options.pingIntervalMS));
 	});
