@@ -1,11 +1,13 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+import * as rcf from 'rcf';
 import * as $ from 'jquery';
-var MsgBroker_1 = require('message-broker');
-var MessageClient_1 = require('message-client');
-require('eventsource-polyfill');
+import {MessageClient, AuthorizedRestApi} from '../restApi';
+import {IMessage} from '../common/MessageInterfaces';
+let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 
-let eventSourceUrl = '/proxy/events/event_stream';
+//let pathname = '/api/events/event_stream';
+let pathname = '/proxy/events/event_stream';
 
 class MsgBrokerTestProps {
     message: string;
@@ -20,38 +22,34 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
     }
 }
 
-let msgBorker = new MsgBroker_1.MsgBroker(function () { return new MessageClient_1.MessageClient(global["EventSource"], $, eventSourceUrl); }, 10000);
-msgBorker.on('connect', function (conn_id) {
+let api = new AuthorizedRestApi($, EventSource);
+let client = api.$M(pathname, 10000);
+client.on('connect', function (conn_id) {
     console.log('connected: conn_id=' + conn_id);
-    var sub_id = msgBorker.subscribe('topic/say_hi'
-        ,function(msg) {
+    var sub_id = client.subscribe('topic/say_hi'
+        ,(msg) => {
             let message = 'msg-rcvd: ' + JSON.stringify(msg);
             console.log(message);
             ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));            
         }
         ,{ "selector": "location = 'USA'" }
-        ,function (err) {
+        ,(err: any) => {
             console.log('sending a test message...');
-            msgBorker.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
+            client.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
         });
     });
 });
-msgBorker.on('client_open', function () {
-    console.log('client_open');
-});
-msgBorker.on('ping', function () {
+
+client.on('ping', function () {
     let message = '<<PING>> ' + new Date();
     console.log(message);
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
-msgBorker.on('error', function (err) {
+
+client.on('error', function (err) {
     let message = '!!! Error:' + JSON.stringify(err);
     console.error(message);
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
-msgBorker.on('state_changed', function (state) {
-    console.log('state_changed: ' + state.toString());
-});
-msgBorker.connect();
 
 ReactDOM.render(<MsgBrokerTestApp message={'Hello World :-)'}/>, document.getElementById('test'));
