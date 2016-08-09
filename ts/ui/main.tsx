@@ -11,7 +11,7 @@ let pathname = '/proxy/events/event_stream';
 let api = new AuthorizedRestApi($, EventSource);
 let client = api.$M(pathname, 10000);
 
-class MsgBrokerTestProps {
+interface MsgBrokerTestProps {
     message: string;
 }
 
@@ -24,9 +24,9 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
     }
 }
 
-client.on('connect', function (conn_id) {
+client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
-    var sub_id = client.subscribe('topic/say_hi'
+    let sub_id = client.subscribe('topic/say_hi'
         ,(msg) => {
             let message = 'msg-rcvd: ' + JSON.stringify(msg);
             console.log(message);
@@ -40,13 +40,13 @@ client.on('connect', function (conn_id) {
     });
 });
 
-client.on('ping', function () {
+client.on('ping', () => {
     let message = '<<PING>> ' + new Date();
     console.log(message);
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
 });
 
-client.on('error', function (err) {
+client.on('error', (err:any) => {
     let message = '!!! Error:' + JSON.stringify(err);
     console.error(message);
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
