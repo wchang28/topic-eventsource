@@ -142,7 +142,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
             'Connection': 'keep-alive'
         });
         // add a sseSend() method to the result object
-        res.sseSend = function(data: any, event? : any) {
+        res.sseSend = (data: any, event? : any) => {
             let s = "";
             if (event) s += "event: " + event.toString() + "\n";
             s+= "data: " + JSON.stringify(data) + "\n\n";
@@ -173,7 +173,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         ///////////////////////////////////////////////////////////////////////
 		
         // The 'close' event is fired when a user closes their browser window.
-        req.on("close", function() {
+        req.on("close", () => {
             router.eventEmitter.emit('sse_disconnect', ep);
             if (conn_id.length > 0) {
                 let cep: ConnectedEventParams = {req, remoteAddress, conn_id};
@@ -183,7 +183,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         });
     });
     
-    router.post(eventPath + '/subscribe', function(req: express.Request, res: express.Response) {
+    router.post(eventPath + '/subscribe', (req: express.Request, res: express.Response) => {
         let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.body;
         let cep: CommandEventParams = {req, remoteAddress, conn_id: data.conn_id, cmd: 'subscribe', data};
@@ -197,7 +197,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         });
     });
 
-    router.get(eventPath + '/unsubscribe', function(req: express.Request, res: express.Response) {
+    router.get(eventPath + '/unsubscribe', (req: express.Request, res: express.Response) => {
         let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.query;
         let cep: CommandEventParams = {req, remoteAddress, conn_id: data.conn_id, cmd: 'unsubscribe', data};
@@ -211,7 +211,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         });
     });
 
-    router.post(eventPath + '/send', function(req: express.Request, res: express.Response) {
+    router.post(eventPath + '/send', (req: express.Request, res: express.Response) => {
         let remoteAddress = req.connection.remoteAddress+':'+req.connection.remotePort.toString();
         let data = req.body;
         let cep: CommandEventParams = {req, remoteAddress, conn_id: data.conn_id, cmd: 'send', data};
