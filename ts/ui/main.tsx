@@ -1,5 +1,5 @@
 import * as rcf from 'rcf';
-import {IMessage, AuthorizedRestApi} from '../restApi';
+import {IMessage, IMessageClientOptions, AuthorizedRestApi} from '../restApi';
 import * as $ from 'jquery';
 let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 import * as React from 'react';
@@ -9,7 +9,8 @@ import * as ReactDOM from 'react-dom';
 let pathname = '/proxy/events/event_stream';
 
 let api = new AuthorizedRestApi($, EventSource);
-let client = api.$M(pathname, 3000);
+let clientOptions: IMessageClientOptions = {reconnetIntervalMS: 3000};
+let client = api.$M(pathname, clientOptions);
 
 interface MsgBrokerTestProps {
     message: string;

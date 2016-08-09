@@ -18,6 +18,14 @@ export interface IMessageClient {
     on: (event:string, listener: Function) => this;
 }
 
+export interface IMessageClientOptions {
+    reconnetIntervalMS?: number
+}
+
+let defaultClientOptions : IMessageClientOptions = {
+    reconnetIntervalMS: 5000
+}
+
 interface IWorkflowCaller {
     call: (url: string, callOptions: rcf.ApiCallOptions, done: rcf.ICompletionHandler) => void;
 }
@@ -118,7 +126,9 @@ export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAutho
     }
 
     // api's $M method
-    $M(pathname: string, reconnetIntervalMS: number) : IMessageClient {
+    $M(pathname: string, options?: IMessageClientOptions) : IMessageClient {
+        options = options || defaultClientOptions;
+        options = _.assignIn({}, defaultClientOptions, options);
         let client = new mc.MessageClient(pathname, this.getAuthorized$J());
         let retryConnect = () => {
             this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
@@ -129,7 +139,7 @@ export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAutho
             });               
         };
         client.on('error', (err:any) => {
-            setTimeout(retryConnect, reconnetIntervalMS);
+            setTimeout(retryConnect, options.reconnetIntervalMS);
         });
         retryConnect();
         return client;
