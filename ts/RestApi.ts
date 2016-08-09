@@ -33,7 +33,7 @@ class $ECall implements IWorkflowCall {
     }
 }
 
-export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements rcf.IAuthorizedApi {
+export class IOauth2RestApi extends events.EventEmitter implements rcf.IAuthorizedApi {
     protected __$J:rcf.I$J = null;
     protected __$E:rcf.I$E = null;
     public additionalHeaders: {[field: string]: string} = null;
@@ -43,10 +43,10 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
         this.__$E = rcf.$Wrapper.get$E(EventSourceClass);
     }
     public get refresh_token() : string {
-        return (this.access ? (this.access.refresh_token ? this.access.refresh_token : null) : null); 
+        return (this.access && this.access.refresh_token ? this.access.refresh_token : null); 
     }
     public get instance_url(): string {
-        return (this.access ? (this.access.instance_url ? this.access.instance_url : '') : '');
+        return (this.access && this.access.instance_url ? this.access.instance_url : '');
     }
     public getUrl(pathname:string) : string {
         return this.instance_url + pathname;
@@ -58,7 +58,7 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
         return (JSON.stringify(headers) === '{}' ? null : headers);
     }
     public get rejectUnauthorized(): boolean {
-        return (this.access ? (typeof this.access.rejectUnauthorized === 'boolean' ? this.access.rejectUnauthorized : null) : null);
+        return (this.access && typeof this.access.rejectUnauthorized === 'boolean' ? this.access.rejectUnauthorized : null);
     }
     public get callOptions(): rcf.ApiCallOptions {
         let ret: rcf.ApiCallOptions = {};
@@ -66,7 +66,7 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
         if (this.rejectUnauthorized) ret.rejectUnauthorized = this.rejectUnauthorized;
         return (JSON.stringify(ret) === '{}' ? null : ret);
     }
-    private executehWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: rcf.ICompletionHandler) {
+    private executeWorkflow(workFlowCall: IWorkflowCall, pathname: string, done: rcf.ICompletionHandler) {
         workFlowCall.call(this.getUrl(pathname), this.callOptions, (err: any, ret: any) => {
              if (err) {
                 if (this.tokenRefresher && this.tokenRefresher.isTokenExpiredError(err) && this.refresh_token) {
@@ -89,17 +89,17 @@ export class OAuth2TokenRefreshWorkflow extends events.EventEmitter implements r
     // workflow's $J method
     $J(method: string, pathname:string, data:any, done: rcf.ICompletionHandler) : void {
         let action = new $JCall(this.__$J, method, data);
-        this.executehWorkflow(action, pathname, done);
+        this.executeWorkflow(action, pathname, done);
     }
     
     // workflow's $E method
     $E(pathname: string, done: rcf.IEventSourceConnectCompletionHandler) : void {
         let action = new $ECall(this.__$E);
-        this.executehWorkflow(action, pathname, done);
+        this.executeWorkflow(action, pathname, done);
     }
 }
 
-export class UnAuthorizedWorkflow extends OAuth2TokenRefreshWorkflow {
+export class NoAuthorizationRestApi extends IOauth2RestApi {
     constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, options?: rcf.ApiInstanceConnectOptions) {
         let access : IOAuth2Access = {};
         if (options && options.instance_url) access.instance_url = options.instance_url;
@@ -108,7 +108,13 @@ export class UnAuthorizedWorkflow extends OAuth2TokenRefreshWorkflow {
     }  
 }
 
-export class AuthorizationPassThroughdWorkflow extends OAuth2TokenRefreshWorkflow {
+export class WebClientRestApi extends IOauth2RestApi {
+    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor) {
+        super(jQuery, EventSourceClass, null, null);
+    } 
+}
+
+export class AuthorizationPassThroughdRestApi extends IOauth2RestApi {
     constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, options?: rcf.ApiInstanceConnectOptions, passThroughHeaders: {[field:string]:string} = null) {
         let access : IOAuth2Access = {};
         if (options && options.instance_url) access.instance_url = options.instance_url;

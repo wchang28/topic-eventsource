@@ -12,7 +12,6 @@
       "./typings/index.d.ts",
       "./ts/common/MessageInterfaces.ts",
       "./ts/common/MsgConnection.ts",
-      "./ts/common/EventSourceAjaxon.ts",
       "./ts/msg-broker/MessageClient.ts",
       "./ts/msg-broker/MsgBroker.ts",
       "./ts/sse-topic-router/SSETopicRouter.ts",
@@ -23,9 +22,6 @@
       "./ts/proxy/index.ts",
       "./ts/clientTest.ts",
       "./ts/gridTest.ts",
-      "./ts/OAuth2TokenRefreshWorkflows.ts",
-      "./ts/ui/main.tsx",
-      "./ts/testExport.ts",
-      "./ts/test.ts"
+      "./ts/ui/main.tsx"
   ]
 }
