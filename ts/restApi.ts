@@ -1,20 +1,13 @@
 import * as events from 'events';
 import * as _ from 'lodash';
 import * as rcf from 'rcf';
+import * as oauth2 from 'oauth2';
 import * as mc from './MessageClient';
 export {MessageClient, IMessage} from './MessageClient';
 
-export interface IOAuth2Access {
-    token_type?: string;
-    access_token?: string;
-    refresh_token?: string;
-    instance_url?: string;
-    rejectUnauthorized?:boolean;
-}
-
 export interface IOAuth2TokenRefresher {
     isTokenExpiredError : (err:any) => boolean;
-    refreshAccessToken: (refresh_token: string, done: (err: any, newAccess: IOAuth2Access) => void) => void;
+    refreshAccessToken: (refresh_token: string, done: (err: any, newAccess: oauth2.Access) => void) => void;
 }
 
 interface IWorkflowCaller {
@@ -43,13 +36,13 @@ export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAutho
     protected __$E:rcf.I$E = null;
     public additionalHeaders: {[field: string]: string} = null;
 
-    static connectOptionsToAccess(connectOptions: rcf.ApiInstanceConnectOptions) : IOAuth2Access {
-        let access: IOAuth2Access = {};
+    static connectOptionsToAccess(connectOptions: rcf.ApiInstanceConnectOptions) : oauth2.Access {
+        let access: oauth2.Access = {};
         if (connectOptions && connectOptions.instance_url) access.instance_url = connectOptions.instance_url;
         if (connectOptions && typeof connectOptions.rejectUnauthorized === 'boolean') access.rejectUnauthorized = connectOptions.rejectUnauthorized;
         return (JSON.stringify(access) === '{}' ? null : access);
     }
-    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, protected access?: IOAuth2Access, protected tokenRefresher?: IOAuth2TokenRefresher) {
+    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, protected access?: oauth2.Access, protected tokenRefresher?: IOAuth2TokenRefresher) {
         super();
         this.__$J = rcf.$Wrapper.get$J(jQuery);
         this.__$E = rcf.$Wrapper.get$E(EventSourceClass);
@@ -75,14 +68,14 @@ export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAutho
     public get callOptions(): rcf.ApiCallOptions {
         let ret: rcf.ApiCallOptions = {};
         if (this.authorizedHeaders) ret.headers = this.authorizedHeaders;
-        if (this.rejectUnauthorized) ret.rejectUnauthorized = this.rejectUnauthorized;
+        if (typeof this.rejectUnauthorized === 'boolean') ret.rejectUnauthorized = this.rejectUnauthorized;
         return (JSON.stringify(ret) === '{}' ? null : ret);
     }
     private executeWorkflow(workFlowCall: IWorkflowCaller, pathname: string, done: rcf.ICompletionHandler) {
         workFlowCall.call(this.getUrl(pathname), this.callOptions, (err: any, ret: any) => {
              if (err) {
                 if (this.tokenRefresher && this.tokenRefresher.isTokenExpiredError(err) && this.refresh_token) {
-                    this.tokenRefresher.refreshAccessToken(this.refresh_token, (err: any, newAccess: IOAuth2Access) : void => {
+                    this.tokenRefresher.refreshAccessToken(this.refresh_token, (err: any, newAccess: oauth2.Access) : void => {
                         if (err)
                             done(err, null);
                         else {
