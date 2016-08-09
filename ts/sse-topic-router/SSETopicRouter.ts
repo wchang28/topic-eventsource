@@ -21,7 +21,7 @@ export class ConnectionsManager extends events.EventEmitter
         this.__connections = {};
     }
     getConnectionsCount() : number { return this.connCount;}
-    createConnection(req: any, connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: mc.IMessageCallback, errorCB: mc.ErrorHandler, done: IConnectionCreatedHandler) : void {
+    createConnection(req: express.Request, connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: mc.IMessageCallback, errorCB: mc.ErrorHandler, done: IConnectionCreatedHandler) : void {
         let conn_id = uuid.v4();
         connectionFactory(req, conn_id, remoteAddress, messageCB, errorCB, (err: any, conn: IConnection) => {
             if (err) {
@@ -46,7 +46,7 @@ export class ConnectionsManager extends events.EventEmitter
             this.emit('change');
         }     
     }
-    addSubscription(req: any, conn_id: string, sub_id:string, destination: string, headers:{[field: string]: any}, done?: mc.DoneHandler)  {
+    addSubscription(req: express.Request, conn_id: string, sub_id:string, destination: string, headers:{[field: string]: any}, done?: mc.DoneHandler)  {
         let conn = this.__connections[conn_id];
         if (conn) {
             conn.addSubscription(req, sub_id, destination, headers, done);
@@ -54,7 +54,7 @@ export class ConnectionsManager extends events.EventEmitter
             if (typeof done === 'function') done('bad connection');
         }
     }
-    removeSubscription(req: any, conn_id: string, sub_id:string, done?: mc.DoneHandler) {
+    removeSubscription(req: express.Request, conn_id: string, sub_id:string, done?: mc.DoneHandler) {
         let conn = this.__connections[conn_id];
         if (conn) {
             conn.removeSubscription(req, sub_id, done);
@@ -62,7 +62,7 @@ export class ConnectionsManager extends events.EventEmitter
             if (typeof done === 'function') done('bad connection');
         }        
     }
-    private forwardMessageImpl(req:any, srcConn:IConnection, destination: string, headers: {[field: string]:any}, message:any, done?: mc.DoneHandler) {
+    private forwardMessageImpl(req:express.Request, srcConn:IConnection, destination: string, headers: {[field: string]:any}, message:any, done?: mc.DoneHandler) {
         let left = this.connCount;
         let errs = [];
         for (let id in this.__connections) {    // for each connection
@@ -76,7 +76,7 @@ export class ConnectionsManager extends events.EventEmitter
             });
         }
     }
-    forwardMessage(req: any, conn_id: string, destination: string, headers: {[field: string]:any}, message:any, done?: mc.DoneHandler) {
+    forwardMessage(req: express.Request, conn_id: string, destination: string, headers: {[field: string]:any}, message:any, done?: mc.DoneHandler) {
         let srcConn = this.__connections[conn_id];
         if (srcConn) {
             this.forwardMessageImpl(req, srcConn, destination, headers, message, done);

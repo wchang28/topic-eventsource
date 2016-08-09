@@ -4,7 +4,7 @@ import * as path from 'path';
 let $ = require('jquery-no-dom');
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
 import * as rcf from 'rcf'; 
-import {AuthorizedRestApi, IOAuth2TokenRefresher} from './restApi';
+import {AuthorizedRestApi} from './restApi';
 
 let app = express();
 
