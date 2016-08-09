@@ -1,6 +1,35 @@
-import {IMessage, IMessageCallback, DoneHandler} from './common/MessageInterfaces';
 import * as events from 'events';
 import * as rcf from 'rcf';
+
+export enum EventType {
+    CONNECT = 0,
+    PING = 1,
+    MESSAGE = 2
+}
+
+export interface IMsgHeaders {
+	event: EventType;
+    conn_id?: string;
+    sub_id?: string;
+    destination?: string;
+}
+
+export interface IMessage {
+	headers: IMsgHeaders;
+	body?: any;
+}
+
+export interface IMessageCallback {
+    (msg: IMessage) : void;
+}
+
+export interface DoneHandler {
+    (err?:any) : void;
+}
+
+export interface ErrorHandler {
+    (err?:any) : void;
+}
 
 export type CommandPath = "/subscribe" | "/unsubscribe" | "/send";
 
@@ -43,12 +72,12 @@ export class MessageClient extends events.EventEmitter {
         this.source.onmessage = (message: rcf.EventSourceMsg) => {
             let msg: IMessage = JSON.parse(message.data);
             //console.log(JSON.stringify(msg));
-            if (msg.headers.event === 'ping') {
+            if (msg.headers.event === EventType.PING) {
                 this.emit('ping');
-            } else if (msg.headers.event === 'connect') {
+            } else if (msg.headers.event === EventType.CONNECT) {
                 this.conn_id = msg.headers.conn_id;
                 this.emit('connect', this.conn_id);
-            } else if (msg.headers.event === 'msg') {
+            } else if (msg.headers.event === EventType.MESSAGE) {
                 let sub_id = msg.headers.sub_id;
                 if (this.subscriptions[sub_id] && typeof this.subscriptions[sub_id].cb === 'function') (this.subscriptions[sub_id].cb)(msg);
             }

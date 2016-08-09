@@ -1,5 +1,5 @@
 import {IConnection, IConnectionFactory} from '../common/MsgConnection';
-import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from '../common/MessageInterfaces';
+import * as mc from '../MessageClient';
 import * as uuid from 'node-uuid';
 import * as events from 'events';
 import * as express from 'express';
@@ -21,7 +21,7 @@ export class ConnectionsManager extends events.EventEmitter
         this.__connections = {};
     }
     getConnectionsCount() : number { return this.connCount;}
-    createConnection(req: any, connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreatedHandler) : void {
+    createConnection(req: any, connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: mc.IMessageCallback, errorCB: mc.ErrorHandler, done: IConnectionCreatedHandler) : void {
         let conn_id = uuid.v4();
         connectionFactory(req, conn_id, remoteAddress, messageCB, errorCB, (err: any, conn: IConnection) => {
             if (err) {
@@ -46,7 +46,7 @@ export class ConnectionsManager extends events.EventEmitter
             this.emit('change');
         }     
     }
-    addSubscription(req: any, conn_id: string, sub_id:string, destination: string, headers:{[field: string]: any}, done?: DoneHandler)  {
+    addSubscription(req: any, conn_id: string, sub_id:string, destination: string, headers:{[field: string]: any}, done?: mc.DoneHandler)  {
         let conn = this.__connections[conn_id];
         if (conn) {
             conn.addSubscription(req, sub_id, destination, headers, done);
@@ -54,7 +54,7 @@ export class ConnectionsManager extends events.EventEmitter
             if (typeof done === 'function') done('bad connection');
         }
     }
-    removeSubscription(req: any, conn_id: string, sub_id:string, done?: DoneHandler) {
+    removeSubscription(req: any, conn_id: string, sub_id:string, done?: mc.DoneHandler) {
         let conn = this.__connections[conn_id];
         if (conn) {
             conn.removeSubscription(req, sub_id, done);
@@ -62,7 +62,7 @@ export class ConnectionsManager extends events.EventEmitter
             if (typeof done === 'function') done('bad connection');
         }        
     }
-    private forwardMessageImpl(req:any, srcConn:IConnection, destination: string, headers: {[field: string]:any}, message:any, done?: DoneHandler) {
+    private forwardMessageImpl(req:any, srcConn:IConnection, destination: string, headers: {[field: string]:any}, message:any, done?: mc.DoneHandler) {
         let left = this.connCount;
         let errs = [];
         for (let id in this.__connections) {    // for each connection
@@ -76,7 +76,7 @@ export class ConnectionsManager extends events.EventEmitter
             });
         }
     }
-    forwardMessage(req: any, conn_id: string, destination: string, headers: {[field: string]:any}, message:any, done?: DoneHandler) {
+    forwardMessage(req: any, conn_id: string, destination: string, headers: {[field: string]:any}, message:any, done?: mc.DoneHandler) {
         let srcConn = this.__connections[conn_id];
         if (srcConn) {
             this.forwardMessageImpl(req, srcConn, destination, headers, message, done);
@@ -84,7 +84,7 @@ export class ConnectionsManager extends events.EventEmitter
             if (typeof done === 'function') done('bad connection');
         }      
     }
-    injectMessage(destination: string, headers: {[field: string]:any}, message:any, done?: DoneHandler) {
+    injectMessage(destination: string, headers: {[field: string]:any}, message:any, done?: mc.DoneHandler) {
         this.forwardMessageImpl(null, null, destination, headers, message, done);
     }
     toJSON() : Object {
@@ -159,7 +159,7 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         req
         ,connectionFactory
         ,remoteAddress
-        ,(msg: IMessage) => {res.sseSend(msg);}
+        ,(msg: mc.IMessage) => {res.sseSend(msg);}
         ,(err: any) => {req.socket.end();}
         ,(err: any, connnection_id: string) => {
             if (err)    // connection cannot be created due to some error

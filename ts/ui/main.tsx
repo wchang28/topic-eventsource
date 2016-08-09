@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import * as rcf from 'rcf';
 import * as $ from 'jquery';
 import {MessageClient, AuthorizedRestApi} from '../restApi';
-import {IMessage} from '../common/MessageInterfaces';
+import {IMessage} from '../MessageClient';
 let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 
 //let pathname = '/api/events/event_stream';

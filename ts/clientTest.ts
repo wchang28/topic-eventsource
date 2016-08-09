@@ -1,5 +1,5 @@
 import * as rcf from 'rcf';
-import {IMessage} from './common/MessageInterfaces';
+import {IMessage} from './MessageClient';
 import {MessageClient, AuthorizedRestApi} from './restApi';
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
 let $ = require('jquery-no-dom');
