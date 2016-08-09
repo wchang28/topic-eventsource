@@ -5,11 +5,6 @@ import * as oauth2 from 'oauth2';
 import * as mc from './MessageClient';
 export {MessageClient, IMessage, IMessageCallback, DoneHandler} from './MessageClient';
 
-export interface IOAuth2TokenRefresher {
-    isTokenExpiredError : (err:any) => boolean;
-    refreshAccessToken: (refresh_token: string, done: (err: any, newAccess: oauth2.Access) => void) => void;
-}
-
 export interface IMessageClient {
     subscribe: (destination: string, cb: mc.IMessageCallback, headers?:{[field:string]: any}, done?: mc.DoneHandler) => string;
     unsubscribe: (sub_id: string, done?: mc.DoneHandler) => void;
@@ -58,7 +53,7 @@ export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAutho
         if (connectOptions && typeof connectOptions.rejectUnauthorized === 'boolean') access.rejectUnauthorized = connectOptions.rejectUnauthorized;
         return (JSON.stringify(access) === '{}' ? null : access);
     }
-    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, protected access?: oauth2.Access, protected tokenRefresher?: IOAuth2TokenRefresher) {
+    constructor(jQuery: any, EventSourceClass: rcf.EventSourceConstructor, protected access?: oauth2.Access, protected tokenGrant?: oauth2.TokenGrant) {
         super();
         this.__$J = rcf.$Wrapper.get$J(jQuery);
         this.__$E = rcf.$Wrapper.get$E(EventSourceClass);
@@ -90,8 +85,8 @@ export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAutho
     private executeWorkflow(workFlowCall: IWorkflowCaller, pathname: string, done: rcf.ICompletionHandler) {
         workFlowCall.call(this.getUrl(pathname), this.callOptions, (err: any, ret: any) => {
              if (err) {
-                if (this.tokenRefresher && this.tokenRefresher.isTokenExpiredError(err) && this.refresh_token) {
-                    this.tokenRefresher.refreshAccessToken(this.refresh_token, (err: any, newAccess: oauth2.Access) : void => {
+                if (this.tokenGrant && this.refresh_token) {
+                    this.tokenGrant.refreshAccessToken(this.refresh_token, (err: any, newAccess: oauth2.Access) : void => {
                         if (err)
                             done(err, null);
                         else {
