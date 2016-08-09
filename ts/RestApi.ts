@@ -100,38 +100,28 @@ export class IOauth2RestApi extends events.EventEmitter implements rcf.IAuthoriz
         this.executeWorkflow(action, pathname, done);
     }
 
-    getAuthorized$J() : rcf.IAuthorized$J {
+    private getAuthorized$J() : rcf.IAuthorized$J {
         return ((method: string, pathname:string, data:any, done: rcf.ICompletionHandler) => {
             this.$J(method, pathname, data, done);
         });
     }
 
-    $M(pathname: string, reconnetIntervalMS: number, done:(err:any, client: mc.MessageClient) => void) : void {
-        let getAuthorized$J = () : rcf.IAuthorized$J => {
-            return this.$J;
-        }
+    $M(pathname: string, reconnetIntervalMS: number) : mc.MessageClient {
         let client = new mc.MessageClient(pathname, this.getAuthorized$J());
+        let retryConnect = () => {
+            console.log('retryConnect()');
+            this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
+                if (err)
+                    client.emit('error', err);
+                 else
+                    client.eventSource = eventSource;
+            });               
+        };
         client.on('error', (err:any) => {
-            let retryConnect = () => {
-                 this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
-                    if (err) {
-                        console.log('!!! Error' + JSON.stringify(err));
-                        setTimeout(retryConnect, reconnetIntervalMS);
-                    } else
-                        client.eventSource = eventSource;
-                });               
-            };
-            console.log('!!! Error' + JSON.stringify(err));
             setTimeout(retryConnect, reconnetIntervalMS);
         });
-        this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
-            if (err)
-                done(err, null);
-            else {
-                client.eventSource = eventSource;
-                done(null, client);
-            }
-        });
+        retryConnect();
+        return client;
     }
 }
 

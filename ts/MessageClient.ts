@@ -38,7 +38,7 @@ export class MessageClient extends events.EventEmitter {
     }
 
     set eventSource(source: rcf.IEventSource) {
-        this.disconnect();
+        //this.disconnect();
         this.source = source;
         this.source.onmessage = (message: rcf.EventSourceMsg) => {
             let msg: IMessage = JSON.parse(message.data);
