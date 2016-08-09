@@ -5,7 +5,7 @@ import * as events from 'events';
 
 // from a express.Request object get an $J function
 interface I$JFactory {
-    (req: express.Request) : rcf.I$J;
+    (req: express.Request) : rcf.IMessageClient$J;
 }
 
 export interface IAuthorizedApiGetter {
@@ -110,7 +110,7 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 
 export function getConnectionFactory(options: Options)  : IConnectionFactory {
 	if (!options) throw 'bad options';
-	function $JFactory(req: express.Request) : rcf.I$J {
+	function $JFactory(req: express.Request) : rcf.IMessageClient$J {
 		let authorizedApi = (options.getAuthorizedApi)(req);
 		return ((method: string, cmdPath: rcf.ClientCommandPath, data: any, done: rcf.ICompletionHandler): void => {
 			authorizedApi.$J(method, options.eventSourcePath + cmdPath, data, done);
