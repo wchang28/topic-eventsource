@@ -3,11 +3,19 @@ import * as _ from 'lodash';
 import * as rcf from 'rcf';
 import * as oauth2 from 'oauth2';
 import * as mc from './MessageClient';
-export {MessageClient, IMessage} from './MessageClient';
+export {MessageClient, IMessage, IMessageCallback, DoneHandler} from './MessageClient';
 
 export interface IOAuth2TokenRefresher {
     isTokenExpiredError : (err:any) => boolean;
     refreshAccessToken: (refresh_token: string, done: (err: any, newAccess: oauth2.Access) => void) => void;
+}
+
+export interface IMessageClient {
+    subscribe: (destination: string, cb: mc.IMessageCallback, headers?:{[field:string]: any}, done?: mc.DoneHandler) => string;
+    unsubscribe: (sub_id: string, done?: mc.DoneHandler) => void;
+    send: (destination:string, headers: {[field:string]:any}, message:any, done? : mc.DoneHandler) => void;
+    disconnect: () => void;
+    on: (event:string, listener: Function) => this;
 }
 
 interface IWorkflowCaller {
@@ -110,7 +118,7 @@ export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAutho
     }
 
     // api's $M method
-    $M(pathname: string, reconnetIntervalMS: number) : mc.MessageClient {
+    $M(pathname: string, reconnetIntervalMS: number) : IMessageClient {
         let client = new mc.MessageClient(pathname, this.getAuthorized$J());
         let retryConnect = () => {
             this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {

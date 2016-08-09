@@ -1,5 +1,5 @@
 import * as rcf from 'rcf';
-import {MessageClient, IMessage, AuthorizedRestApi} from '../restApi';
+import {IMessage, AuthorizedRestApi} from '../restApi';
 import * as $ from 'jquery';
 let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 import * as React from 'react';
