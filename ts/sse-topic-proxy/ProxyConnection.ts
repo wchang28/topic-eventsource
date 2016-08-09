@@ -1,6 +1,6 @@
 import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler, IConnectionOptionsBase} from '../common/MsgConnection';
 import {IMessage, IMessageCallback, DoneHandler, ErrorHandler} from '../common/MessageInterfaces';
-import * as mc from '../msg-broker/MessageClient';
+import * as mc from '../MessageClient';
 import * as rcf from 'rcf';
 import * as express from 'express';
 import * as events from 'events';

@@ -20,7 +20,7 @@
       "./ts/app.ts",
       "./ts/api/index.ts",
       "./ts/proxy/index.ts",
-      "./ts/clientTest.ts",
+      "./ts/clientTest2.ts",
       "./ts/gridTest.ts",
       "./ts/ui/main.tsx"
   ]

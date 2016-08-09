@@ -1,6 +1,8 @@
 import * as events from 'events';
 import * as _ from 'lodash';
 import * as rcf from 'rcf';
+import * as mc from './MessageClient';
+export {MessageClient} from './MessageClient';
 
 export interface IOAuth2Access {
     token_type?: string;
@@ -86,16 +88,43 @@ export class IOauth2RestApi extends events.EventEmitter implements rcf.IAuthoriz
         });
     }
     
-    // workflow's $J method
+    // api's $J method
     $J(method: string, pathname:string, data:any, done: rcf.ICompletionHandler) : void {
         let action = new $JCall(this.__$J, method, data);
         this.executeWorkflow(action, pathname, done);
     }
     
-    // workflow's $E method
+    // api's $E method
     $E(pathname: string, done: rcf.IEventSourceConnectCompletionHandler) : void {
         let action = new $ECall(this.__$E);
         this.executeWorkflow(action, pathname, done);
+    }
+
+    $M(pathname: string, reconnetIntervalMS: number, done:(err:any, client: mc.MessageClient) => void) : void {
+        function getAuthorized$J() : rcf.IAuthorized$J {
+            return this.$J;
+        }
+        let client = new mc.MessageClient(getAuthorized$J());
+        client.on('error', (err:any) => {
+            client.disconnect();
+            function retryConnect() {
+                 this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
+                    if (err)
+                        setTimeout(retryConnect, reconnetIntervalMS);
+                    else
+                        client.eventSource = eventSource;
+                });               
+            }
+            setTimeout(retryConnect, reconnetIntervalMS);
+        });
+        this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
+            if (err)
+                done(err, null);
+            else {
+                client.eventSource = eventSource;
+                done(null, client);
+            }
+        });
     }
 }
 
