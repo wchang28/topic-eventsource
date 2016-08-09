@@ -1,6 +1,6 @@
 import * as rcf from 'rcf';
 import {IMessage} from './common/MessageInterfaces';
-import {MessageClient, IOauth2RestApi, NoAuthorizationRestApi} from './restApi';
+import {MessageClient, AuthorizedRestApi} from './restApi';
 let EventSource:rcf.EventSourceConstructor = require('eventsource');
 let $ = require('jquery-no-dom');
 
@@ -11,7 +11,7 @@ let connectOptions: rcf.ApiInstanceConnectOptions = {
     instance_url:"http://127.0.0.1:8080"
 };
 
-let api = new NoAuthorizationRestApi($, EventSource, connectOptions);
+let api = new AuthorizedRestApi($, EventSource, AuthorizedRestApi.connectOptionsToAccess(connectOptions));
 
 let client = api.$M(pathname, 3000);
 
