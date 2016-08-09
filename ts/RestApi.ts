@@ -112,16 +112,16 @@ export class IOauth2RestApi extends events.EventEmitter implements rcf.IAuthoriz
         }
         let client = new mc.MessageClient(pathname, this.getAuthorized$J());
         client.on('error', (err:any) => {
-            console.log('!!! Error' + JSON.stringify(err));
-            client.disconnect();
             let retryConnect = () => {
                  this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
-                    if (err)
+                    if (err) {
+                        console.log('!!! Error' + JSON.stringify(err));
                         setTimeout(retryConnect, reconnetIntervalMS);
-                    else
+                    } else
                         client.eventSource = eventSource;
                 });               
             };
+            console.log('!!! Error' + JSON.stringify(err));
             setTimeout(retryConnect, reconnetIntervalMS);
         });
         this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {

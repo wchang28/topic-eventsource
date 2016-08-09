@@ -54,6 +54,7 @@ export class MessageClient extends events.EventEmitter {
             }
         };
         this.source.onerror = (err: rcf.EventSourceError) => {
+            this.disconnect();
             this.emit('error', err);
         };        
     }
