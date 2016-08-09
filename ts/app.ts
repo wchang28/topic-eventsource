@@ -18,12 +18,12 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 import {router as apiRouter} from './api';
 app.use('/api', apiRouter);
 
-import {NoAuthorizationRestApi} from './restApi';
+import {AuthorizedRestApi} from './restApi';
 function RestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let callOptions: rcf.ApiInstanceConnectOptions = {
 		instance_url: 'http://127.0.0.1:8080'
 	}
-	let api = new NoAuthorizationRestApi($, EventSource, callOptions);
+	let api = new AuthorizedRestApi($, EventSource, AuthorizedRestApi.connectOptionsToAccess(callOptions));
 	req["$A"] = api;
 	next();
 }
