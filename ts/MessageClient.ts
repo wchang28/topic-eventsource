@@ -33,7 +33,7 @@ export class MessageClient extends events.EventEmitter {
     private conn_id: string = null;
     public subscriptions: {[sub_id: string]: Subscription;} = {};
     private sub_id: number = 0;
-    constructor(private authorized$J: rcf.IAuthorized$J) {
+    constructor(private pathname: string, private authorized$J: rcf.IAuthorized$J) {
         super();
     }
 
@@ -98,7 +98,7 @@ export class MessageClient extends events.EventEmitter {
     // this is the $J method for the message client
     private get $J() : I$J {
         return ((method: string, cmdPath: CommandPath, data: any, done: (err: any, data: any) => void) => {
-            this.authorized$J(method, this.source.url + cmdPath, data, done);
+            this.authorized$J(method, this.pathname + cmdPath, data, done);
         });
     }
     

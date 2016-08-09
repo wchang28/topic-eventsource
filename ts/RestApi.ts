@@ -100,21 +100,28 @@ export class IOauth2RestApi extends events.EventEmitter implements rcf.IAuthoriz
         this.executeWorkflow(action, pathname, done);
     }
 
+    getAuthorized$J() : rcf.IAuthorized$J {
+        return ((method: string, pathname:string, data:any, done: rcf.ICompletionHandler) => {
+            this.$J(method, pathname, data, done);
+        });
+    }
+
     $M(pathname: string, reconnetIntervalMS: number, done:(err:any, client: mc.MessageClient) => void) : void {
-        function getAuthorized$J() : rcf.IAuthorized$J {
+        let getAuthorized$J = () : rcf.IAuthorized$J => {
             return this.$J;
         }
-        let client = new mc.MessageClient(getAuthorized$J());
+        let client = new mc.MessageClient(pathname, this.getAuthorized$J());
         client.on('error', (err:any) => {
+            console.log('!!! Error' + JSON.stringify(err));
             client.disconnect();
-            function retryConnect() {
+            let retryConnect = () => {
                  this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
                     if (err)
                         setTimeout(retryConnect, reconnetIntervalMS);
                     else
                         client.eventSource = eventSource;
                 });               
-            }
+            };
             setTimeout(retryConnect, reconnetIntervalMS);
         });
         this.$E(pathname, (err:rcf.EventSourceError, eventSource:rcf.IEventSource) => {
