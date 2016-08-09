@@ -1,7 +1,7 @@
 import * as rcf from 'rcf';
 import {IMessage} from './common/MessageInterfaces';
 import {MessageClient, AuthorizedRestApi} from './restApi';
-let EventSource:rcf.EventSourceConstructor = require('eventsource');
+let EventSource: rcf.EventSourceConstructor = require('eventsource');
 let $ = require('jquery-no-dom');
 
 //let pathname = '/api/events/event_stream';

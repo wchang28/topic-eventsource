@@ -2,8 +2,9 @@ import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';
 let $ = require('jquery-no-dom');
-let EventSource = require('eventsource');
+let EventSource: rcf.EventSourceConstructor = require('eventsource');
 import * as rcf from 'rcf'; 
+import {AuthorizedRestApi, IOAuth2TokenRefresher} from './restApi';
 
 let app: express.Express = express();
 
@@ -18,7 +19,6 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 import {router as apiRouter} from './api';
 app.use('/api', apiRouter);
 
-import {AuthorizedRestApi} from './restApi';
 function RestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let callOptions: rcf.ApiInstanceConnectOptions = {
 		instance_url: 'http://127.0.0.1:8080'
@@ -29,7 +29,6 @@ function RestApiMiddleware(req: express.Request, res: express.Response, next: ex
 }
 
 /*
-import {AuthorizedRestApi, IOAuth2TokenRefresher} from './restApi';
 function RestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let tokenRefresher: IOAuth2TokenRefresher = null;
 	let api = new AuthorizedRestApi($, EventSource, req.session.access, tokenRefresher);
