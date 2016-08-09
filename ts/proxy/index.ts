@@ -12,8 +12,7 @@ let get$A = (req: express.Request): rcf.IAuthorizedApi => {
 
 let proxyOptions: proxy.Options = {
 	eventSourcePath: '/api/events/event_stream'
-	,getAuthorized$J: (req: express.Request) => {return get$A(req).$J}
-	,getAuthorized$E: (req: express.Request) => {return get$A(req).$E}
+	,getAuthorizedApi: get$A
 };
 
 let topicRouter = tr.getRouter('/event_stream', proxy.getConnectionFactory(proxyOptions));

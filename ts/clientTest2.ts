@@ -4,13 +4,16 @@ import {MessageClient, IOauth2RestApi, NoAuthorizationRestApi} from './restApi';
 let EventSource:rcf.EventSourceConstructor = require('eventsource');
 let $ = require('jquery-no-dom');
 
+//let pathname = '/api/events/event_stream';
+let pathname = '/proxy/events/event_stream';
+
 let connectOptions: rcf.ApiInstanceConnectOptions = {
     instance_url:"http://127.0.0.1:8080"
 };
 
 let api = new NoAuthorizationRestApi($, EventSource, connectOptions);
 
-let client = api.$M('/api/events/event_stream', 3000);
+let client = api.$M(pathname, 3000);
 
 client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);

@@ -10,18 +10,13 @@ interface I$JFactory {
     (req: express.Request) : mc.I$J;
 }
 
-export interface IAuthorized$JGetter {
-	(req: express.Request) : rcf.IAuthorized$J;
-}
-
-export interface IAuthorized$EGetter {
-	(req: express.Request) : rcf.IAuthorized$E;
+export interface IAuthorizedApiGetter {
+	(req: express.Request) : rcf.IAuthorizedApi;
 }
 
 export interface Options extends IConnectionOptionsBase {
 	eventSourcePath: string;
-	getAuthorized$J: IAuthorized$JGetter;
-	getAuthorized$E: IAuthorized$EGetter;
+	getAuthorizedApi: IAuthorizedApiGetter;
 }
 
 class ProxyConnection extends events.EventEmitter implements IConnection {
@@ -118,15 +113,15 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 export function getConnectionFactory(options: Options)  : IConnectionFactory {
 	if (!options) throw 'bad options';
 	function $JFactory(req: express.Request) : mc.I$J {
+		let authorizedApi = (options.getAuthorizedApi)(req);
 		return ((method: string, cmdPath: mc.CommandPath, data: any, done: rcf.ICompletionHandler): void => {
-			let authorized$J = (options.getAuthorized$J)(req);
-			authorized$J(method, options.eventSourcePath + cmdPath, data, done);
+			authorizedApi.$J(method, options.eventSourcePath + cmdPath, data, done);
 		});
 	}
 	return ((req: express.Request, conn_id: string, remoteAddress: string, messageCB: IMessageCallback, errorCB: ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
 		let cookie = (options.cookieSetter ? (options.cookieSetter)(req) : null);
-		let authorized$E = (options.getAuthorized$E)(req);
-		authorized$E(options.eventSourcePath, (err: rcf.EventSourceError, eventSource: rcf.IEventSource): void => {
+		let authorizedApi = (options.getAuthorizedApi)(req);
+		authorizedApi.$E(options.eventSourcePath, (err: rcf.EventSourceError, eventSource: rcf.IEventSource): void => {
 			if (err) 
 				done(err, null);
 			else
