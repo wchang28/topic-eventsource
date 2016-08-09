@@ -19,7 +19,7 @@ app.use((req: express.Request, res: express.Response, next: express.NextFunction
 import {router as apiRouter} from './api';
 app.use('/api', apiRouter);
 
-function RestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+function ProxyRestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let callOptions: rcf.ApiInstanceConnectOptions = {
 		instance_url: 'http://127.0.0.1:8080'
 	}
@@ -29,7 +29,7 @@ function RestApiMiddleware(req: express.Request, res: express.Response, next: ex
 }
 
 /*
-function RestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
+function ProxyRestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let tokenRefresher: IOAuth2TokenRefresher = null;
 	let api = new AuthorizedRestApi($, EventSource, req.session.access, tokenRefresher);
 	api.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
@@ -41,7 +41,7 @@ function RestApiMiddleware(req: express.Request, res: express.Response, next: ex
 */
 
 import {router as proxyRouter} from './proxy';
-app.use('/proxy', RestApiMiddleware, proxyRouter);
+app.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
 
 app.use('/app', express.static(path.join(__dirname, '../ui')));
 
