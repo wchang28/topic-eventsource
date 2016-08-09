@@ -1,69 +1,59 @@
-import {MsgBroker, MsgBrokerStates, MessageClient, IMessage} from './msg-broker/MsgBroker';
-let EventSource = require('eventsource');
+import * as rcf from 'rcf';
+import {IMessage} from './common/MessageInterfaces';
+import {MessageClient, AuthorizedRestApi} from './restApi';
+let EventSource:rcf.EventSourceConstructor = require('eventsource');
 let $ = require('jquery-no-dom');
 
-let url = 'http://127.0.0.1:8080/proxy/events/event_stream';
-//let url = 'http://127.0.0.1:8080/api/events/event_stream';
-let eventSourceInitDict = null;
+//let pathname = '/api/events/event_stream';
+let pathname = '/proxy/events/event_stream';
 
-/*
-let url = 'https://harvesttesting.firstkeyholdings.com:47380/services/data/v35.0/events/event_stream';
-let eventSourceInitDict = {
-    headers: {
-        'Authorization': 'Bearer' + ' ' + 'Vi7HG3KiptvKF_MYKRSci1qgqNZ8SkF_bKL4RxgSYClN9VWy6nLrXay9lbZqBrjNluuLwRCgXOXRTTgTvUttoqTERGf2ZZbl'
-    }
+let connectOptions: rcf.ApiInstanceConnectOptions = {
+    instance_url:"http://127.0.0.1:8080"
 };
-*/
 
-let msgBorker = new MsgBroker(() => new MessageClient(EventSource, $, url, eventSourceInitDict) , 10000);
+let api = new AuthorizedRestApi($, EventSource, AuthorizedRestApi.connectOptionsToAccess(connectOptions));
 
-msgBorker.on('connect', (conn_id:string) : void => {
+let client = api.$M(pathname, 3000);
+
+client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
-    let sub_id = msgBorker.subscribe('topic/say_hi', (msg: IMessage): void => {
-         console.log('msg-rcvd: ' + JSON.stringify(msg));
+    let sub_id = client.subscribe('topic/say_hi', (msg: IMessage): void => {
+        console.log('msg-rcvd: ' + JSON.stringify(msg));
     }, {"selector": "location = 'USA'"}, (err: any): void => {
         if (err) {
             console.error('!!! Error: topic subscription failed');
         } else {
             console.log('topic subscribed sub_id=' + sub_id + " :-)");
             console.log('sending a test message...');
-            msgBorker.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
+            client.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
                 if (err) {
                     console.error('!!! Error: message send failed');
                 } else {
                     console.log('message sent successfully :-)');
+                    /*
                     setTimeout(() : void => {
                         console.log('unscribing the topic...');
-                        msgBorker.unsubscribe(sub_id, (err:any):void => {
+                        client.unsubscribe(sub_id, (err:any):void => {
                             if (err) {
                                 console.error('!!! Error: unscribed failed');
                             } else {
                                 console.log('topic unsubscribed :-)'); 
-                                msgBorker.disconnect();
+                                client.disconnect();
                                 console.log('disconnected :-)'); 
                             }
                         });                        
                     }, 10000);
+                    */
                 }
             });
         }
     });
 });
 
-msgBorker.on('client_open', (): void => {
-    console.log('client_open');
-});
-
-msgBorker.on('ping', (): void => {
+client.on('ping', () => {
     console.log('<<PING>> ' + new Date());
 });
 
-msgBorker.on('error', (err: any) : void => {
-    console.error('!!! Error:' + JSON.stringify(err));
+client.on('error', (err:any) => {
+    console.error('!!! Error: ' + JSON.stringify(err));
 });
-
-msgBorker.on('state_changed', (state: MsgBrokerStates): void => {
-    console.log('state_changed: ' + state.toString());
-});
-
-msgBorker.connect();

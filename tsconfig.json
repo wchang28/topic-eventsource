@@ -18,9 +18,7 @@
       "./ts/sse-topic-conn/TopicConnection.ts",
       "./ts/sse-topic-proxy/ProxyConnection.ts",
       "./ts/app.ts",
-      "./ts/api/index.ts",
-      "./ts/proxy/index.ts",
-      "./ts/clientTest2.ts",
+      "./ts/clientTest.ts",
       "./ts/gridTest.ts",
       "./ts/ui/main.tsx"
   ]
