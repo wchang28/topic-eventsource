@@ -4,7 +4,6 @@ import * as path from 'path';
 let $ = require('jquery-no-dom');
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
 import * as rcf from 'rcf'; 
-import {AuthorizedRestApi} from './restApi';
 
 let app = express();
 
@@ -23,7 +22,7 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 	let callOptions: rcf.ApiInstanceConnectOptions = {
 		instance_url: 'http://127.0.0.1:8080'
 	}
-	let api = new AuthorizedRestApi($, EventSource, AuthorizedRestApi.connectOptionsToAccess(callOptions));
+	let api = new rcf.AuthorizedRestApi($, EventSource, rcf.AuthorizedRestApi.connectOptionsToAccess(callOptions));
 	req["$A"] = api;
 	next();
 }

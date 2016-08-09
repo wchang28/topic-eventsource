@@ -1,5 +1,4 @@
 import * as rcf from 'rcf';
-import {IMessage, IMessageClientOptions, AuthorizedRestApi} from './restApi';
 let $ = require('jquery-no-dom');
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
 
@@ -10,13 +9,13 @@ let connectOptions: rcf.ApiInstanceConnectOptions = {
 //let pathname = '/api/events/event_stream';
 let pathname = '/proxy/events/event_stream';
 
-let api = new AuthorizedRestApi($, EventSource, AuthorizedRestApi.connectOptionsToAccess(connectOptions));
-let clientOptions: IMessageClientOptions = {reconnetIntervalMS: 3000};
+let api = new rcf.AuthorizedRestApi($, EventSource, rcf.AuthorizedRestApi.connectOptionsToAccess(connectOptions));
+let clientOptions: rcf.IMessageClientOptions = {reconnetIntervalMS: 3000};
 let client = api.$M(pathname, clientOptions);
 
 client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
-    let sub_id = client.subscribe('topic/say_hi', (msg: IMessage): void => {
+    let sub_id = client.subscribe('topic/say_hi', (msg: rcf.IMessage): void => {
         console.log('msg-rcvd: ' + JSON.stringify(msg));
     }, {"selector": "location = 'USA'"}, (err: any): void => {
         if (err) {
