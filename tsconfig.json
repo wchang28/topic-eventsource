@@ -10,16 +10,8 @@
   },
   "files": [
       "./typings/index.d.ts",
-      "./ts/common/MessageInterfaces.ts",
-      "./ts/common/MsgConnection.ts",
-      "./ts/msg-broker/MessageClient.ts",
-      "./ts/msg-broker/MsgBroker.ts",
-      "./ts/sse-topic-router/SSETopicRouter.ts",
-      "./ts/sse-topic-conn/TopicConnection.ts",
-      "./ts/sse-topic-proxy/ProxyConnection.ts",
       "./ts/app.ts",
       "./ts/clientTest.ts",
-      "./ts/gridTest.ts",
       "./ts/ui/main.tsx"
   ]
 }
