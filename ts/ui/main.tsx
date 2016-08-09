@@ -1,10 +1,9 @@
+import * as rcf from 'rcf';
+import {MessageClient, IMessage, AuthorizedRestApi} from '../restApi';
+import * as $ from 'jquery';
+let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as rcf from 'rcf';
-import * as $ from 'jquery';
-import {MessageClient, AuthorizedRestApi} from '../restApi';
-import {IMessage} from '../MessageClient';
-let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 
 //let pathname = '/api/events/event_stream';
 let pathname = '/proxy/events/event_stream';

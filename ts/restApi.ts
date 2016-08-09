@@ -2,7 +2,7 @@ import * as events from 'events';
 import * as _ from 'lodash';
 import * as rcf from 'rcf';
 import * as mc from './MessageClient';
-export {MessageClient} from './MessageClient';
+export {MessageClient, IMessage} from './MessageClient';
 
 export interface IOAuth2Access {
     token_type?: string;
@@ -35,6 +35,9 @@ class $ECaller implements IWorkflowCaller {
     }
 }
 
+// base class for all REST api
+// support the following events:
+// 1. on_access_refreshed(newAccess)
 export class AuthorizedRestApi extends events.EventEmitter implements rcf.IAuthorizedApi {
     protected __$J:rcf.I$J = null;
     protected __$E:rcf.I$E = null;
