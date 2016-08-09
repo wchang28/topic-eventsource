@@ -1,12 +1,11 @@
 import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler, IConnectionOptionsBase} from '../MsgConnection';
-import * as mc from '../MessageClient';
 import * as rcf from 'rcf';
 import * as express from 'express';
 import * as events from 'events';
 
 // from a express.Request object get an $J function
 interface I$JFactory {
-    (req: express.Request) : mc.I$J;
+    (req: express.Request) : rcf.I$J;
 }
 
 export interface IAuthorizedApiGetter {
@@ -27,7 +26,7 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 	private state: string;
 	private remote_conn_id: string;
 		
-	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: mc.IMessageCallback, errorCB: mc.ErrorHandler, remoteEventSource: rcf.IEventSource, $JFactory: I$JFactory) {
+	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: rcf.IMessageCallback, errorCB: rcf.ErrorHandler, remoteEventSource: rcf.IEventSource, $JFactory: I$JFactory) {
 		super();
 		this.conn_id = conn_id;
 		this.remoteAddress = remoteAddress;
@@ -39,10 +38,10 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 		this.remote_conn_id = "";
 		this.initEventSource(messageCB, errorCB);
 	}
-	private initEventSource(messageCB: mc.IMessageCallback, errorCB: mc.ErrorHandler): void {
+	private initEventSource(messageCB: rcf.IMessageCallback, errorCB: rcf.ErrorHandler): void {
 		this.remoteEventSource.onmessage = (message: rcf.EventSourceMsg) => {
-			let msg: mc.IMessage = JSON.parse(message.data);
-			if (msg.headers.event === mc.EventType.CONNECT) {// receive a remote 'connect' message
+			let msg: rcf.IMessage = JSON.parse(message.data);
+			if (msg.headers.event === rcf.MessageEventType.CONNECT) {// receive a remote 'connect' message
 				this.remote_conn_id = msg.headers.conn_id; // store the remote conn_id
 				this.state = 'connected';
 				this.emit('change');
@@ -72,26 +71,26 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 	onChange(handler: () => void) {
 		this.on('change', handler);
 	}
-	addSubscription(req: express.Request, sub_id: string, destination: string, headers: {[field: string]: any}, done?: mc.DoneHandler) : void {
+	addSubscription(req: express.Request, sub_id: string, destination: string, headers: {[field: string]: any}, done?: rcf.DoneHandler) : void {
 		if (!this.remoteConnected()) {
 			if (typeof done === 'function') done("not connected");
 		} else {
-			mc.MessageClient.ajaxSubscribe(this.$JFactory(req), this.remote_conn_id, sub_id, destination, headers, done);
+			rcf.MessageClient.ajaxSubscribe(this.$JFactory(req), this.remote_conn_id, sub_id, destination, headers, done);
 		}
 	}
-	removeSubscription (req: express.Request, sub_id: string, done?: mc.DoneHandler) : void {
+	removeSubscription (req: express.Request, sub_id: string, done?: rcf.DoneHandler) : void {
 		if (!this.remoteConnected()) {
 			if (typeof done === 'function') done("not connected");
 		} else {
-			mc.MessageClient.ajaxUnsubscribe(this.$JFactory(req), this.remote_conn_id, sub_id, done);
+			rcf.MessageClient.ajaxUnsubscribe(this.$JFactory(req), this.remote_conn_id, sub_id, done);
 		}		
 	}
-	forwardMessage(req: express.Request, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: mc.DoneHandler) : void {
+	forwardMessage(req: express.Request, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done?: rcf.DoneHandler) : void {
 		if (srcConn === this && req) {	// only if the message came from this connection
 			if (!this.remoteConnected()) {
 				if (typeof done === 'function') done("not connected");
 			} else {
-				mc.MessageClient.ajaxSend(this.$JFactory(req), this.remote_conn_id, destination, headers, message, done);
+				rcf.MessageClient.ajaxSend(this.$JFactory(req), this.remote_conn_id, destination, headers, message, done);
 			}
 		} else {
 			if (typeof done === 'function') done(null);
@@ -111,13 +110,13 @@ class ProxyConnection extends events.EventEmitter implements IConnection {
 
 export function getConnectionFactory(options: Options)  : IConnectionFactory {
 	if (!options) throw 'bad options';
-	function $JFactory(req: express.Request) : mc.I$J {
+	function $JFactory(req: express.Request) : rcf.I$J {
 		let authorizedApi = (options.getAuthorizedApi)(req);
-		return ((method: string, cmdPath: mc.CommandPath, data: any, done: rcf.ICompletionHandler): void => {
+		return ((method: string, cmdPath: rcf.ClientCommandPath, data: any, done: rcf.ICompletionHandler): void => {
 			authorizedApi.$J(method, options.eventSourcePath + cmdPath, data, done);
 		});
 	}
-	return ((req: express.Request, conn_id: string, remoteAddress: string, messageCB: mc.IMessageCallback, errorCB: mc.ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
+	return ((req: express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.IMessageCallback, errorCB: rcf.ErrorHandler, done: IConnectionCreateCompleteHandler): void => {
 		let cookie = (options.cookieSetter ? (options.cookieSetter)(req) : null);
 		let authorizedApi = (options.getAuthorizedApi)(req);
 		authorizedApi.$E(options.eventSourcePath, (err: rcf.EventSourceError, eventSource: rcf.IEventSource): void => {
