@@ -29,10 +29,10 @@ function RestApiMiddleware(req: express.Request, res: express.Response, next: ex
 }
 
 /*
-import {IOauth2RestApi, IOAuth2Access, IOAuth2TokenRefresher} from './RestApi';
+import {AuthorizedRestApi, IOAuth2TokenRefresher} from './restApi';
 function RestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let tokenRefresher: IOAuth2TokenRefresher = null;
-	let api = new IOauth2RestApi($, EventSource, req.session.access, tokenRefresher);
+	let api = new AuthorizedRestApi($, EventSource, req.session.access, tokenRefresher);
 	api.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
 		req.session.access = newAccess;
 	});
