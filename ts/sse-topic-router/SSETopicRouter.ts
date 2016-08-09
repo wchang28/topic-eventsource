@@ -1,4 +1,4 @@
-import {IConnection, IConnectionFactory} from '../common/MsgConnection';
+import {IConnection, IConnectionFactory} from '../MsgConnection';
 import * as mc from '../MessageClient';
 import * as uuid from 'node-uuid';
 import * as events from 'events';

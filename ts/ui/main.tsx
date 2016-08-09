@@ -9,7 +9,7 @@ import * as ReactDOM from 'react-dom';
 let pathname = '/proxy/events/event_stream';
 
 let api = new AuthorizedRestApi($, EventSource);
-let client = api.$M(pathname, 10000);
+let client = api.$M(pathname, 3000);
 
 interface MsgBrokerTestProps {
     message: string;

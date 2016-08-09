@@ -1,5 +1,5 @@
 import * as express from 'express';
-import * as mc from '../MessageClient';
+import * as mc from './MessageClient';
 
 export interface IConnection {
     conn_id: string

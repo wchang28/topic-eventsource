@@ -1,4 +1,4 @@
-import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler, IConnectionOptionsBase} from '../common/MsgConnection';
+import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler, IConnectionOptionsBase} from '../MsgConnection';
 import * as mc from '../MessageClient';
 import * as events from 'events';
 import * as express from 'express';
