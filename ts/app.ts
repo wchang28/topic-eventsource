@@ -4,7 +4,6 @@ import * as path from 'path';
 let $ = require('jquery-no-dom');
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
 import * as rcf from 'rcf';
-import * as url from 'url';
 
 let appApi = express();
 let appProxy = express();
@@ -50,14 +49,14 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 }
 */
 
+import * as url from 'url';
 import * as _ from 'lodash';
-
-let proxyUrl:url.Url = url.parse('http://127.0.0.1:8081');
+let apiyUrl:url.Url = url.parse('http://127.0.0.1:8081');
 function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	let options:http.RequestOptions = {
-		protocol: proxyUrl.protocol
-		,hostname: proxyUrl.hostname
-		,port: parseInt(proxyUrl.port)
+		protocol: apiyUrl.protocol
+		,hostname: apiyUrl.hostname
+		,port: parseInt(apiyUrl.port)
 		,method: req.method
 		,path: '/api' + req.path
 	};
