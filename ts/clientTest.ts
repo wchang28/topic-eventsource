@@ -3,11 +3,11 @@ let $ = require('jquery-no-dom');
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
 
 let connectOptions: rcf.ApiInstanceConnectOptions = {
-    instance_url:"http://127.0.0.1:8080"
+    instance_url:"http://127.0.0.1:8080"    // proxy
+    //instance_url:"http://127.0.0.1:8081"    // direct connect
 };
 
-//let pathname = '/api/events/event_stream';
-let pathname = '/proxy/events/event_stream';
+let pathname = '/services/events/event_stream';
 
 let api = new rcf.AuthorizedRestApi($, EventSource, rcf.AuthorizedRestApi.connectOptionsToAccess(connectOptions));
 let clientOptions: rcf.IMessageClientOptions = {reconnetIntervalMS: 3000};

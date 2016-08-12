@@ -24,7 +24,7 @@ appApi.use(requestLogger);
 appProxy.use(requestLogger);
 
 import {router as apiRouter} from './api';
-appApi.use('/api', apiRouter);
+appApi.use('/services', apiRouter);
 
 /*
 function ProxyRestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -58,7 +58,7 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 		,hostname: apiyUrl.hostname
 		,port: parseInt(apiyUrl.port)
 		,method: req.method
-		,path: '/api' + req.path
+		,path: '/services' + req.path
 	};
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
@@ -80,7 +80,7 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
     });
 }
 
-//appProxy.use('/proxy', ProxyRestApiMiddleware2);
+//appProxy.use('/services', ProxyRestApiMiddleware2);
 
 /*
 import {router as proxyRouter} from './proxy';
@@ -92,7 +92,7 @@ import * as httpProxy from 'http-proxy';
 function ProxyRestApiMiddleware3(req: express.Request, res: express.Response) {
     let proxy = httpProxy.createProxyServer();
     let options: httpProxy.ServerOptions = {
-         target: 'http://127.0.0.1:8081/api'
+         target: 'http://127.0.0.1:8081/services'
          ,changeOrigin: true    // change the 'host' header field to target host
     };
     proxy.web(req, res, options);
@@ -101,15 +101,15 @@ function ProxyRestApiMiddleware3(req: express.Request, res: express.Response) {
         res.status(500).jsonp({'error': 'server internal error'});
     });
     proxy.on('proxyReq', (proxyReq:http.ClientRequest, req: express.Request, res: express.Response, options: httpProxy.ServerOptions) => {
-        console.log('proxyReq()');
+        //console.log('proxyReq()');
         //proxyReq.setHeader('authorization', 'Bearer ' + bearerToken);
     });
     proxy.on('proxyRes', (proxyRes:http.IncomingMessage, req: express.Request, res: express.Response) => {
-        console.log('proxyRes()');
+        //console.log('proxyRes()');
     });
 }
 
-appProxy.use('/proxy', ProxyRestApiMiddleware3);
+appProxy.use('/services', ProxyRestApiMiddleware3);
 
 appProxy.use('/app', express.static(path.join(__dirname, '../ui')));
 
