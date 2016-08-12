@@ -54,14 +54,16 @@ appProxy.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
 */
 import * as url from 'url';
 import * as _ from 'lodash';
-let apiyUrl:url.Url = url.parse('http://127.0.0.1:8081');
+
 function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
+	let target = 'http://127.0.0.1:8081/services';
+	let targetUrl:url.Url = url.parse(target);
 	let options:http.RequestOptions = {
-		protocol: apiyUrl.protocol
-		,hostname: apiyUrl.hostname
-		,port: parseInt(apiyUrl.port)
+		protocol: targetUrl.protocol
+		,hostname: targetUrl.hostname
+		,port: parseInt(targetUrl.port)
 		,method: req.method
-		,path: '/services' + req.path
+		,path: targetUrl.pathname + req.path	// TODO: add query component
 	};
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
