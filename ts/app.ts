@@ -6,22 +6,28 @@ let EventSource: rcf.EventSourceConstructor = require('eventsource');
 import * as rcf from 'rcf';
 import * as url from 'url';
 
-let app = express();
+let appApi = express();
+let appProxy = express();
 
-app.use(require('no-cache-express'));
+appApi.use(require('no-cache-express'));
+appProxy.use(require('no-cache-express'));
 
-app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+let requestLogger = (req: express.Request, res: express.Response, next: express.NextFunction) => {
 	console.log('**********************************************************************');
 	let req_address = req.connection.remoteAddress;
 	console.log('incoming request from ' + req_address + ', path='+ req.path);
 	console.log('headers: ' + JSON.stringify(req.headers));
 	console.log('**********************************************************************');
 	next();
-});
+};
+
+appApi.use(requestLogger);
+appProxy.use(requestLogger);
 
 import {router as apiRouter} from './api';
-app.use('/api', apiRouter);
+appApi.use('/api', apiRouter);
 
+/*
 function ProxyRestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
 	let callOptions: rcf.ApiInstanceConnectOptions = {
 		instance_url: 'http://127.0.0.1:8080'
@@ -30,6 +36,7 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 	req["$A"] = api;
 	next();
 }
+*/
 
 /*
 function ProxyRestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
@@ -43,7 +50,7 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 }
 */
 
-let proxyUrl:url.Url = url.parse('http://127.0.0.1:8080');
+let proxyUrl:url.Url = url.parse('http://127.0.0.1:8081');
 function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	//console.log('req.path=' +req.path);
 	//console.log('req.headers=' +JSON.stringify(req.headers));
@@ -60,6 +67,8 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	if (req.headers['content-type']) options.headers['content-type']=req.headers['content-type'];
 	if (req.headers['content-length']) options.headers['content-length']=req.headers['content-length'];
 	//options.headers['authorization'] = 'Bearer ' + bearerToken
+	
+	//options.headers = req.headers;
 	let connector = http.request(options, (resp: http.IncomingMessage) => {
 		res.writeHead(resp.statusCode, resp.statusMessage, resp.headers);
 		resp.pipe(res);
@@ -68,21 +77,29 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	req.socket.on('close' ,() => {connector.abort();});
 }
 
-app.use('/proxy', ProxyRestApiMiddleware2);
+appProxy.use('/proxy', ProxyRestApiMiddleware2);
 
 /*
 import {router as proxyRouter} from './proxy';
-app.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
+appProxy.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
 */
 
 
-app.use('/app', express.static(path.join(__dirname, '../ui')));
+appProxy.use('/app', express.static(path.join(__dirname, '../ui')));
 
 let secure_http:boolean = false;
-let server: http.Server = http.createServer(app);
+let apiServer: http.Server = http.createServer(appApi);
 
-server.listen(8080, "127.0.0.1", () => {
-	let host = server.address().address; 
-	let port = server.address().port; 
-	console.log('application listening at %s://%s:%s', (secure_http ? 'https' : 'http'), host, port);    
+apiServer.listen(8081, "127.0.0.1", () => {
+	let host = apiServer.address().address; 
+	let port = apiServer.address().port; 
+	console.log('Api server listening at %s://%s:%s', (secure_http ? 'https' : 'http'), host, port);   
+
+	let proxyServer: http.Server = http.createServer(appProxy);
+
+	proxyServer.listen(8080, "127.0.0.1", () => {
+		let host = proxyServer.address().address; 
+		let port = proxyServer.address().port; 
+		console.log('Proxy server listening at %s://%s:%s', (secure_http ? 'https' : 'http'), host, port);   
+	});
 });

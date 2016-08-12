@@ -39,9 +39,6 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 				this.eventEmitter.emit('message', msg);
 			}, this.pingIntervalMS);
 		}
-		console.log('');
-		console.log('<<< CONNECT >>>:conn_id');
-		console.log('');
 		// emit a 'connected' message
 		/////////////////////////////////////////////////////////
         let msg : rcf.IMessage = {

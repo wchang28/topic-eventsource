@@ -4,7 +4,6 @@ let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-//let pathname = '/api/events/event_stream';
 let pathname = '/proxy/events/event_stream';
 
 let api = new rcf.AuthorizedRestApi($, EventSource);
