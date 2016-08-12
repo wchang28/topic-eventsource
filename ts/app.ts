@@ -62,7 +62,7 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	};
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
-	/*
+	//console.log('resp.statusCode=' + resp.statusCode);
 	if (req.headers['cache-control']) options.headers['cache-control']=req.headers['cache-control'];
 	if (req.headers['accept']) options.headers['accept']=req.headers['accept'];
 	if (req.headers['content-type']) options.headers['content-type']=req.headers['content-type'];
@@ -71,10 +71,12 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	*/
 	let connector = http.request(options, (resp: http.IncomingMessage) => {
 		res.writeHead(resp.statusCode, resp.statusMessage, resp.headers);
-		resp.pipe(res);
+		resp.on('error', (err) => {}).pipe(res).on('error', (err) => {});
 	});
-	req.pipe(connector);
-	req.socket.on('close' ,() => {connector.abort();});
+    req.on('error', (err) => {}).pipe(connector).on('error', (err) => {});
+    req.socket.on('close' ,() => {
+        connector.abort();
+    });
 }
 
 appProxy.use('/proxy', ProxyRestApiMiddleware2);
