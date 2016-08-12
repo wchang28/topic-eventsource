@@ -50,6 +50,8 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 }
 */
 
+import * as _ from 'lodash';
+
 let proxyUrl:url.Url = url.parse('http://127.0.0.1:8081');
 function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	//console.log('req.path=' +req.path);
@@ -60,15 +62,16 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 		,port: parseInt(proxyUrl.port)
 		,method: req.method
 		,path: '/api' + req.path
-		,headers: {}
 	};
+	options.headers = _.assignIn(req.headers);
+	delete options.headers['host'];
+	/*
 	if (req.headers['cache-control']) options.headers['cache-control']=req.headers['cache-control'];
 	if (req.headers['accept']) options.headers['accept']=req.headers['accept'];
 	if (req.headers['content-type']) options.headers['content-type']=req.headers['content-type'];
 	if (req.headers['content-length']) options.headers['content-length']=req.headers['content-length'];
-	//options.headers['authorization'] = 'Bearer ' + bearerToken
-	
-	//options.headers = req.headers;
+	options.headers['authorization'] = 'Bearer ' + bearerToken
+	*/
 	let connector = http.request(options, (resp: http.IncomingMessage) => {
 		res.writeHead(resp.statusCode, resp.statusMessage, resp.headers);
 		resp.pipe(res);
