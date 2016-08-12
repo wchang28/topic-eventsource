@@ -21,7 +21,6 @@ let requestLogger = (req: express.Request, res: express.Response, next: express.
 };
 
 appApi.use(requestLogger);
-appProxy.use(requestLogger);
 
 import {router as apiRouter} from './api';
 appApi.use('/services', apiRouter);
@@ -111,7 +110,7 @@ function ProxyRestApiMiddleware3(req: express.Request, res: express.Response) {
 
 appProxy.use('/services', ProxyRestApiMiddleware3);
 
-appProxy.use('/app', express.static(path.join(__dirname, '../ui')));
+appProxy.use('/', express.static(path.join(__dirname, '../ui')));
 
 let secure_http:boolean = false;
 let apiServer: http.Server = http.createServer(appApi);
