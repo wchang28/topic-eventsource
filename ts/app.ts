@@ -54,8 +54,6 @@ import * as _ from 'lodash';
 
 let proxyUrl:url.Url = url.parse('http://127.0.0.1:8081');
 function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
-	//console.log('req.path=' +req.path);
-	//console.log('req.headers=' +JSON.stringify(req.headers));
 	let options:http.RequestOptions = {
 		protocol: proxyUrl.protocol
 		,hostname: proxyUrl.hostname
@@ -75,6 +73,11 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	let connector = http.request(options, (resp: http.IncomingMessage) => {
 		res.writeHead(resp.statusCode, resp.statusMessage, resp.headers);
 		resp.pipe(res);
+		req.socket.on('close', () => {
+			console.log('');
+			console.log('pipe finished for ' + req.path);
+			console.log('');
+		});
 	});
 	req.pipe(connector);
 	req.socket.on('close' ,() => {connector.abort();});
