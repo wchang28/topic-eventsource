@@ -65,21 +65,16 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	};
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
-	//console.log('resp.statusCode=' + resp.statusCode);
 	/*
-	if (req.headers['cache-control']) options.headers['cache-control']=req.headers['cache-control'];
-	if (req.headers['accept']) options.headers['accept']=req.headers['accept'];
-	if (req.headers['content-type']) options.headers['content-type']=req.headers['content-type'];
-	if (req.headers['content-length']) options.headers['content-length']=req.headers['content-length'];
 	options.headers['authorization'] = 'Bearer ' + bearerToken
 	*/
-	let connector = http.request(options, (resp: http.IncomingMessage) => {
-		res.writeHead(resp.statusCode, resp.statusMessage, resp.headers);
-		resp.on('error', (err) => {}).pipe(res).on('error', (err) => {});
+	let proxyReq = http.request(options, (proxyRes: http.IncomingMessage) => {
+		res.writeHead(proxyRes.statusCode, proxyRes.statusMessage, proxyRes.headers);
+		proxyRes.on('error', (err) => {}).pipe(res).on('error', (err) => {});	// proxyRes ===> res
 	});
-    req.on('error', (err) => {}).pipe(connector).on('error', (err) => {});
+    req.on('error', (err) => {}).pipe(proxyReq).on('error', (err) => {}); // req ===> proxyReq
     req.socket.on('close' ,() => {
-        connector.abort();
+        proxyReq.abort();
     });
 }
 
