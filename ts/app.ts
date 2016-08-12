@@ -61,7 +61,6 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	if (req.headers['content-length']) options.headers['content-length']=req.headers['content-length'];
 	//options.headers['authorization'] = 'Bearer ' + bearerToken
 	let connector = http.request(options, (resp: http.IncomingMessage) => {
-		res.setHeader('connection','close');
 		resp.pipe(res);
 	});
 	req.pipe(connector);
