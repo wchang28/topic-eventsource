@@ -45,17 +45,23 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 
 let proxyUrl:url.Url = url.parse('http://127.0.0.1:8080');
 function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
-	console.log('req.path=' +req.path);
-	console.log('req.headers=' +JSON.stringify(req.headers));
+	//console.log('req.path=' +req.path);
+	//console.log('req.headers=' +JSON.stringify(req.headers));
 	let options:http.RequestOptions = {
 		protocol: proxyUrl.protocol
 		,hostname: proxyUrl.hostname
 		,port: parseInt(proxyUrl.port)
 		,method: req.method
 		,path: '/api' + req.path
-		,headers: req.headers
+		,headers: {}
 	};
+	if (req.headers['cache-control']) options.headers['cache-control']=req.headers['cache-control'];
+	if (req.headers['accept']) options.headers['accept']=req.headers['accept'];
+	if (req.headers['content-type']) options.headers['content-type']=req.headers['content-type'];
+	if (req.headers['content-length']) options.headers['content-length']=req.headers['content-length'];
+	//options.headers['authorization'] = 'Bearer ' + bearerToken
 	let connector = http.request(options, (resp: http.IncomingMessage) => {
+		res.setHeader('connection','close');
 		resp.pipe(res);
 	});
 	req.pipe(connector);
