@@ -16,6 +16,7 @@
     "serve-static": "github:DefinitelyTyped/DefinitelyTyped/serve-static/serve-static.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed"
   },
   "dependencies": {
-    "debug": "registry:npm/debug#2.0.0+20160511151334"
+    "debug": "registry:npm/debug#2.0.0+20160511151334",
+    "http-proxy": "registry:npm/http-proxy#1.12.0+20160315230223"
   }
 }

@@ -63,6 +63,7 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
 	//console.log('resp.statusCode=' + resp.statusCode);
+	/*
 	if (req.headers['cache-control']) options.headers['cache-control']=req.headers['cache-control'];
 	if (req.headers['accept']) options.headers['accept']=req.headers['accept'];
 	if (req.headers['content-type']) options.headers['content-type']=req.headers['content-type'];
@@ -79,13 +80,36 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
     });
 }
 
-appProxy.use('/proxy', ProxyRestApiMiddleware2);
+//appProxy.use('/proxy', ProxyRestApiMiddleware2);
 
 /*
 import {router as proxyRouter} from './proxy';
 appProxy.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
 */
 
+import * as httpProxy from 'http-proxy';
+
+function ProxyRestApiMiddleware3(req: express.Request, res: express.Response) {
+    let proxy = httpProxy.createProxyServer();
+    let options: httpProxy.ServerOptions = {
+         target: 'http://127.0.0.1:8081/api'
+         ,changeOrigin: true    // change the 'host' header field to target host
+    };
+    proxy.web(req, res, options);
+    proxy.on('error', (err:any) => {
+        console.log('proxy error: ' + JSON.stringify(err));
+        res.status(500).jsonp({'error': 'server internal error'});
+    });
+    proxy.on('proxyReq', (proxyReq:http.ClientRequest, req: express.Request, res: express.Response, options: httpProxy.ServerOptions) => {
+        console.log('proxyReq()');
+        //proxyReq.setHeader('authorization', 'Bearer ' + bearerToken);
+    });
+    proxy.on('proxyRes', (proxyRes:http.IncomingMessage, req: express.Request, res: express.Response) => {
+        console.log('proxyRes()');
+    });
+}
+
+appProxy.use('/proxy', ProxyRestApiMiddleware3);
 
 appProxy.use('/app', express.static(path.join(__dirname, '../ui')));
 
