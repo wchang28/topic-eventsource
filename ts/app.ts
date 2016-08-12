@@ -63,7 +63,7 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 		,hostname: targetUrl.hostname
 		,port: parseInt(targetUrl.port)
 		,method: req.method
-		,path: targetUrl.pathname + req.path	// TODO: add query component
+		,path: targetUrl.pathname + req.url
 	};
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
