@@ -48,6 +48,10 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 }
 */
 
+/*
+import {router as proxyRouter} from './proxy';
+appProxy.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
+*/
 import * as url from 'url';
 import * as _ from 'lodash';
 let apiyUrl:url.Url = url.parse('http://127.0.0.1:8081');
@@ -81,23 +85,18 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 
 //appProxy.use('/services', ProxyRestApiMiddleware2);
 
-/*
-import {router as proxyRouter} from './proxy';
-appProxy.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
-*/
-
 import * as httpProxy from 'http-proxy';
 
-function ProxyRestApiMiddleware3(req: express.Request, res: express.Response) {
+function ApiProxyMiddleware(req: express.Request, res: express.Response) {
     let proxy = httpProxy.createProxyServer();
     let options: httpProxy.ServerOptions = {
          target: 'http://127.0.0.1:8081/services'
          ,changeOrigin: true    // change the 'host' header field to target host
     };
     proxy.web(req, res, options);
-    proxy.on('error', (err:any) => {
+    proxy.on('error', (err:any, req: express.Request, res:express.Response) => {
         console.log('proxy error: ' + JSON.stringify(err));
-        res.status(500).jsonp({'error': 'server internal error'});
+        res.status(500).jsonp({'error': 'internal server error'});
     });
     proxy.on('proxyReq', (proxyReq:http.ClientRequest, req: express.Request, res: express.Response, options: httpProxy.ServerOptions) => {
         //console.log('proxyReq()');
@@ -108,7 +107,8 @@ function ProxyRestApiMiddleware3(req: express.Request, res: express.Response) {
     });
 }
 
-appProxy.use('/services', ProxyRestApiMiddleware3);
+appProxy.use('/services', ApiProxyMiddleware);
+
 
 appProxy.use('/', express.static(path.join(__dirname, '../ui')));
 
