@@ -3,7 +3,8 @@ import * as express from 'express';
 import * as path from 'path';
 let $ = require('jquery-no-dom');
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
-import * as rcf from 'rcf'; 
+import * as rcf from 'rcf';
+import * as url from 'url';
 
 let app = express();
 
@@ -39,8 +40,31 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response, nex
 }
 */
 
-import {router as proxyRouter} from './proxy';
-app.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
+function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
+	console.log('req.path=' +req.path);
+	let instance_url = 'http://127.0.0.1:8080';
+	let ret = url.parse(instance_url);
+	let options:http.RequestOptions = {
+		protocol: ret.protocol
+		,hostname: ret.hostname
+		,port: parseInt(ret.port)
+		,method: req.method
+		,path: '/api' + req.path
+		//,headers: ...
+	};
+	let connector = http.request(options, (resp: http.IncomingMessage) => {
+		resp.pipe(res);
+	});
+	req.pipe(connector);
+}
+
+app.use('/proxy', ProxyRestApiMiddleware2);
+
+//import {router as proxyRouter} from './proxy';
+//app.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
+
+
+
 
 app.use('/app', express.static(path.join(__dirname, '../ui')));
 
