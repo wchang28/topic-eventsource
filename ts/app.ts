@@ -73,11 +73,6 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	let connector = http.request(options, (resp: http.IncomingMessage) => {
 		res.writeHead(resp.statusCode, resp.statusMessage, resp.headers);
 		resp.pipe(res);
-		req.socket.on('close', () => {
-			console.log('');
-			console.log('pipe finished for ' + req.path);
-			console.log('');
-		});
 	});
 	req.pipe(connector);
 	req.socket.on('close' ,() => {connector.abort();});
