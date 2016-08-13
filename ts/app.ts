@@ -80,7 +80,7 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
     });
 }
 
-//appProxy.use('/services', ProxyRestApiMiddleware2);
+appProxy.use('/services', ProxyRestApiMiddleware2);
 
 import * as httpProxy from 'http-proxy';
 
@@ -104,7 +104,7 @@ function ApiProxyMiddleware(req: express.Request, res: express.Response) {
     });
 }
 
-appProxy.use('/services', ApiProxyMiddleware);
+//appProxy.use('/services', ApiProxyMiddleware);
 
 
 appProxy.use('/', express.static(path.join(__dirname, '../ui')));
