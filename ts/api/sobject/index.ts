@@ -4,10 +4,11 @@ import * as core from "express-serve-static-core";
 let router = express.Router();
 
 router.get('/test_get', (req:express.Request, res:express.Response) => {
-    res.json(req.query);
+    //res.json(req.query);
+    res.status(400).json(req.query);
 });
 
-router.get('/test_post', (req:express.Request, res:express.Response) => {
+router.post('/test_post', (req:express.Request, res:express.Response) => {
     res.json(req.body);
 });
 

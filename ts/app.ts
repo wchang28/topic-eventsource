@@ -70,6 +70,7 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
 	};
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
+	console.log('options.path=' + options.path);
 	/*
 	options.headers['authorization'] = 'Bearer ' + bearerToken
 	*/
@@ -92,6 +93,7 @@ function ApiProxyMiddleware(req: express.Request, res: express.Response) {
     let options: httpProxy.ServerOptions = {
          target: 'http://127.0.0.1:8081/services'
          ,changeOrigin: true    // change the 'host' header field to target host
+		 //,secure: true/false	// rejectUnauthorized
     };
     proxy.web(req, res, options);
     proxy.on('error', (err:any, req: express.Request, res:express.Response) => {

@@ -12,6 +12,7 @@
       "./typings/index.d.ts",
       "./ts/app.ts",
       "./ts/clientTest.ts",
+      "./ts/test.ts",
       "./ts/ui/main.tsx"
   ]
 }
