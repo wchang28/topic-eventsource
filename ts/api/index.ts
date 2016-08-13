@@ -28,4 +28,8 @@ topicRouter.eventEmitter.on('client_disconnect', (params: tr.ConnectedEventParam
     console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress +  ' disconnected from the SSE topic endpoint');
 });
 
+import * as sobject from './sobject';
+
+router.use('/sobject', sobject.router);
+
 export {router};

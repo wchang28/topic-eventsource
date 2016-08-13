@@ -1,6 +1,7 @@
 import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';
+import * as bodyParser from 'body-parser';
 let $ = require('jquery-no-dom');
 let EventSource: rcf.EventSourceConstructor = require('eventsource');
 import * as rcf from 'rcf';
@@ -10,6 +11,8 @@ let appProxy = express();
 
 appApi.use(require('no-cache-express'));
 appProxy.use(require('no-cache-express'));
+
+appApi.use(bodyParser.json());
 
 let requestLogger = (req: express.Request, res: express.Response, next: express.NextFunction) => {
 	console.log('**********************************************************************');
