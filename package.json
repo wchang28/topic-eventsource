@@ -24,6 +24,7 @@
     "rcf": "git+https://github.com/wchang28/rcf.git",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
+    "request": "^2.74.0",
     "sse-express": "git+https://github.com/wchang28/sse-express.git"
   },
   "devDependencies": {
