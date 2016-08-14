@@ -20,8 +20,8 @@ let handler = (err:restIntf.IError, ret:any) => {
         console.log(typeof ret === 'string' ? ret : JSON.stringify(ret));
     }
 }
-$driver.$J('GET', '/services/sobject/test_get', data, handler, {headers});
-
+//$driver.$J('GET', '/services/sobject/test_get', data, handler, {headers});
+$driver.$J('POST', '/services/sobject/test_post', data, handler, {headers});
 
 
 let pathname = '/services/events/event_stream';

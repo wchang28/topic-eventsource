@@ -17,7 +17,7 @@ export function get(driverOptions: Options) : $Driver {
         .success((ret:any) => {
             if (typeof done === 'function') done(null, ret);
         }).fail((jqXHR:any, textStatus:string, errorThrown:string) => {
-            let err = {error: textStatus||errorThrown||'unknown-error', error_description: textStatus||errorThrown||'unknown error occured'};
+            let err = {error: textStatus||errorThrown||'unknown-error', error_description: errorThrown||textStatus||'unknown error occured'};
             if (typeof done === 'function') done(err, null);
         });
     };
