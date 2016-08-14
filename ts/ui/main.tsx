@@ -4,6 +4,26 @@ let EventSource: rcf.EventSourceConstructor = global['EventSource'];
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
+import * as $browser from '../$-browser';
+import * as restIntf from 'rest-api-interfaces';
+
+let $driver = $browser.get({jQuery: $, EventSource});
+
+let data:any = {msg:'how are you', name: 'wen', age:5};
+let headers:{[fld:string]:string} = {
+    'x-my-header': '<<**********wen chang************>>'
+};
+let handler = (err:restIntf.IError, ret:any) => {
+    if (err)
+        console.error('!!! Error: ' + JSON.stringify(err));
+    else {
+        console.log(typeof ret === 'string' ? ret : JSON.stringify(ret));
+    }
+}
+$driver.$J('GET', '/services/sobject/test_get', data, handler, {headers});
+
+
+
 let pathname = '/services/events/event_stream';
 
 let api = new rcf.AuthorizedRestApi($, EventSource);
