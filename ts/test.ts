@@ -1,18 +1,25 @@
-import * as http from 'http';
-import * as request from 'request';
+import * as $node from './$-node';
+import * as restIntf from 'rest-api-interfaces';
 
-let options: request.Options = {
-    url:'http://127.0.0.1:8080/services/sobject/test_get'
-    ,method:"GET"
-    ,qs: {msg:'how are you', name: 'wen', age:5}
-    ,headers: {'x-greeting': 'gretting from wen chang'}
+let $driver = $node.get()
+let headers:{[fld:string]:string} = {
+    'x-my-header': '<<**********wen chang************>>'
 };
 
-//,strictSSL:true/false // rejectUnauthorized
+/*
+$driver.$J('GET', 'http://127.0.0.1:8080/services/sobject/test_get', {msg:'how are you', name: 'wen', age:5}, (err:$lib.IError, ret:any) => {
+    if (err)
+        console.error('!!! Error: ' + JSON.stringify(err));
+    else {
+        console.log(typeof ret === 'string' ? ret : JSON.stringify(ret));
+    }
+}, {headers});
+*/
 
-request(options, (error: any, response: http.IncomingMessage, body: any) => {
-    console.log('error=' + error? JSON.stringify(error) : 'null');
-    console.log(response.headers);
-    console.log('statusCode=' + response.statusCode);
-    let ret = JSON.stringify(body);
-});
+$driver.$J('POST', 'http://127.0.0.1:8080/services/sobject/test_post', {msg:'how are you', name: 'wen', age:5}, (err:restIntf.IError, ret:any) => {
+    if (err)
+        console.error('!!! Error: ' + JSON.stringify(err));
+    else {
+        console.log(typeof ret === 'string' ? ret : JSON.stringify(ret));
+    }
+}, {headers});

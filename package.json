@@ -12,7 +12,9 @@
     "body-parser": "^1.15.1",
     "eventsource": "^0.2.1",
     "eventsource-polyfill": "^0.9.6",
+    "eventsource-typings": "git+https://github.com/wchang28/eventsource-typings.git",
     "express": "^4.13.4",
+    "form-data": "^1.0.0-rc4",
     "http-proxy": "^1.14.0",
     "jquery": "^2.2.3",
     "jquery-no-dom": "git+https://github.com/wchang28/jquery-no-dom.git",
@@ -25,6 +27,7 @@
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "request": "^2.74.0",
+    "rest-api-interfaces": "git+https://github.com/wchang28/rest-api-interfaces.git",
     "sse-express": "git+https://github.com/wchang28/sse-express.git"
   },
   "devDependencies": {

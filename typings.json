@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "debug": "registry:npm/debug#2.0.0+20160511151334",
+    "form-data": "registry:npm/form-data#1.0.0+20160723033700",
     "http-proxy": "registry:npm/http-proxy#1.12.0+20160315230223",
     "request": "registry:npm/request#2.69.0+20160428223725"
   }
