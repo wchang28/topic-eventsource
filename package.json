@@ -17,8 +17,6 @@
     "file-upload-stream-factory": "git+https://github.com/wchang28/file-upload-stream-factory.git",
     "form-data": "^1.0.0-rc4",
     "http-proxy": "^1.14.0",
-    "jquery": "^2.2.3",
-    "jquery-no-dom": "git+https://github.com/wchang28/jquery-no-dom.git",
     "lodash": "^4.12.0",
     "no-cache-express": "git+https://github.com/wchang28/no-cache-express.git",
     "node-uuid": "^1.4.7",
@@ -26,13 +24,11 @@
     "rcf": "git+https://github.com/wchang28/rcf.git",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
-    "request": "^2.74.0",
     "rest-api-interfaces": "git+https://github.com/wchang28/rest-api-interfaces.git",
     "rest-browser": "git+https://github.com/wchang28/rest-browser.git",
     "rest-driver": "git+https://github.com/wchang28/rest-driver.git",
     "rest-node": "git+https://github.com/wchang28/rest-node.git",
-    "s3-upload-stream-factory": "git+https://github.com/wchang28/s3-upload-stream-factory.git",
-    "sse-express": "git+https://github.com/wchang28/sse-express.git"
+    "s3-upload-stream-factory": "git+https://github.com/wchang28/s3-upload-stream-factory.git"
   },
   "devDependencies": {
     "browserify": "^12.0.1"
