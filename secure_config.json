@@ -5,13 +5,16 @@
         {
             "host": "0.0.0.0"
             ,"port": 8081
-            ,"private_key_file": "C:/run/keys/ssl/key_with_no_pw.key"
-            ,"certificate_file": "C:/run/keys/ssl/cert.pem"
-            ,"ca_files":
-            [
-                "C:/run/keys/ssl/Go Daddy Root Certificate Authority - G2.cer"
-                ,"C:/run/keys/ssl/Go Daddy Secure Certificate Authority - G2.cer"
-            ]
+            ,"ssl":
+            {
+                "private_key_file": "C:/run/keys/ssl/key_with_no_pw.key"
+                ,"certificate_file": "C:/run/keys/ssl/cert.pem"
+                ,"ca_files":
+                [
+                    "C:/run/keys/ssl/Go Daddy Root Certificate Authority - G2.cer"
+                    ,"C:/run/keys/ssl/Go Daddy Secure Certificate Authority - G2.cer"
+                ]
+            }
         }
     }
     ,"proxyServer":
@@ -20,13 +23,16 @@
         {
             "host": "0.0.0.0"
             ,"port": 8080
-            ,"private_key_file": "C:/run/keys/ssl/key_with_no_pw.key"
-            ,"certificate_file": "C:/run/keys/ssl/cert.pem"
-            ,"ca_files":
-            [
-                "C:/run/keys/ssl/Go Daddy Root Certificate Authority - G2.cer"
-                ,"C:/run/keys/ssl/Go Daddy Secure Certificate Authority - G2.cer"
-            ]
+            ,"ssl":
+            {
+                "private_key_file": "C:/run/keys/ssl/key_with_no_pw.key"
+                ,"certificate_file": "C:/run/keys/ssl/cert.pem"
+                ,"ca_files":
+                [
+                    "C:/run/keys/ssl/Go Daddy Root Certificate Authority - G2.cer"
+                    ,"C:/run/keys/ssl/Go Daddy Secure Certificate Authority - G2.cer"
+                ]
+            }
         }
     }
 }
