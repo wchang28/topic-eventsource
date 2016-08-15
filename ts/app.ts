@@ -5,9 +5,15 @@ import * as bodyParser from 'body-parser';
 import * as ews from 'express-web-server';
 import * as fs from 'fs';
 
+interface IProxyTargetConfig {
+	targetUrl: string;
+	rejectUnauthorized?: boolean;
+}
+
 interface IAppConfig {
     apiServer: ews.IWebServerConfig;
     proxyServer: ews.IWebServerConfig;
+	proxyTarget: IProxyTargetConfig
 }
 
 let configFile = (process.argv.length < 3 ? path.join(__dirname, '../local_testing_config.json') : process.argv[2]);
@@ -73,10 +79,10 @@ import * as httpProxy from 'http-proxy';
 function ApiProxyMiddleware(req: express.Request, res: express.Response) {
     let proxy = httpProxy.createProxyServer();
     let options: httpProxy.ServerOptions = {
-         target: 'http://127.0.0.1:8081/services'
+         target: config.proxyTarget.targetUrl
          ,changeOrigin: true    // change the 'host' header field to target host
-		 //,secure: true/false	// rejectUnauthorized
     };
+	if (typeof config.proxyTarget.rejectUnauthorized === 'boolean') options.secure = config.proxyTarget.rejectUnauthorized;
     proxy.web(req, res, options);
     proxy.on('error', (err:any, req: express.Request, res:express.Response) => {
         console.log('proxy error: ' + JSON.stringify(err));

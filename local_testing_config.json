@@ -15,4 +15,8 @@
             ,"port": 8080
         }
     }
+    ,"proxyTarget":
+    {
+        "targetUrl": "http://127.0.0.1:8081/services"
+    }
 }

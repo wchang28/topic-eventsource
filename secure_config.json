@@ -35,4 +35,9 @@
             }
         }
     }
+    ,"proxyTarget":
+    {
+        "targetUrl": "https://127.0.0.1:8081/services"
+        ,"rejectUnauthorized": false
+    }
 }
