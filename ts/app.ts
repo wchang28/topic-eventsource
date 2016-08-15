@@ -2,7 +2,6 @@ import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
-//import * as rcf from 'rcf';
 
 let appApi = express();
 let appProxy = express();
