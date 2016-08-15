@@ -83,8 +83,24 @@ function ApiProxyMiddleware(req: express.Request, res: express.Response) {
 
 appProxy.use('/services', ApiProxyMiddleware);
 
-
 appProxy.use('/', express.static(path.join(__dirname, '../ui')));
+
+// catch all
+////////////////////////////////////////////////////////////////////////////////////////
+appProxy.use((req: express.Request, res: express.Response) => {
+    req.on('data', (data) => {});
+    req.on("end" ,() => {
+        res.status(400).json({error: 'bad request'});
+    });
+});
+
+appApi.use((req: express.Request, res: express.Response) => {
+    req.on('data', (data) => {});
+    req.on("end" ,() => {
+        res.status(400).json({error: 'bad request'});
+    });
+});
+////////////////////////////////////////////////////////////////////////////////////////
 
 let secure_http:boolean = false;
 let apiServer: http.Server = http.createServer(appApi);

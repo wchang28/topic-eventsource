@@ -29,7 +29,9 @@ topicRouter.eventEmitter.on('client_disconnect', (params: tr.ConnectedEventParam
 });
 
 import * as sobject from './sobject';
+import * as upload from './upload';
 
 router.use('/sobject', sobject.router);
+router.use('/upload', upload.router);
 
 export {router};
