@@ -1,5 +1,5 @@
 import * as rcf from 'rcf';
-import * as $node from './$-node';
+import * as $node from 'rest-node';
 
 let connectOptions: rcf.ApiInstanceConnectOptions = {
     instance_url:"http://127.0.0.1:8080"    // proxy

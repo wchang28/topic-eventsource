@@ -1,11 +1,11 @@
 import * as rcf from 'rcf';
 import * as eventSource from 'eventsource-typings';
 let EventSource: eventSource.EventSourceConstructor = global['EventSource'];
+import * as $browser from 'rest-browser';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import {FilesUploadTest} from './FilesUploadTest';
 
-import * as $browser from '../$-browser';
 let $driver = $browser.get({EventSource});
 
 let pathname = '/services/events/event_stream';

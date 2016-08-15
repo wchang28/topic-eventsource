@@ -1,4 +1,4 @@
-import * as $node from './$-node';
+import * as $node from 'rest-node';
 import * as FormData from 'form-data';
 import * as fs from 'fs';
 import * as rcf from 'rcf';
