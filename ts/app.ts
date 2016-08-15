@@ -25,6 +25,7 @@ appApi.use(requestLogger);
 import {router as apiRouter} from './api';
 appApi.use('/services', apiRouter);
 
+/*
 import * as url from 'url';
 import * as _ from 'lodash';
 
@@ -41,9 +42,9 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response) {
 	options.headers = _.assignIn(req.headers);
 	delete options.headers['host'];
 	console.log('options.path=' + options.path);
-	/*
-	options.headers['authorization'] = 'Bearer ' + bearerToken
-	*/
+
+	// options.headers['authorization'] = 'Bearer ' + bearerToken
+
 	let proxyReq = http.request(options, (proxyRes: http.IncomingMessage) => {
 		res.writeHead(proxyRes.statusCode, proxyRes.statusMessage, proxyRes.headers);
 		proxyRes.on('error', (err) => {}).pipe(res).on('error', (err) => {});	// proxyRes ===> res
@@ -55,8 +56,8 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response) {
 }
 
 appProxy.use('/services', ProxyRestApiMiddleware);
+*/
 
-/*
 import * as httpProxy from 'http-proxy';
 
 function ApiProxyMiddleware(req: express.Request, res: express.Response) {
@@ -69,7 +70,7 @@ function ApiProxyMiddleware(req: express.Request, res: express.Response) {
     proxy.web(req, res, options);
     proxy.on('error', (err:any, req: express.Request, res:express.Response) => {
         console.log('proxy error: ' + JSON.stringify(err));
-        res.status(500).jsonp({'error': 'internal server error'});
+        res.status(500).json({'error': 'internal server error'});
     });
     proxy.on('proxyReq', (proxyReq:http.ClientRequest, req: express.Request, res: express.Response, options: httpProxy.ServerOptions) => {
         //console.log('proxyReq()');
@@ -79,8 +80,8 @@ function ApiProxyMiddleware(req: express.Request, res: express.Response) {
         //console.log('proxyRes()');
     });
 }
-*/
-//appProxy.use('/services', ApiProxyMiddleware);
+
+appProxy.use('/services', ApiProxyMiddleware);
 
 
 appProxy.use('/', express.static(path.join(__dirname, '../ui')));
