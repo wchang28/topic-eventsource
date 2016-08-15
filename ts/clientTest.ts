@@ -1,10 +1,10 @@
 import * as rcf from 'rcf';
 import * as $node from 'rest-node';
+import * as fs from 'fs';
+import * as path from 'path';
 
-let connectOptions: rcf.ApiInstanceConnectOptions = {
-    instance_url:"http://127.0.0.1:8080"    // proxy
-    //instance_url:"http://127.0.0.1:8081"    // direct connect
-};
+let configFile = (process.argv.length < 3 ? path.join(__dirname, '../client_test_config.json') : process.argv[2]);
+let connectOptions: rcf.ApiInstanceConnectOptions = JSON.parse(fs.readFileSync(configFile, 'utf8'));
 
 let pathname = '/services/events/event_stream';
 
