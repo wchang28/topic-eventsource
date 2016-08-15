@@ -3,7 +3,7 @@ import * as eventSource from 'eventsource-typings';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
-import * as $browser from '../$-browser';
+import * as $browser from 'rest-browser';
 let $driver = $browser.get({});
 
 let api = new rcf.AuthorizedRestApi($driver);
