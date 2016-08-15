@@ -1,6 +1,7 @@
 import * as rcf from 'rcf';
 import * as $ from 'jquery';
-let EventSource: rcf.EventSourceConstructor = global['EventSource'];
+import * as eventSource from 'eventsource-typings';
+let EventSource: eventSource.EventSourceConstructor = global['EventSource'];
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 
@@ -26,7 +27,7 @@ $driver.$J('POST', '/services/sobject/test_post', data, handler, {headers});
 
 let pathname = '/services/events/event_stream';
 
-let api = new rcf.AuthorizedRestApi($, EventSource);
+let api = new rcf.AuthorizedRestApi($driver);
 let clientOptions: rcf.IMessageClientOptions = {reconnetIntervalMS: 3000};
 let client = api.$M(pathname, clientOptions);
 
@@ -46,7 +47,7 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
 client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
     let sub_id = client.subscribe('topic/say_hi'
-        ,(msg) => {
+        ,(msg: rcf.IMessage) => {
             let message = 'msg-rcvd: ' + JSON.stringify(msg);
             console.log(message);
             ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));            

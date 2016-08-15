@@ -1,6 +1,5 @@
 import * as rcf from 'rcf';
-let $ = require('jquery-no-dom');
-let EventSource: rcf.EventSourceConstructor = require('eventsource');
+import * as $node from './$-node';
 
 let connectOptions: rcf.ApiInstanceConnectOptions = {
     instance_url:"http://127.0.0.1:8080"    // proxy
@@ -9,7 +8,7 @@ let connectOptions: rcf.ApiInstanceConnectOptions = {
 
 let pathname = '/services/events/event_stream';
 
-let api = new rcf.AuthorizedRestApi($, EventSource, rcf.AuthorizedRestApi.connectOptionsToAccess(connectOptions));
+let api = new rcf.AuthorizedRestApi($node.get(), rcf.AuthorizedRestApi.connectOptionsToAccess(connectOptions));
 let clientOptions: rcf.IMessageClientOptions = {reconnetIntervalMS: 3000};
 let client = api.$M(pathname, clientOptions);
 

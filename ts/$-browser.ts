@@ -1,6 +1,6 @@
 import {IError, ApiCallOptions} from 'rest-api-interfaces';
 import * as eventSource from 'eventsource-typings';
-import * as $dr from './$-driver';
+import * as $dr from 'rest-driver';
 import * as $ from 'jquery';
 
 export interface Options {
@@ -34,7 +34,7 @@ export function get(driverOptions: Options) : $dr.$Driver {
             if (options && options.headers) settings.headers = options.headers;
             jQueryAjax(settings, done);
         }
-        ,$E: (url: string, done: $dr.IEventSourceConnectCompletionHandler, options?:ApiCallOptions) : void => {
+        ,$E: (url: string, done: $dr.EventSourceConnectCompletionHandler, options?:ApiCallOptions) : void => {
             if (!driverOptions || !driverOptions.EventSource) {
                 if (typeof done === 'function') done({type:'invalid-EventSource'}, null);
                 return;
