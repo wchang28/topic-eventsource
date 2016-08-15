@@ -1,0 +1,24 @@
+{
+  "name": "topic-eventsource",
+  "description": "Topic-based event source",
+  "authors": [
+    "Wen Chang"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "typescript"
+  ],
+  "homepage": "https://github.com/wchang28/topic-eventsource",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "font-awesome": "fontawesome#^4.6.3",
+    "w3-css": "git://github.com/wchang28/w3-css.git"
+  }
+}

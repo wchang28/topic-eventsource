@@ -100,6 +100,7 @@ function ApiProxyMiddleware(req: express.Request, res: express.Response) {
 appProxy.use('/services', ApiProxyMiddleware);
 
 appProxy.use('/', express.static(path.join(__dirname, '../ui')));
+appProxy.use('/bower_components', express.static(path.join(__dirname, '../bower_components')));
 
 // catch all
 ////////////////////////////////////////////////////////////////////////////////////////
