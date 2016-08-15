@@ -2,6 +2,16 @@ import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
+import * as ews from 'express-web-server';
+import * as fs from 'fs';
+
+interface IAppConfig {
+    apiServer: ews.IWebServerConfig;
+    proxyServer: ews.IWebServerConfig;
+}
+
+let configFile = (process.argv.length < 3 ? path.join(__dirname, '../local_testing_config.json') : process.argv[2]);
+let config: IAppConfig = JSON.parse(fs.readFileSync(configFile, 'utf8'));
 
 let appApi = express();
 let appProxy = express();
@@ -102,6 +112,15 @@ appApi.use((req: express.Request, res: express.Response) => {
 });
 ////////////////////////////////////////////////////////////////////////////////////////
 
+ews.startServer(config.apiServer, appApi, (secure:boolean, host:string, port:number) => {
+	console.log('Api server listening at %s://%s:%s', (secure ? 'https' : 'http'), host, port);
+
+	ews.startServer(config.proxyServer, appProxy, (secure:boolean, host:string, port:number) => {
+		console.log('Proxy server listening at %s://%s:%s', (secure ? 'https' : 'http'), host, port);
+	});
+});
+
+/*
 let secure_http:boolean = false;
 let apiServer: http.Server = http.createServer(appApi);
 
@@ -118,3 +137,4 @@ apiServer.listen(8081, "127.0.0.1", () => {
 		console.log('Proxy server listening at %s://%s:%s', (secure_http ? 'https' : 'http'), host, port);   
 	});
 });
+*/
