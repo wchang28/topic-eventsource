@@ -1,6 +1,6 @@
 import {IError, ApiCallOptions} from 'rest-api-interfaces';
 import * as eventSource from 'eventsource-typings';
-import {$Driver} from './$-driver';
+import * as $dr from './$-driver';
 import * as http from 'http';
 import * as request from 'request';
 import * as _ from 'lodash';
@@ -37,8 +37,8 @@ let getHandler = (done:(err:IError, ret:any) => void) : request.RequestCallback 
     return handler;
 }
 
-export function get() : $Driver {
-    let driver:$Driver  = {
+export function get() : $dr.$Driver {
+    let driver:$dr.$Driver  = {
         $J: (method:string, url:string, data:any, done:(err:IError, ret:any) => void, options?: ApiCallOptions) : void => {
             let opt: request.Options = {
                 url:url
@@ -55,7 +55,7 @@ export function get() : $Driver {
             if (options && typeof options.rejectUnauthorized === 'boolean') opt.strictSSL = options.rejectUnauthorized;
             request(opt, getHandler(done));
         }
-        ,$E: (url: string, done: (err: eventSource.Error, eventSource: eventSource.IEventSource) => void, options?:ApiCallOptions) : void => {
+        ,$E: (url: string, done: $dr.IEventSourceConnectCompletionHandler, options?:ApiCallOptions) : void => {
             let EventSource: eventSource.EventSourceConstructor = require('eventsource');
             let es: eventSource.IEventSource = new EventSource(url, options);
             es.onopen = () => {if (typeof done === 'function')  done(null, es);}

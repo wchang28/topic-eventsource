@@ -7,7 +7,7 @@ import * as ReactDOM from 'react-dom';
 import * as $browser from '../$-browser';
 import * as restIntf from 'rest-api-interfaces';
 
-let $driver = $browser.get({jQuery: $, EventSource});
+let $driver = $browser.get({EventSource});
 
 let data:any = {msg:'how are you', name: 'wen', age:5};
 let headers:{[fld:string]:string} = {
