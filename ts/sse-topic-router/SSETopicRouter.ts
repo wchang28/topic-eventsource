@@ -21,9 +21,9 @@ export class ConnectionsManager extends events.EventEmitter
         this.__connections = {};
     }
     getConnectionsCount() : number { return this.connCount;}
-    createConnection(req: express.Request, connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: rcf.IMessageCallback, errorCB: rcf.ErrorHandler, done: IConnectionCreatedHandler) : void {
+    createConnection(req: express.Request, connectionFactory: IConnectionFactory, remoteAddress: string, messageCB: rcf.IMessageCallback, done: IConnectionCreatedHandler) : void {
         let conn_id = uuid.v4();
-        connectionFactory(req, conn_id, remoteAddress, messageCB, errorCB, (err: any, conn: IConnection) => {
+        connectionFactory(req, conn_id, remoteAddress, messageCB, (err: any, conn: IConnection) => {
             if (err) {
                 done(err, null);
             } else {
@@ -160,7 +160,6 @@ export function getRouter(eventPath: string, connectionFactory: IConnectionFacto
         ,connectionFactory
         ,remoteAddress
         ,(msg: rcf.IMessage) => {res.sseSend(msg);}
-        ,(err: any) => {req.socket.end();}
         ,(err: any, connnection_id: string) => {
             if (err)    // connection cannot be created due to some error
                 req.socket.end();   // close the socket, this will trigger req.on("close")

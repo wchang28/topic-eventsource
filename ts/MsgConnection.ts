@@ -18,7 +18,7 @@ export interface IConnectionCreateCompleteHandler {
 }
 
 export interface IConnectionFactory {
-    (req: express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.IMessageCallback, errorCB: rcf.ErrorHandler, done: IConnectionCreateCompleteHandler): void;
+    (req: express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.IMessageCallback, done: IConnectionCreateCompleteHandler): void;
 }
 
 export interface ICookieSetter {

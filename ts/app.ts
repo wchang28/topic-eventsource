@@ -2,9 +2,7 @@ import * as http from 'http';
 import * as express from 'express';
 import * as path from 'path';
 import * as bodyParser from 'body-parser';
-let $ = require('jquery-no-dom');
-let EventSource: rcf.EventSourceConstructor = require('eventsource');
-import * as rcf from 'rcf';
+//import * as rcf from 'rcf';
 
 let appApi = express();
 let appProxy = express();
@@ -28,37 +26,10 @@ appApi.use(requestLogger);
 import {router as apiRouter} from './api';
 appApi.use('/services', apiRouter);
 
-/*
-function ProxyRestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
-	let callOptions: rcf.ApiInstanceConnectOptions = {
-		instance_url: 'http://127.0.0.1:8080'
-	}
-	let api = new rcf.AuthorizedRestApi($, EventSource, rcf.AuthorizedRestApi.connectOptionsToAccess(callOptions));
-	req["$A"] = api;
-	next();
-}
-*/
-
-/*
-function ProxyRestApiMiddleware(req: express.Request, res: express.Response, next: express.NextFunction) {
-	let tokenRefresher: IOAuth2TokenRefresher = null;
-	let api = new AuthorizedRestApi($, EventSource, req.session.access, tokenRefresher);
-	api.on('on_access_refreshed', (newAccess: IOAuth2Access) : void => {
-		req.session.access = newAccess;
-	});
-	req["$A"] = api;
-	next();
-}
-*/
-
-/*
-import {router as proxyRouter} from './proxy';
-appProxy.use('/proxy', ProxyRestApiMiddleware, proxyRouter);
-*/
 import * as url from 'url';
 import * as _ from 'lodash';
 
-function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
+function ProxyRestApiMiddleware(req: express.Request, res: express.Response) {
 	let target = 'http://127.0.0.1:8081/services';
 	let targetUrl:url.Url = url.parse(target);
 	let options:http.RequestOptions = {
@@ -84,8 +55,9 @@ function ProxyRestApiMiddleware2(req: express.Request, res: express.Response) {
     });
 }
 
-appProxy.use('/services', ProxyRestApiMiddleware2);
+appProxy.use('/services', ProxyRestApiMiddleware);
 
+/*
 import * as httpProxy from 'http-proxy';
 
 function ApiProxyMiddleware(req: express.Request, res: express.Response) {
@@ -108,7 +80,7 @@ function ApiProxyMiddleware(req: express.Request, res: express.Response) {
         //console.log('proxyRes()');
     });
 }
-
+*/
 //appProxy.use('/services', ApiProxyMiddleware);
 
 

@@ -129,7 +129,7 @@ let defaultOptions: Options = {
 export function getConnectionFactory(options?: Options) : IConnectionFactory {
 	if (!options) options = {};
 	options = _.assignIn({}, defaultOptions, options);
-	return ((req:express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.IMessageCallback, errorCB: rcf.ErrorHandler, done: IConnectionCreateCompleteHandler) => {
+	return ((req:express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.IMessageCallback, done: IConnectionCreateCompleteHandler) => {
 		let cookie = (options.cookieSetter ? (options.cookieSetter)(req) : null);
 		done(null, new TopicConnection(conn_id, remoteAddress, cookie, messageCB, options.pingIntervalMS));
 	});
