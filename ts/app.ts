@@ -101,22 +101,3 @@ ews.startServer(config.apiServer, appApi, (secure:boolean, host:string, port:num
 		console.log('Proxy server listening at %s://%s:%s', (secure ? 'https' : 'http'), host, port);
 	});
 });
-
-/*
-let secure_http:boolean = false;
-let apiServer: http.Server = http.createServer(appApi);
-
-apiServer.listen(8081, "127.0.0.1", () => {
-	let host = apiServer.address().address; 
-	let port = apiServer.address().port; 
-	console.log('Api server listening at %s://%s:%s', (secure_http ? 'https' : 'http'), host, port);   
-
-	let proxyServer: http.Server = http.createServer(appProxy);
-
-	proxyServer.listen(8080, "127.0.0.1", () => {
-		let host = proxyServer.address().address; 
-		let port = proxyServer.address().port; 
-		console.log('Proxy server listening at %s://%s:%s', (secure_http ? 'https' : 'http'), host, port);   
-	});
-});
-*/
