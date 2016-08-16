@@ -1,6 +1,6 @@
 import * as express from 'express';
 import * as core from "express-serve-static-core";
-import * as tr from '../sse-topic-router/SSETopicRouter';
+import * as tr from 'rcf-msg-router';
 import * as tc from '../sse-topic-conn/TopicConnection';
 
 let router = express.Router();

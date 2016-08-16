@@ -1,11 +1,10 @@
-import {IConnection, IConnectionFactory, IConnectionCreateCompleteHandler, IConnectionOptionsBase} from '../MsgConnection';
 import * as rcf from 'rcf';
 import * as events from 'events';
 import * as express from 'express';
 import * as _ from 'lodash';
 let alasql = require('alasql');
 
-export interface Options extends IConnectionOptionsBase {
+export interface Options extends rcf.IMsgConnOptionsBase {
 	pingIntervalMS?:number
 }
 
@@ -13,14 +12,14 @@ interface Subscription {
 	destination: string;
 	headers?: {[field: string]: any};
 }
-class TopicConnection extends events.EventEmitter implements IConnection {
+class TopicConnection extends events.EventEmitter implements rcf.IMsgConnection {
 	public conn_id: string;
 	public remoteAddress: string
 	public cookie: any
 	private eventEmitter: events.EventEmitter;
 	private subscriptions: {[sub_id:string] : Subscription;}
 	private pintInterval: NodeJS.Timer;
-	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: rcf.IMessageCallback, public pingIntervalMS:number = 10000) {
+	constructor(conn_id: string, remoteAddress: string, cookie: any, messageCB: rcf.MessageCallback, public pingIntervalMS:number = 10000) {
 		super();
 		this.conn_id = conn_id;
 		this.remoteAddress = remoteAddress;
@@ -54,7 +53,7 @@ class TopicConnection extends events.EventEmitter implements IConnection {
 	onChange(handler: () => void) {
 		this.on('change', handler);
 	}
-	forwardMessage(req: express.Request, srcConn: IConnection, destination: string, headers: {[field: string]: any}, message: any, done: rcf.DoneHandler) : void {
+	forwardMessage(req: express.Request, srcConn: rcf.IMsgConnection, destination: string, headers: {[field: string]: any}, message: any, done: rcf.DoneHandler) : void {
         for (var sub_id in this.subscriptions) {	// for each subscription this connection has
 			let subscription = this.subscriptions[sub_id];
 			let pattern = new RegExp(subscription.destination, 'gi');
@@ -126,10 +125,10 @@ let defaultOptions: Options = {
 	pingIntervalMS: 10000
 }
 
-export function getConnectionFactory(options?: Options) : IConnectionFactory {
+export function getConnectionFactory(options?: Options) : rcf.MsgConnFactory {
 	if (!options) options = {};
 	options = _.assignIn({}, defaultOptions, options);
-	return ((req:express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.IMessageCallback, done: IConnectionCreateCompleteHandler) => {
+	return ((req:express.Request, conn_id: string, remoteAddress: string, messageCB: rcf.MessageCallback, done: rcf.MsgConnCreateCompleteHandler) => {
 		let cookie = (options.cookieSetter ? (options.cookieSetter)(req) : null);
 		done(null, new TopicConnection(conn_id, remoteAddress, cookie, messageCB, options.pingIntervalMS));
 	});
