@@ -4,16 +4,12 @@ import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import * as ews from 'express-web-server';
 import * as fs from 'fs';
-
-interface IProxyTargetConfig {
-	targetUrl: string;
-	rejectUnauthorized?: boolean;
-}
+import * as proxy from 'rcf-http-proxy'
 
 interface IAppConfig {
     apiServer: ews.IWebServerConfig;
     proxyServer: ews.IWebServerConfig;
-	proxyTarget: IProxyTargetConfig
+	proxyTarget: proxy.TargetSettings
 }
 
 let configFile = (process.argv.length < 3 ? path.join(__dirname, '../local_testing_config.json') : process.argv[2]);
@@ -74,30 +70,9 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response) {
 appProxy.use('/services', ProxyRestApiMiddleware);
 */
 
-import * as httpProxy from 'http-proxy';
+let proxyMiddleware = proxy.get(config.proxyTarget);
 
-function ApiProxyMiddleware(req: express.Request, res: express.Response) {
-    let proxy = httpProxy.createProxyServer();
-    let options: httpProxy.ServerOptions = {
-         target: config.proxyTarget.targetUrl
-         ,changeOrigin: true    // change the 'host' header field to target host
-    };
-	if (typeof config.proxyTarget.rejectUnauthorized === 'boolean') options.secure = config.proxyTarget.rejectUnauthorized;
-    proxy.web(req, res, options);
-    proxy.on('error', (err:any, req: express.Request, res:express.Response) => {
-        console.log('proxy error: ' + JSON.stringify(err));
-        res.status(500).json({'error': 'internal server error'});
-    });
-    proxy.on('proxyReq', (proxyReq:http.ClientRequest, req: express.Request, res: express.Response, options: httpProxy.ServerOptions) => {
-        //console.log('proxyReq()');
-        //proxyReq.setHeader('authorization', 'Bearer ' + bearerToken);
-    });
-    proxy.on('proxyRes', (proxyRes:http.IncomingMessage, req: express.Request, res: express.Response) => {
-        //console.log('proxyRes()');
-    });
-}
-
-appProxy.use('/services', ApiProxyMiddleware);
+appProxy.use('/services', proxyMiddleware);
 
 appProxy.use('/', express.static(path.join(__dirname, '../ui')));
 appProxy.use('/bower_components', express.static(path.join(__dirname, '../bower_components')));
