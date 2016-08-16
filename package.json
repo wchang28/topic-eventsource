@@ -7,7 +7,6 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "alasql": "^0.2.5",
     "body-parser": "^1.15.1",
     "busboy-pipe": "git+https://github.com/wchang28/busboy-pipe.git",
     "event-source-polyfill": "0.0.7",
@@ -23,6 +22,7 @@
     "oauth2": "git+https://github.com/wchang28/oauth2.git",
     "rcf": "git+https://github.com/wchang28/rcf.git",
     "rcf-msg-router": "git+https://github.com/wchang28/rcf-msg-router.git",
+    "rcf-topic-conn": "git+https://github.com/wchang28/rcf-topic-conn.git",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "rest-api-interfaces": "git+https://github.com/wchang28/rest-api-interfaces.git",
