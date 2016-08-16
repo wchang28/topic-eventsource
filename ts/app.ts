@@ -70,7 +70,15 @@ function ProxyRestApiMiddleware(req: express.Request, res: express.Response) {
 appProxy.use('/services', ProxyRestApiMiddleware);
 */
 
-let proxyMiddleware = proxy.get(config.proxyTarget);
+let targetAcquisition: proxy.TargetAcquisition = (req:express.Request, done: proxy.TargetAcquisitionCompletionHandler) => {
+	done(null, config.proxyTarget);
+}
+
+let proxyOptions: proxy.Options = {
+	targetAcquisition: targetAcquisition
+};
+
+let proxyMiddleware = proxy.get(proxyOptions);
 
 appProxy.use('/services', proxyMiddleware);
 
