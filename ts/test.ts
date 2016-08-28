@@ -13,7 +13,6 @@ let api = new rcf.AuthorizedRestApi($driver, rcf.AuthorizedRestApi.connectOption
 let form = new FormData();
 form.append('FirstName', 'Wen');
 form.append('LastName', 'Chang');
-form.append("Myfile[]", fs.createReadStream('C:/Users/wchang/Desktop/node-grid-4.zip'), 'node-grid-4.zip');
 form.append("Myfile[]", fs.createReadStream('C:/Users/wchang/Desktop/signedcorrected 4506-T.pdf'), 'signedcorrected 4506-T.pdf');
 form.append("Myfile[]", fs.createReadStream('C:/Users/wchang/Desktop/polaris.txt'), 'polaris.txt');
 
