@@ -17,7 +17,11 @@ eventEmitter.on('begin', (params: busboyPipe.EventParamsBase) => {
 });
 
 let filePathMaker = (params: busboyPipe.FilePipeParams) : string => {
-    return 'c:/upload/' + params.fileInfo.filename;
+    let s = 'c:/upload';
+    let subFolder:string = params.req.body['subFolder'];
+    if (subFolder) s += subFolder;
+    s += '/' + params.fileInfo.filename;
+    return s;
 }
 
 router.post('/file_upload', busboyPipe.get(fileUploadStreamFactory.get({filePathMaker}), {eventEmitter}), (req: express.Request, res: express.Response) => {
@@ -32,7 +36,11 @@ router.post('/file_upload', busboyPipe.get(fileUploadStreamFactory.get({filePath
 let s3Options: s3UploadStreamFactory.Options = {
     "Bucket": 's3-fkh-tst'
     ,"KeyMaker": (params: busboyPipe.FilePipeParams): string => {
-        return 'busboy_upload/' + params.fileInfo.filename;
+        let s = 'busboy_upload';
+        let subFolder:string = params.req.body['subFolder'];
+        if (subFolder) s += subFolder;
+        s += '/' + params.fileInfo.filename;
+        return s;
     }
     ,"additonalS3Options": {
         "ACL": "public-read"
