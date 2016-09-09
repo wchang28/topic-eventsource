@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import * as ews from 'express-web-server';
 import * as fs from 'fs';
 import * as proxy from 'rcf-http-proxy'
+import * as prettyPrinter from 'express-pretty-print'; 
 
 interface IAppConfig {
     apiServer: ews.IWebServerConfig;
@@ -22,6 +23,8 @@ appApi.use(require('no-cache-express'));
 appProxy.use(require('no-cache-express'));
 
 appApi.use(bodyParser.json());
+
+appApi.use(prettyPrinter.get());
 
 let requestLogger = (req: express.Request, res: express.Response, next: express.NextFunction) => {
 	console.log('**********************************************************************');
