@@ -9,11 +9,17 @@ let router = express.Router();
 
 let eventEmitter = new events.EventEmitter();
 eventEmitter.on('begin', (params: busboyPipe.EventParamsBase) => {
-    console.log('Piping started');
+    console.log('begin ===========================================================');
 }).on('end', (params: busboyPipe.EventParamsBase) => {
-    console.log('All done :-)');
+    console.log('end =============================================================');
 }).on('total-files-count', (params: busboyPipe.FilesCountParams) => {
     console.log('number of files to pipe: ' + params.count);
+}).on('file-begin', (params: busboyPipe.FilePipeParams) => {
+    console.log('file-begin >>');
+}).on('file-end', (params: busboyPipe.FilePipeParams) => {
+    console.log(JSON.stringify(params.fileInfo))
+    console.log('file-end <<');
+    console.log('');
 });
 
 let filePathMaker = (params: busboyPipe.FilePipeParams) : string => {
