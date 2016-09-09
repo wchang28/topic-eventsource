@@ -28,8 +28,8 @@ appApi.use(prettyPrinter.get());
 
 let requestLogger = (req: express.Request, res: express.Response, next: express.NextFunction) => {
 	console.log('**********************************************************************');
-	let req_address = req.connection.remoteAddress;
-	console.log('incoming request from ' + req_address + ', path='+ req.path);
+	let req_address = req.connection.remoteAddress + ':' + req.connection.remotePort.toString();
+	console.log('incoming "' + req.method.toUpperCase() + '" request from ' + req_address + ', url='+ req.url);
 	console.log('headers: ' + JSON.stringify(req.headers));
 	console.log('**********************************************************************');
 	next();
