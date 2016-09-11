@@ -5,6 +5,7 @@ import * as bodyParser from 'body-parser';
 import * as ews from 'express-web-server';
 import * as fs from 'fs';
 import * as proxy from 'rcf-http-proxy'
+import * as prettyPrinter from 'express-pretty-print'; 
 
 interface IAppConfig {
     apiServer: ews.IWebServerConfig;
@@ -23,10 +24,12 @@ appProxy.use(require('no-cache-express'));
 
 appApi.use(bodyParser.json());
 
+appApi.use(prettyPrinter.get());
+
 let requestLogger = (req: express.Request, res: express.Response, next: express.NextFunction) => {
 	console.log('**********************************************************************');
-	let req_address = req.connection.remoteAddress;
-	console.log('incoming request from ' + req_address + ', path='+ req.path);
+	let req_address = req.connection.remoteAddress + ':' + req.connection.remotePort.toString();
+	console.log('incoming "' + req.method.toUpperCase() + '" request from ' + req_address + ', url='+ req.url);
 	console.log('headers: ' + JSON.stringify(req.headers));
 	console.log('**********************************************************************');
 	next();

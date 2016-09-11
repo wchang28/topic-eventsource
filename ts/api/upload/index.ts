@@ -9,15 +9,25 @@ let router = express.Router();
 
 let eventEmitter = new events.EventEmitter();
 eventEmitter.on('begin', (params: busboyPipe.EventParamsBase) => {
-    console.log('Piping started');
+    console.log('begin ===========================================================');
 }).on('end', (params: busboyPipe.EventParamsBase) => {
-    console.log('All done :-)');
+    console.log('end =============================================================');
 }).on('total-files-count', (params: busboyPipe.FilesCountParams) => {
     console.log('number of files to pipe: ' + params.count);
+}).on('file-begin', (params: busboyPipe.FilePipeParams) => {
+    console.log('file-begin >>');
+}).on('file-end', (params: busboyPipe.FilePipeParams) => {
+    console.log(JSON.stringify(params.fileInfo))
+    console.log('file-end <<');
+    console.log('');
 });
 
 let filePathMaker = (params: busboyPipe.FilePipeParams) : string => {
-    return 'c:/upload/' + params.fileInfo.filename;
+    let s = 'c:/upload';
+    let subFolder:string = params.req.body['subFolder'];
+    if (subFolder) s += subFolder;
+    s += '/' + params.fileInfo.filename;
+    return s;
 }
 
 router.post('/file_upload', busboyPipe.get(fileUploadStreamFactory.get({filePathMaker}), {eventEmitter}), (req: express.Request, res: express.Response) => {
@@ -32,7 +42,11 @@ router.post('/file_upload', busboyPipe.get(fileUploadStreamFactory.get({filePath
 let s3Options: s3UploadStreamFactory.Options = {
     "Bucket": 's3-fkh-tst'
     ,"KeyMaker": (params: busboyPipe.FilePipeParams): string => {
-        return 'busboy_upload/' + params.fileInfo.filename;
+        let s = 'busboy_upload';
+        let subFolder:string = params.req.body['subFolder'];
+        if (subFolder) s += subFolder;
+        s += '/' + params.fileInfo.filename;
+        return s;
     }
     ,"additonalS3Options": {
         "ACL": "public-read"
