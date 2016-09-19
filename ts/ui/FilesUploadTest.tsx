@@ -70,7 +70,8 @@ export class FilesUploadTest extends React.Component<FilesUploadTestProps, Files
                 
         let url = (this.state.uploadToS3 ? '/services/upload/s3_upload' : '/services/upload/file_upload');
 
-        let formData = new FormData();
+        //let formData = new FormData();
+        let formData = $driver.createFormData();
         formData.append('FirstName', 'Wen');
         formData.append('LastName', 'Chang');
         for (let i = 0; i < files.length; i++) {
