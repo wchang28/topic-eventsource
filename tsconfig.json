@@ -13,6 +13,7 @@
       "./ts/app.ts",
       "./ts/clientTest.ts",
       "./ts/test.ts",
-      "./ts/ui/main.tsx"
+      "./ts/ui/main.tsx",
+      "./ts/ui/router-test.tsx"
   ]
 }

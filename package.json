@@ -26,6 +26,7 @@
     "rcf-topic-conn": "git+https://github.com/wchang28/rcf-topic-conn.git",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
+    "react-router": "^2.8.1",
     "rest-api-interfaces": "git+https://github.com/wchang28/rest-api-interfaces.git",
     "rest-browser": "git+https://github.com/wchang28/rest-browser.git",
     "rest-driver": "git+https://github.com/wchang28/rest-driver.git",

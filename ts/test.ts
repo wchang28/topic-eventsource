@@ -10,7 +10,8 @@ let connectOptions: rcf.ApiInstanceConnectOptions = JSON.parse(fs.readFileSync(c
 let $driver = $node.get();
 let api = new rcf.AuthorizedRestApi($driver, rcf.AuthorizedRestApi.connectOptionsToAccess(connectOptions));
 
-let form = new FormData();
+//let form = new FormData();
+let form: FormData = $driver.createFormData();
 form.append('FirstName', 'Wen');
 form.append('LastName', 'Chang');
 form.append("Myfile[]", fs.createReadStream('C:/tmp/signedcorrected 4506-T.pdf'), 'signedcorrected 4506-T.pdf');
