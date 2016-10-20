@@ -1,18 +1,10 @@
 {
   "name": "topic-eventsource",
   "globalDependencies": {
-    "body-parser": "github:DefinitelyTyped/DefinitelyTyped/body-parser/body-parser.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
-    "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
-    "express-serve-static-core": "github:DefinitelyTyped/DefinitelyTyped/express-serve-static-core/express-serve-static-core.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
-    "lodash": "github:DefinitelyTyped/DefinitelyTyped/lodash/lodash.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
-    "mime": "github:DefinitelyTyped/DefinitelyTyped/mime/mime.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
-    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
     "react": "github:DefinitelyTyped/DefinitelyTyped/react/react.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
-    "react-dom": "github:DefinitelyTyped/DefinitelyTyped/react/react-dom.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed",
-    "serve-static": "github:DefinitelyTyped/DefinitelyTyped/serve-static/serve-static.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed"
+    "react-dom": "github:DefinitelyTyped/DefinitelyTyped/react/react-dom.d.ts#1ec3d510e0c4d7c50e708ca7cb0765c7e06fa2ed"
   },
   "dependencies": {
-    "form-data": "registry:npm/form-data#1.0.0+20160723033700",
     "react-router": "registry:npm/react-router#2.4.0+20160915183637"
   }
 }
