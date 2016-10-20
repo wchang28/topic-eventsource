@@ -9,18 +9,19 @@ let topicAuthApp = express();
 topicAuthApp.use('/topic/say_hi', (req:express.Request, res:express.Response, next: express.NextFunction) => {
     let {authReq, authRes} = tr.getDestinationAuthReqRes(req, res);
     console.log('USE /topic/say_hi:' + JSON.stringify(authReq, null, 2));
+    authReq['user'] = "Wen Chang";
     next();
 });
 
-topicAuthApp.get('/topic/say_hi', (req:express.Request, res:express.Response, next: express.NextFunction) => {
+topicAuthApp.get('/topic/say_hi', (req:express.Request, res:express.Response) => {
     let {authReq, authRes} = tr.getDestinationAuthReqRes(req, res);
-    console.log('<GET/SUBSCRIBE>: /topic/say_hi');
+    console.log('<GET/SUBSCRIBE>: /topic/say_hi, user=' + authReq['user']);
     authRes.accept();
 });
 
-topicAuthApp.post('/topic/say_hi', (req:express.Request, res:express.Response, next: express.NextFunction) => {
+topicAuthApp.post('/topic/say_hi', (req:express.Request, res:express.Response) => {
     let {authReq, authRes} = tr.getDestinationAuthReqRes(req, res);
-    console.log('<POST/SEND>: /topic/say_hi');
+    console.log('<POST/SEND>: /topic/say_hi, user=' + authReq['user']);
     //authRes.reject("not authorized :-(");
     authRes.accept();
 });
