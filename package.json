@@ -1,6 +1,6 @@
 {
   "name": "topic-eventsource",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Topic-based event source",
   "main": "index.js",
   "scripts": {},
@@ -28,7 +28,6 @@
     "rcf": "git+https://github.com/wchang28/rcf.git",
     "rcf-http-proxy": "https://github.com/wchang28/rcf-http-proxy.git",
     "rcf-message-router": "git+https://github.com/wchang28/rcf-message-router.git",
-    "rcf-topic-conn": "git+https://github.com/wchang28/rcf-topic-conn.git",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "react-router": "^2.8.1",

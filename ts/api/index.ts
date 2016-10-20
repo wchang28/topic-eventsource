@@ -1,15 +1,14 @@
 import * as express from 'express';
 import * as core from "express-serve-static-core";
 import * as tr from 'rcf-message-router';
-import * as tc from 'rcf-topic-conn';
 
 let router = express.Router();
 
-let tcOptions: tc.Options = {
+let trOptions: tr.Options = {
     pingIntervalMS: 5000
 };
 
-let topicRouter = tr.getRouter('/event_stream', tc.getConnectionFactory(tcOptions));
+let topicRouter = tr.getRouter('/event_stream', trOptions);
 router.use('/events', topicRouter); // topic subscription endpoint is available at /events/event_stream from this route
 
 topicRouter.connectionsManager.on('change', () => {
