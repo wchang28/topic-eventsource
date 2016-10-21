@@ -4,8 +4,22 @@ import * as tr from 'rcf-message-router';
 
 let router = express.Router();
 
+let destAuthRouter = new tr.DestinationAuthRouter();
+
+destAuthRouter.use('/topic/say_hi', (req: tr.IDestAuthRequest, res: tr.IDestAuthResponse) => {
+    console.log('req=' + JSON.stringify(req, null, 2));
+    if (req.authMode === tr.DestAuthMode.Subscribe) {
+        res.accept();
+        //res.reject('not authorize');
+    } else {
+        res.accept();
+        //res.reject('not authorize');
+    }
+});
+
 let trOptions: tr.Options = {
     pingIntervalMS: 5000
+    ,destinationAuthorizeRouter: destAuthRouter
 };
 
 let topicRouter = tr.getRouter('/event_stream', trOptions);

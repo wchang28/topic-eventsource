@@ -18,7 +18,7 @@ client.on('connect', (conn_id:string) => {
         console.log('msg-rcvd: ' + JSON.stringify(msg));
     }, {"selector": "location = 'USA'"}, (err: any): void => {
         if (err) {
-            console.error('!!! Error: topic subscription failed');
+            console.error('!!! Error: topic subscription failed: ' + JSON.stringify(err));
         } else {
             console.log('topic subscribed sub_id=' + sub_id + " :-)");
             console.log('sending a test message...');
