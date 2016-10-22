@@ -6,14 +6,18 @@ let router = express.Router();
 
 let destAuthRouter = new tr.DestinationAuthRouter();
 
-destAuthRouter.use('/topic/say_hi', (req: tr.IDestAuthRequest, res: tr.IDestAuthResponse) => {
-    console.log('req=' + JSON.stringify(req, null, 2));
+destAuthRouter.use('/topic/:conn_id', (req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
+    console.log('req=\n' + JSON.stringify(req, null, 2));
     if (req.authMode === tr.DestAuthMode.Subscribe) {
-        res.accept();
-        //res.reject('not authorize');
+        if(req.conn_id === req.params[":conn_id"])
+            res.accept();
+        else
+            res.reject('not authorize');
     } else {
-        res.accept();
-        //res.reject('not authorize');
+        if(req.conn_id === req.params[":conn_id"])
+            res.accept();
+        else
+            res.reject('not authorize');
     }
 });
 
