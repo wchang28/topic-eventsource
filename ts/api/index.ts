@@ -12,7 +12,7 @@ destAuthRouter.use('/topic/:conn_id', (req: tr.DestAuthRequest, res: tr.DestAuth
         if(req.conn_id === req.params[":conn_id"])
             res.accept();
         else
-            res.reject('not authorize');
+            res.reject();
     } else {
         if(req.conn_id === req.params[":conn_id"])
             res.accept();
