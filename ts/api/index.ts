@@ -1,25 +1,35 @@
 import * as express from 'express';
 import * as core from "express-serve-static-core";
-import * as tr from 'rcf-message-router';
+import * as tr from 'rcf-message-router-2';
 
 let router = express.Router();
 
-let destAuthRouter = new tr.DestinationAuthRouter();
+let destAuthRouter = express.Router();
 
-destAuthRouter.use('/topic/:conn_id', (req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
-    console.log('req=\n' + JSON.stringify(req, null, 2));
-    if (req.authMode === tr.DestAuthMode.Subscribe) {
-        if(req.conn_id === req.params[":conn_id"])
-            res.accept();
-        else
-            res.reject();
-    } else {
-        if(req.conn_id === req.params[":conn_id"])
-            res.accept();
-        else
-            res.reject();
-    }
-});
+let topicAuthRouter = express.Router();
+destAuthRouter.use('/topic', topicAuthRouter);
+
+topicAuthRouter.route('/:conn_id')
+.all(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse, next: express.NextFunction) => {
+    console.log('R USE req=\n' + JSON.stringify(req, null, 2));
+    req['user'] = "Wen Chang";
+    next();
+}))
+.get(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
+    console.log('R GET req=\n' + JSON.stringify(req, null, 2));
+    if(req.conn_id === req.params["conn_id"])
+        res.accept();
+    else
+        res.reject();
+}))
+.post(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
+    console.log('R POST req=\n' + JSON.stringify(req, null, 2));
+    if(req.conn_id === req.params["conn_id"])
+        res.accept();
+    else
+        res.reject();
+}));
+
 
 let trOptions: tr.Options = {
     pingIntervalMS: 5000

@@ -27,7 +27,7 @@
     "oauth2": "git+https://github.com/wchang28/oauth2.git",
     "rcf": "git+https://github.com/wchang28/rcf.git",
     "rcf-http-proxy": "https://github.com/wchang28/rcf-http-proxy.git",
-    "rcf-message-router": "git+https://github.com/wchang28/rcf-message-router.git",
+    "rcf-message-router-2": "git+https://github.com/wchang28/rcf-message-router-2.git",
     "react": "^15.0.2",
     "react-dom": "^15.0.2",
     "react-router": "^2.8.1",
