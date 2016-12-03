@@ -14,17 +14,18 @@ let client = api.$M(pathname, clientOptions);
 
 client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
-    let sub_id = client.subscribe('topic/say_hi', (msg: rcf.IMessage): void => {
+    let sub_id = client.subscribe('/topic/'+conn_id
+    , (msg: rcf.IMessage): void => {
         console.log('msg-rcvd: ' + JSON.stringify(msg));
     }, {"selector": "location = 'USA'"}, (err: any): void => {
         if (err) {
-            console.error('!!! Error: topic subscription failed');
+            console.error('!!! Error: topic subscription failed: ' + JSON.stringify(err));
         } else {
             console.log('topic subscribed sub_id=' + sub_id + " :-)");
             console.log('sending a test message...');
-            client.send('topic/say_hi', {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
+            client.send('/topic/'+conn_id, {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
                 if (err) {
-                    console.error('!!! Error: message send failed');
+                    console.error('!!! Error: message send failed: ' + JSON.stringify(err));
                 } else {
                     console.log('message sent successfully :-)');
                     /*
