@@ -32,7 +32,7 @@ topicAuthRouter.route('/:conn_id')
 
 
 let trOptions: tr.Options = {
-    pingIntervalMS: 5000
+    connKeepAliveIntervalMS: 5000
     ,destinationAuthorizeRouter: destAuthRouter
 };
 
