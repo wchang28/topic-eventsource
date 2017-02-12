@@ -13,10 +13,15 @@ let clientOptions: rcf.IMessageClientOptions = {reconnetIntervalMS: 3000};
 let client = api.$M(pathname, clientOptions);
 
 client.on('connect', (conn_id:string) => {
+    console.log('');
     console.log('connected: conn_id=' + conn_id);
+    console.log('');
     let sub_id = client.subscribe('/topic/'+conn_id
     , (msg: rcf.IMessage): void => {
-        console.log('msg-rcvd: ' + JSON.stringify(msg));
+        console.log('msg-rcvd:');
+        console.log('===============================================');
+        console.log(JSON.stringify(msg, null, 2));
+        console.log('===============================================');
     }, {"selector": "location = 'USA'"}, (err: any): void => {
         if (err) {
             console.error('!!! Error: topic subscription failed: ' + JSON.stringify(err));
