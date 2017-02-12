@@ -11,19 +11,21 @@ destAuthRouter.use('/topic', topicAuthRouter);
 
 topicAuthRouter.route('/:conn_id')
 .all(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse, next: express.NextFunction) => {
-    console.log('R USE req=\n' + JSON.stringify(req, null, 2));
+    //console.log('R USE req=\n' + JSON.stringify(req, null, 2));
     req['user'] = "Wen Chang";
     next();
 }))
 .get(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
-    console.log('R GET req=\n' + JSON.stringify(req, null, 2));
+    //console.log('R GET req=\n' + JSON.stringify(req, null, 2));
+    console.log('req["user"]=' + req['user']);
     if(req.connection.id === req.params["conn_id"])
         res.accept();
     else
         res.reject();
 }))
 .post(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
-    console.log('R POST req=\n' + JSON.stringify(req, null, 2));
+    //console.log('R POST req=\n' + JSON.stringify(req, null, 2));
+    console.log('req["user"]=' + req['user']);
     if(req.connection.id === req.params["conn_id"])
         res.accept();
     else
