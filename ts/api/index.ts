@@ -52,11 +52,11 @@ connectionsManager.on('change', () => {
     console.log("======================================================");
     console.log("");
     */
-}).on('client_connect', (connection: tr.ITopicConnection) : void => {
+}).on('client_connect', (req:express.Request, connection: tr.ITopicConnection) : void => {
     console.log('client ' + connection.id + ' @ ' + connection.remoteAddress + ' connected to the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
-}).on('client_disconnect', (connection: tr.ITopicConnection) : void => {
+}).on('client_disconnect', (req:express.Request, connection: tr.ITopicConnection) : void => {
     console.log('client ' + connection.id + ' @ ' + connection.remoteAddress +  ' disconnected from the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
-}).on('on_client_send_msg', (connection: tr.ITopicConnection, params: tr.SendMsgParams) => {
+}).on('on_client_send_msg', (req:express.Request, connection: tr.ITopicConnection, params: tr.SendMsgParams) => {
     console.log('\nclient ' + connection.id +' just sent the following message:\n' + JSON.stringify(params, null, 2));
 });
 
