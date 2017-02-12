@@ -51,11 +51,11 @@ connectionsManager.on('change', () => {
     console.log("");
     */
 }).on('client_connect', (params: tr.ConnectedEventParams) : void => {
-    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress + ' connected to the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
+    console.log('client ' + params.conn_id + ' @ ' + params.remoteAddress + ' connected to the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
 }).on('client_disconnect', (params: tr.ConnectedEventParams) : void => {
-    console.log('clinet ' + params.conn_id + ' @ ' + params.remoteAddress +  ' disconnected from the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
+    console.log('client ' + params.conn_id + ' @ ' + params.remoteAddress +  ' disconnected from the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
 }).on('on_client_send_msg', (params: tr.ClientSendMsgEventParams) => {
-    console.log('\nclinet ' + params.conn_id +' just sent the following message:\n' + JSON.stringify(params.data, null, 2));
+    console.log('\nclient ' + params.conn_id +' just sent the following message:\n' + JSON.stringify(params.data, null, 2));
 });
 
 import * as sobject from './sobject';
