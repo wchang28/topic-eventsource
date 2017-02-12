@@ -52,12 +52,12 @@ connectionsManager.on('change', () => {
     console.log("======================================================");
     console.log("");
     */
-}).on('client_connect', (params: tr.ConnectedEventParams) : void => {
-    console.log('client ' + params.conn_id + ' @ ' + params.remoteAddress + ' connected to the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
-}).on('client_disconnect', (params: tr.ConnectedEventParams) : void => {
-    console.log('client ' + params.conn_id + ' @ ' + params.remoteAddress +  ' disconnected from the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
-}).on('on_client_send_msg', (params: tr.ClientSendMsgEventParams) => {
-    console.log('\nclient ' + params.conn_id +' just sent the following message:\n' + JSON.stringify(params.data, null, 2));
+}).on('client_connect', (connection: tr.ITopicConnection) : void => {
+    console.log('client ' + connection.id + ' @ ' + connection.remoteAddress + ' connected to the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
+}).on('client_disconnect', (connection: tr.ITopicConnection) : void => {
+    console.log('client ' + connection.id + ' @ ' + connection.remoteAddress +  ' disconnected from the SSE topic endpoint, no. conn = ' + connectionsManager.ConnectionsCount);
+}).on('on_client_send_msg', (connection: tr.ITopicConnection, params: tr.SendMsgParams) => {
+    console.log('\nclient ' + connection.id +' just sent the following message:\n' + JSON.stringify(params, null, 2));
 });
 
 import * as sobject from './sobject';
