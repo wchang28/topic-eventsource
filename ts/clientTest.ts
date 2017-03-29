@@ -17,7 +17,7 @@ client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
     console.log('');
     //let topic = '/topic/'+conn_id;
-    let topic = 'topic/say_hi';
+    let topic = '/topic/say_hi';
     let sub_id = client.subscribe(topic
     , (msg: rcf.IMessage): void => {
         console.log('msg-rcvd:');
@@ -30,7 +30,7 @@ client.on('connect', (conn_id:string) => {
         } else {
             console.log('topic subscribed sub_id=' + sub_id + " :-)");
             console.log('sending a test message...');
-            client.send('/topic/'+conn_id, {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
+            client.send(topic, {'location': 'USA'}, {'greeting':'good afternoon ' + new Date()}, (err: any) : void => {
                 if (err) {
                     console.error('!!! Error: message send failed: ' + JSON.stringify(err));
                 } else {

@@ -36,7 +36,7 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
 
 client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
-    let topic = 'topic/say_hi';
+    let topic = '/topic/say_hi';
     let sub_id = client.subscribe(topic
         ,(msg: rcf.IMessage) => {
             let message = 'msg-rcvd: ' + JSON.stringify(msg);
@@ -46,7 +46,7 @@ client.on('connect', (conn_id:string) => {
         ,{ "selector": "location = 'USA'" }
         ,(err: any) => {
             console.log('sending a test message...');
-            client.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
+            client.send(topic, { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
         });
     });
 }).on('ping', () => {
