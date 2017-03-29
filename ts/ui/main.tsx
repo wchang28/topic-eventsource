@@ -48,15 +48,11 @@ client.on('connect', (conn_id:string) => {
             client.send('topic/say_hi', { 'location': 'USA' }, { 'greeting': 'good morining' }, function (err) {
         });
     });
-});
-
-client.on('ping', () => {
+}).on('ping', () => {
     let message = '<<PING>> ' + new Date();
     console.log(message);
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
-});
-
-client.on('error', (err:any) => {
+}).on('error', (err:any) => {
     let message = '!!! Error:' + JSON.stringify(err);
     console.error(message);
     ReactDOM.render(<MsgBrokerTestApp message={message}/>, document.getElementById('test'));
