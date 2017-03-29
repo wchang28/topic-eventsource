@@ -52,12 +52,8 @@ client.on('connect', (conn_id:string) => {
             });
         }
     });
-});
-
-client.on('ping', () => {
+}).on('ping', () => {
     console.log('<<PING>> ' + new Date());
-});
-
-client.on('error', (err:any) => {
+}).on('error', (err:any) => {
     console.error('!!! Error: ' + JSON.stringify(err));
 });
