@@ -9,6 +9,13 @@ let destAuthRouter = express.Router();
 let topicAuthRouter = express.Router();
 destAuthRouter.use('/topic', topicAuthRouter);
 
+topicAuthRouter.route('/say_hi')
+.get(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
+    res.accept();
+})).post(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse) => {
+    res.accept();
+}));
+
 topicAuthRouter.route('/:conn_id')
 .all(tr.destAuth((req: tr.DestAuthRequest, res: tr.DestAuthResponse, next: express.NextFunction) => {
     //console.log('R USE req=\n' + JSON.stringify(req, null, 2));
