@@ -78,5 +78,9 @@ ews.startServer(config.apiServer, appApi, (secure:boolean, host:string, port:num
 
 	ews.startServer(config.proxyServer, appProxy, (secure:boolean, host:string, port:number) => {
 		console.log('Proxy server listening at %s://%s:%s', (secure ? 'https' : 'http'), host, port);
+	}, (err: any) => {
+		console.error(new Date().toISOString() + ": !!! Proxy server error: " + JSON.stringify(err));
 	});
+}, (err: any) => {
+	console.error(new Date().toISOString() + ": !!! Api server error: " + JSON.stringify(err));
 });
