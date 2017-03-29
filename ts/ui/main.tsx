@@ -36,7 +36,8 @@ class MsgBrokerTestApp extends React.Component<MsgBrokerTestProps, any> {
 
 client.on('connect', (conn_id:string) => {
     console.log('connected: conn_id=' + conn_id);
-    let sub_id = client.subscribe('topic/say_hi'
+    let topic = 'topic/say_hi';
+    let sub_id = client.subscribe(topic
         ,(msg: rcf.IMessage) => {
             let message = 'msg-rcvd: ' + JSON.stringify(msg);
             console.log(message);

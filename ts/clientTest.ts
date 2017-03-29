@@ -16,7 +16,8 @@ client.on('connect', (conn_id:string) => {
     console.log('');
     console.log('connected: conn_id=' + conn_id);
     console.log('');
-    let topic = '/topic/'+conn_id;
+    //let topic = '/topic/'+conn_id;
+    let topic = 'topic/say_hi';
     let sub_id = client.subscribe(topic
     , (msg: rcf.IMessage): void => {
         console.log('msg-rcvd:');
