@@ -4,13 +4,14 @@ import * as path from 'path';
 import * as bodyParser from 'body-parser';
 import * as ews from 'express-web-server';
 import * as fs from 'fs';
-import * as proxy from 'rcf-http-proxy'
+import * as proxy from 'express-http-proxy'
 import * as prettyPrinter from 'express-pretty-print'; 
+import * as events from 'events';
 
 interface IAppConfig {
     apiServer: ews.IWebServerConfig;
     proxyServer: ews.IWebServerConfig;
-	proxyTarget: proxy.TargetSettings
+	proxyTarget: proxy.TargetSettings;
 }
 
 let configFile = (process.argv.length < 3 ? path.join(__dirname, '../local_testing_config.json') : process.argv[2]);
@@ -40,48 +41,15 @@ appApi.use(requestLogger);
 import {router as apiRouter} from './api';
 appApi.use('/services', apiRouter);
 
-/*
-import * as url from 'url';
-import * as _ from 'lodash';
+let targetAcquisition: proxy.TargetAcquisition = (req:express.Request) => Promise.resolve<proxy.TargetSettings>(config.proxyTarget);
 
-function ProxyRestApiMiddleware(req: express.Request, res: express.Response) {
-	let target = 'http://127.0.0.1:8081/services';
-	let targetUrl:url.Url = url.parse(target);
-	let options:http.RequestOptions = {
-		protocol: targetUrl.protocol
-		,hostname: targetUrl.hostname
-		,port: parseInt(targetUrl.port)
-		,method: req.method
-		,path: targetUrl.pathname + req.url
-	};
-	options.headers = _.assignIn(req.headers);
-	delete options.headers['host'];
-	console.log('options.path=' + options.path);
+let eventEmitter = new events.EventEmitter();
 
-	// options.headers['authorization'] = 'Bearer ' + bearerToken
+eventEmitter.on('error', (err: any) => {
+    console.error(new Date().toISOString() + ": !!! Proxy error: " + JSON.stringify(err));
+});
 
-	let proxyReq = http.request(options, (proxyRes: http.IncomingMessage) => {
-		res.writeHead(proxyRes.statusCode, proxyRes.statusMessage, proxyRes.headers);
-		proxyRes.on('error', (err) => {}).pipe(res).on('error', (err) => {});	// proxyRes ===> res
-	});
-    req.on('error', (err) => {}).pipe(proxyReq).on('error', (err) => {}); // req ===> proxyReq
-    req.socket.on('close' ,() => {
-        proxyReq.abort();
-    });
-}
-
-appProxy.use('/services', ProxyRestApiMiddleware);
-*/
-
-let targetAcquisition: proxy.TargetAcquisition = (req:express.Request, done: proxy.TargetAcquisitionCompletionHandler) => {
-	done(null, config.proxyTarget);
-}
-
-let proxyOptions: proxy.Options = {
-	targetAcquisition: targetAcquisition
-};
-
-let proxyMiddleware = proxy.get(proxyOptions);
+let proxyMiddleware = proxy.get({targetAcquisition, eventEmitter});
 
 appProxy.use('/services', proxyMiddleware);
 
