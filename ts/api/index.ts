@@ -73,7 +73,7 @@ import * as upload from './upload';
 router.use('/sobject', sobject.router);
 router.use('/upload', upload.router);
 
-router.get('kill_all_conns', (req:express.Request, res: express.Response) => {
+router.get('/kill_all_conns', (req:express.Request, res: express.Response) => {
     let connections = connectionsManager.findConnections();
     for (let i in connections) {
         let conn = connections[i];
