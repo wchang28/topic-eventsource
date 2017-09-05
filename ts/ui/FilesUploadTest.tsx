@@ -2,9 +2,9 @@ import * as rcf from 'rcf';
 import * as eventSource from 'eventsource-typings';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-
 import * as $browser from 'rest-browser';
-let $driver = $browser.get({});
+
+let $driver = $browser.get();
 
 let api = new rcf.AuthorizedRestApi($driver);
 
@@ -79,17 +79,17 @@ export class FilesUploadTest extends React.Component<FilesUploadTestProps, Files
             formData.append("Myfile[]", file, file.name);
         }
 
-        let handler = (err:any, ret:any) => {
-            this.setState({uploading: false});
-            if (err)
-                console.error("!!! Error: " + JSON.stringify(err));
-            else
-                console.log(typeof ret === 'string'? ret : JSON.stringify(ret));
-            alert('done');
-        }
-
         this.setState({uploading: true});
-        api.$F(url, formData, handler);
+        api.$F("POST", url, formData)
+        .then((ret: rcf.RESTReturn) => {
+            this.setState({uploading: false});
+            console.log(JSON.stringify(ret, null, 2));
+            alert('done');
+        }).catch((err: any) => {
+            this.setState({uploading: false});
+            console.error("!!! Error: " + JSON.stringify(err));
+            alert('done');
+        });
         
         e.preventDefault();
     }

@@ -17,12 +17,16 @@ form.append('LastName', 'Chang');
 form.append("Myfile[]", fs.createReadStream('C:/tmp/signedcorrected 4506-T.pdf'), 'signedcorrected 4506-T.pdf');
 form.append("Myfile[]", fs.createReadStream('C:/tmp/polaris.txt'), 'polaris.txt');
 
-let handler = (err:any, ret:any) => {
-    if (err)
-        console.error("!!! Error: " + JSON.stringify(err));
-    else
-        console.log(typeof ret === 'string'? ret : JSON.stringify(ret));
-}
+api.$F("POST", '/services/upload/file_upload', form)
+.then((ret: rcf.RESTReturn) => {
+    console.log(JSON.stringify(ret, null, 2));
+}).catch((err: any) => {
+    console.error("!!! Error: " + JSON.stringify(err));
+});
 
-api.$F('/services/upload/file_upload', form, handler);
-//api.$F('/services/upload/s3_upload', form, handler);
+api.$F("POST", '/services/upload/s3_upload', form)
+.then((ret: rcf.RESTReturn) => {
+    console.log(JSON.stringify(ret, null, 2));
+}).catch((err: any) => {
+    console.error("!!! Error: " + JSON.stringify(err));
+});
